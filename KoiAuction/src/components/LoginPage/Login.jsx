@@ -1,6 +1,10 @@
 import { useNavigate } from "react-router-dom";
 import { Button, Input, Space, Divider, message } from "antd";
-import { UserOutlined, EyeInvisibleOutlined, EyeTwoTone } from "@ant-design/icons";
+import {
+  UserOutlined,
+  EyeInvisibleOutlined,
+  EyeTwoTone,
+} from "@ant-design/icons";
 import { useState } from "react";
 import axios from "axios";
 import styles from "./Login.module.css"; // Importing CSS module
@@ -14,10 +18,13 @@ const Login = () => {
     e.preventDefault();
 
     try {
-      const response = await axios.post("http://localhost:8080/BidKoi/account/login", {
-        username: username,
-        password: password,
-      });
+      const response = await axios.post(
+        "http://localhost:8080/BidKoi/account/login",
+        {
+          username: username,
+          password: password,
+        }
+      );
 
       const data = response.data;
 
@@ -54,8 +61,11 @@ const Login = () => {
         </div>
 
         <div className={`${styles.col2} ${styles.glass2}`}>
-          <p className={styles.loginWords}>Welcome Kim Cuong Back!</p>
-          <form className={`${styles.loginForm} ${styles.glass}`} onSubmit={handleLogin}>
+          <p className={styles.loginWords}>Welcome Back!</p>
+          <form
+            className={`${styles.loginForm} ${styles.glass}`}
+            onSubmit={handleLogin}
+          >
             {/* Username Input */}
             <Input
               placeholder="Enter your username"
@@ -74,7 +84,9 @@ const Login = () => {
             <Space direction="vertical" size="large" style={{ width: "100%" }}>
               <Input.Password
                 placeholder="Enter your password"
-                iconRender={(visible) => (visible ? <EyeTwoTone /> : <EyeInvisibleOutlined />)}
+                iconRender={(visible) =>
+                  visible ? <EyeTwoTone /> : <EyeInvisibleOutlined />
+                }
                 className={`${styles.formItem}`}
                 required
                 value={password}
@@ -86,14 +98,22 @@ const Login = () => {
             <br />
 
             {/* Login Button */}
-            <Button className={styles.formItem2} type="primary" block htmlType="submit">
+            <Button
+              className={styles.formItem2}
+              type="primary"
+              block
+              htmlType="submit"
+            >
               Login
             </Button>
 
-            <Divider style={{ borderColor: '#A8A6A7' }}>Or</Divider>
+            <Divider style={{ borderColor: "#A8A6A7" }}>Or</Divider>
 
             {/* Google Login Button */}
-            <Button className={`${styles.loginGoogle} ${styles.formItem}`} block>
+            <Button
+              className={`${styles.loginGoogle} ${styles.formItem}`}
+              block
+            >
               <img
                 src="https://th.bing.com/th/id/R.0dd54f853a1bffb0e9979f8146268af3?rik=qTQlRtQRV5AliQ&riu=http%3a%2f%2fpluspng.com%2fimg-png%2fgoogle-logo-png-google-logo-icon-png-transparent-background-1000.png&ehk=VlcCHZ7jyV%2fCI7dZfbUl8Qb9%2f7uibkF6I6MBoqTtpRU%3d&risl=&pid=ImgRaw&r=0"
                 alt="Google logo"
