@@ -1,0 +1,155 @@
+/* Login.module.css */
+@keyframes slide-down {
+  0% {
+    transform: translateY(-30px);
+    opacity: 0;
+  }
+  100% {
+    transform: translateY(0);
+    opacity: 1;
+  }
+}
+.loginpage {
+  height: 100vh;
+  width: 100vw; /* Viewport width for responsiveness */
+  background: to right, #a6c2ffaf,#f18cf1a0, #f53c3cb2,
+    url("D:\Ky5\FER\demovite\KoiAuction\src\assets\Picsart_24-09-23_21-55-02-339.png");
+  background-size: cover;
+  background-position: center;
+  background-blend-mode: overlay; /* Blend the gradient with the image */
+  overflow-x: hidden;
+}
+
+.formContainer {
+  display: flex;
+  height: 100vh;
+  width: 100vw; /* Adjusted to vw for full width */
+}
+
+.glass {
+  background-color: unset;
+  background: rgba(245, 203, 203, 0.146);
+  backdrop-filter: blur(5px) !important;
+}
+
+.glass2 {
+  background-color: unset;
+  background: rgba(217, 227, 234, 0.299);
+  backdrop-filter: blur(5px) !important;
+}
+
+.col1 {
+  display: flex;
+  align-items: center;
+  flex-direction: column;
+  width: 70%;
+}
+
+.col2 {
+  display: flex;
+  align-items: center;
+  justify-content: center; /* Changed from justify-self to justify-content */
+  flex-direction: column;
+  width: 130%; /* Adjusted for better proportion */
+  border-radius: 64px 0px 0px 64px;
+  transition: border-radius 0.3s;
+  animation: slide-down 0.6s ease-out;
+}
+
+.image {
+  margin-top: 10vh;
+  width: 350px;
+  height: 600px;
+  object-fit: fill;
+  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.5);
+}
+
+.featuredWords {
+  text-align: center;
+  color: #fff;
+  font-size: 30px;
+}
+
+.featuredWords span {
+  font-weight: 600;
+  color: cornflowerblue;
+}
+
+.loginWords {
+  font-family: "Quicksand", sans-serif;
+  font-size: 50px;
+  font-weight: 600;
+}
+
+.loginForm {
+  padding: 20px;
+  border-radius: 8px;
+  box-shadow: 0px 4px 8px rgba(0, 0, 0, 0.1);
+}
+
+.formItem {
+  margin-bottom: 16px;
+  border-radius: 24px !important;
+}
+
+.formItem2 {
+  margin-bottom: 16px;
+  margin-top: 10px;
+  width: 100%;
+  padding: 10px;
+  background-color: #d4163c !important;
+  border: none;
+  border-radius: 24px !important;
+  font-size: 16px;
+  cursor: pointer;
+}
+
+label {
+  display: block;
+  margin-bottom: 8px;
+  font-weight: thin;
+  color: black;
+}
+
+/* button {
+  margin-top: 10px;
+  width: 100%;
+  padding: 10px;
+  background-color: #d4163c !important;
+  border: none;
+  border-radius: 24px !important;
+  font-size: 16px;
+  cursor: pointer;
+} */
+
+.loginGoogle {
+  display: flex !important;
+  align-items: center;
+  justify-content: center;
+  gap: 20px;
+  background-color: #cacbcf !important;
+  color: black;
+}
+
+.registerLink {
+  margin-top: 20px;
+  font-size: 20px;
+  text-align: center;
+}
+
+.registerLink a {
+  padding: 7px;
+  font-size: 12px;
+  background-color: #4685af;
+  color: white;
+  text-decoration: none;
+  border-radius: 4px;
+}
+
+.registerLink span {
+  font-size: 14px;
+  padding: 10px;
+  background-color: #d4163c;
+  border-radius: 24px;
+  color: #fff;
+}

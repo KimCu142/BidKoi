@@ -1,0 +1,7 @@
+body {
+    background: linear-gradient(to right, #0051ff22,#ff01a238, #ff000039), 
+                url("D:\Ky5\FER\demovite\KoiAuction\src\assets\Picsart_24-09-25_16-28-33-038.png");
+    background-size: cover;
+    background-position: center;
+    background-blend-mode: overlay; 
+  }

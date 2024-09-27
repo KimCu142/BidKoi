@@ -1,0 +1,193 @@
+$primary-color: rgb(70, 133, 175);
+$second-color: #d4163c;
+$font-family: "Montserrat", sans-serif;
+$main-bg: "D:\Ky5\FER\demovite\KoiAuction\src\assets\Picsart_24-09-25_16-28-33-038.png";
+@keyframes slide-down {
+  0% {
+    transform: translateY(-30px);
+    opacity: 0;
+  }
+  100% {
+    transform: translateY(0);
+    opacity: 1;
+  }
+}
+
+.app {
+
+
+  .container {
+    max-width: 100%;
+    margin: 0 auto;
+    padding: 20px;
+
+    .main-content {
+      .hero-section {
+        position: relative;
+        text-align: center;
+        padding: 75px 16px;
+        animation: slide-down 0.6s ease-out;
+
+        .hero-container {
+          padding: 0px 20px;
+
+          .hero-content {
+            width: auto;
+            height: auto;
+
+            .hero-header {
+              // animation: slide-down 0.6s ease-out;
+              animation-delay: 0.2s;
+              .logo-container {
+                position: relative;
+                align-items: center;
+                justify-content: center;
+                width: 100%;
+                margin: 0px 0px 80px;
+
+                .logo {
+                  //   display: block;
+                  width: 800px;
+                  height: 432px;
+                  border-radius: 0 0 10px 10px;
+                  margin-right: 10px;
+                }
+
+                .title-container {
+                  display: flex;
+                  align-items: center;
+                  justify-content: center;
+                  border-radius: 8px;
+                  background-color: #2b2e4033;
+                  line-height: 24px;
+                  padding: 0px;
+                  width: 751px;
+                  height: 108px;
+                  margin-right: 5px;
+                  position: absolute;
+                  left: 49.7%;
+                  bottom: -5%;
+                  transform: translateX(-50%);
+                  background-color: rgba(0, 0, 0, 0.7);
+                  background: #2b2e4033;
+
+                  backdrop-filter: blur(10px);
+
+                  svg.site-logo {
+                    height: 96px;
+                    width: 96px;
+                    line-height: 24px;
+                  }
+
+                  .site-title {
+                    font-family: "Righteous", sans-serif;
+                    color: #fff;
+                    font-size: 96px;
+                    font-weight: 500;
+                    margin: 0;
+                  }
+                  .site-tagline {
+                    font-size: 24px;
+                    font-family: "Montserrat", sans-serif;
+                    color: #fff;
+                    font-weight: 500;
+                    letter-spacing: 0.6px;
+                    margin: 32px 0;
+                    writing-mode: vertical-rl; // Xoay chữ theo chiều dọc từ dưới lên
+                    transform: rotate(180deg); // Đảo ngược chiều hiển thị chữ
+                    align-self: center;
+                  }
+                }
+              }
+              .hero-title {
+                font-family: "Quicksand", sans-serif;
+                width: 1200px;
+                // height: 198px;
+                font-size: 72px;
+                font-weight: 700;
+                line-height: 99px;
+                color:#fff;
+                margin: 0px auto 32px;
+                text-align: center;
+                text-transform: capitalize;
+
+                .highlight {
+                  font-family: "Quicksand", sans-serif;
+                  color: #d4163c;
+                  display: inline;
+                }
+              }
+
+              .button-container {
+                display: grid;
+                align-items: center;
+                justify-content: center;
+                grid-template-columns: 1280px;
+                grid-template-rows: 100px;
+                line-height: 24px;
+                margin: 0px 0px 40px;
+                // animation: slide-down 0.6s ease-out;
+                animation-delay: 0.2s;
+
+                .btn1,
+                .btn2 {
+                  font-family: "Montserrat", sans-serif;
+                  font-size: 20px;
+                  color: #fff;
+                  justify-content: center;
+                  align-items: center;
+                  grid-template-rows: 28px;
+                  text-align: center;
+                  border-radius: 9999px;
+                  text-decoration: none;
+                  transition: background-color 0.3s ease, box-shadow 0.3s ease,
+                    transform 0.3s ease;
+                }
+
+                .btn1:active .btn2:active {
+                  transform: translateY(0);
+                  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+                }
+
+                .btn1 {
+                  grid-template-columns: 85.9896px;
+                  background-color: #d4163c;
+                  font-weight: 600;
+                  padding: 16px 36px;
+                }
+
+                .btn1:hover {
+                  background-color: #f41844;
+                  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
+                  transform: translateY(-3px);
+                }
+
+                .btn2 {
+                  background-color: $primary-color;
+                  grid-template-columns: 150.76px;
+                  font-weight: 700;
+                  padding: 16px 32px;
+                }
+                .btn2:hover {
+                  background-color: #6ba5cb;
+                  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
+                  transform: translateY(-3px);
+                }
+              }
+            }
+          }
+        }
+      }
+    }
+  }
+}
+
+.button-group {
+  display: grid;
+  gap: 16px;
+  grid-template-columns: 216px 216px;
+  grid-template-rows: 60px;
+  justify-content: center;
+  margin: 40px 0px 0px;
+  animation-delay: 0.4s;
+}

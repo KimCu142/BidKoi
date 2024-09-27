@@ -1,0 +1,110 @@
+/* Kiểu dáng chung cho card */
+.card {
+  width: 351px; /* Điều chỉnh kích thước theo ý muốn */
+  border: 1px solid #ccc;
+  border-radius: 24px;
+  overflow: hidden;
+  box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
+  background-color: #c7c9cd;
+  font-family: sans-serif;
+
+}
+
+/* Phần header */
+.card-header {
+  display: flex;
+  flex-direction: column;
+  position: relative;
+  align-items: center;
+  justify-content: center;
+  padding: 10px;
+  background-color: #2980b9; /* Màu xanh dương đậm */
+  color: white;
+}
+
+.card-header img[alt="Logo"] {
+  position: absolute;
+  top: 10px; /* Điều chỉnh khoảng cách từ mép trên */
+  left: 10px; /* Điều chỉnh khoảng cách từ mép trái */
+  z-index: 1; /* Đảm bảo logo hiển thị trên hình ảnh */
+  height: 48px;
+  margin: 5px;
+}
+
+.section {
+  width: 380px;
+  display: flex;
+  justify-content: space-around;
+}
+
+.card-number {
+  font-size: 1.2em;
+  font-weight: bold;
+  width: 100px;
+}
+
+/* Hình ảnh cá Koi */
+
+.card-header img[alt="KoiPic"] {
+  width: auto;
+  width: 150px;
+}
+
+/* Nội dung chính */
+.card-content {
+  padding: 15px;
+  display: flex;
+  justify-content: space-between;
+}
+
+.card-content h2 {
+  margin-top: 0;
+}
+
+.ended {
+  font-weight: 600;
+  color: #d4163c;
+  font-family: "Montserrat", sans-serif;
+font-size: 20px;
+}
+
+.price {
+  font-size: 1.5em;
+  font-weight: bold;
+  color: green;
+}
+
+/* Chi tiết cá */
+.details {
+  display: flex;
+flex-direction: column;
+align-items: self-start;
+
+}
+
+.detail-item {
+  display: flex;
+  flex-direction: column;
+  margin-bottom: 10px;
+  margin-right: 20px;
+
+}
+
+.icon {
+  margin-right: 5px;
+}
+
+/* Đánh giá */
+.rating {
+  width: 150px;
+  margin-left: 20px;
+  display: flex;
+  align-items: end;
+  justify-content: flex-end; /* Đẩy các ngôi sao về phía cuối (bên phải) */
+}
+.card-content2 {
+  display: flex;
+  justify-content: space-around;
+  margin-left: 10px;
+  
+}
