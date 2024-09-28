@@ -35,22 +35,30 @@ function Profile() {
 
   const [activeTab, setActiveTab] = useState("account");
 
-  // =========================== Gọi API để lấy thông tin người dùng
 
 
  // =========================== Gọi API để lấy thông tin người dùng
  const fetchUserData = async () => {
   try {
-    const response = await axios.get(
-      "http://localhost:8080/BidKoi/account/view/185f4923-8212-480b-8769-b549c00bb0d3"
-    );
-    setUserData(response.data); // Đặt dữ liệu vào state
-    setInitialData(response.data); // Lưu lại dữ liệu ban đầu để có thể reset
+    const storedUser = localStorage.getItem("user"); 
+    if (storedUser) {
+      const userData = JSON.parse(storedUser);
+      const userId = userData.id; // Lấy user ID từ dữ liệu đã lưu
+
+      const response = await axios.get(
+        `http://localhost:8080/BidKoi/account/view/${userId}` // Sử dụng user ID trong URL
+      );
+      setUserData(response.data);
+      setInitialData(response.data);
+    } else {
+      // Xử lý trường hợp không tìm thấy thông tin người dùng trong localStorage
+      console.error("User data not found in localStorage");
+      // Có thể chuyển hướng đến trang đăng nhập hoặc hiển thị thông báo lỗi
+    }
   } catch (error) {
     console.error("Error fetching user data", error);
   }
 };
-
 // Sử dụng useEffect để gọi API khi component render lần đầu
 useEffect(() => {
   fetchUserData(); // Gọi hàm lấy dữ liệu người dùng khi component được render
