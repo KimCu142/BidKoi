@@ -51,7 +51,7 @@ const Login = () => {
         </div>
 
         <div className={`${styles.col2} ${styles.glass2}`}>
-          <p className={styles.loginWords}>Welcome Kim Cuong Back!</p>
+          <p className={styles.loginWords}>Welcome Back!</p>
           <form
             className={`${styles.loginForm} ${styles.glass}`}
             onSubmit={handleLogin}
