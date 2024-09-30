@@ -27,15 +27,23 @@
       .nav__left,
       .nav__right {
         display: flex;
-
+     
         li {
+          justify-content: center;
           margin-right: 10px;
-          .nav-button,
-          .log-button,
-          .reg-button {
+          .Loged-Box{
+          padding-top: 5px;
+       .ant-btn {
+            background-color: #d4163c ; /* Set the background color to red */
+            color: white; /* Set the text color to white for contrast */
+            border-color: red; /* Set the border color to red */
+          }
+          }
+          
+          .nav-button,.reg-button,.log-button   {
             display: inline-flex; // Hiển thị như một nút
             align-items: center;
-            padding: 9px 20px;
+            padding: 10px 20px;
             background-color: transparent;
             color: #15171f;
             font-weight: 500;

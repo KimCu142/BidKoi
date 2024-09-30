@@ -1,17 +1,17 @@
-import { Table } from "antd";
+import { Button, Table } from "antd";
 import axios from "axios";
 import { useEffect, useState } from "react";
 import { toast } from "react-toastify";
 
-function StaffResponse() {
+function CreateAuction() {
   const api = "https://66f83af72a683ce9730f0194.mockapi.io/KoiRequest";
-  const [kois, setKois] = useState([]);
+  const [auctions, setAuctions] = useState([]);
 
   //GET
   const fetchData = async () => {
     try {
       const response = await axios.get(api);
-      setKois(response.data);
+      setAuctions(response.data);
     } catch (err) {
       toast.error(err.response.data);
     }
@@ -29,10 +29,10 @@ function StaffResponse() {
 
   return (
     <div>
-      <Button></Button>
-      <Table dataSource={kois} />
+      <Button>Create new Auction</Button>
+      <Table dataSource={auctions} />
     </div>
   );
 }
 
-export default StaffResponse;
+export default CreateAuction;

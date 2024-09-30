@@ -77,6 +77,7 @@ function Profile() {
   const handleUpdate = async () => {
     console.log("Hàm handleUpdate được gọi");
     try {
+      const storedUser = localStorage.getItem("user");
       setIsUpdate(true);
 
       let updatedData = { ...userData };
@@ -88,8 +89,10 @@ function Profile() {
         setPreviewImage(url);
       }
 
-      const userId = localStorage.getItem("id");
+      // const userId = localStorage.getItem("id");
       const token = localStorage.getItem("token");
+      const userData = JSON.parse(storedUser);
+      const userId = userData.id;
 
       console.log("Dữ liệu trước khi gửi:", updatedData);
 
