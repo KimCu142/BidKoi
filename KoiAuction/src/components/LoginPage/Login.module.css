@@ -1,4 +1,5 @@
 /* Login.module.css */
+
 @keyframes slide-down {
   0% {
     transform: translateY(-30px);
@@ -12,11 +13,6 @@
 .loginpage {
   height: 100vh;
   width: 100vw; /* Viewport width for responsiveness */
-  background: to right, #a6c2ffaf,#f18cf1a0, #f53c3cb2,
-    url("D:\Ky5\FER\demovite\KoiAuction\src\assets\Picsart_24-09-23_21-55-02-339.png");
-  background-size: cover;
-  background-position: center;
-  background-blend-mode: overlay; /* Blend the gradient with the image */
   overflow-x: hidden;
 }
 

@@ -30,14 +30,20 @@ function Profile() {
   const [fileList, setFileList] = useState([]);
   const [activeTab, setActiveTab] = useState("account");
 
+
   const apiView = "http://localhost:8080/BidKoi/account/view";
   const apiUpdate = "http://localhost:8080/BidKoi/account/update-profile";
 
   // =========================== Gọi API để lấy thông tin người dùng
   const fetchUserData = useCallback(async () => {
     try {
+         const storedUser = localStorage.getItem("user");
+      if (storedUser) {
       const token = localStorage.getItem("token");
       const userId = localStorage.getItem("id");
+           const userData = JSON.parse(storedUser);
+        const userId = userData.id; // Lấy user ID từ dữ liệu đã lưu
+
 
       const response = await axios.get(`${apiView}/${userId}`, {
         headers: {
@@ -50,10 +56,12 @@ function Profile() {
         setInitialData(response.data);
         setPreviewImage(response.data.avatar || "");
         console.log("Fetched User Data after update: ", response.data); // In dữ liệu mới fetch xong
+
       }
     } catch (error) {
       console.error("Error fetching user data", error);
     }
+
   }, [apiView]);
 
   // ===================================================
@@ -72,6 +80,7 @@ function Profile() {
   useEffect(() => {
     fetchUserData();
   }, [fetchUserData]);
+
 
   // =========================== Gắn API để cập nhật thông tin mới
   const handleUpdate = async () => {
@@ -157,6 +166,7 @@ function Profile() {
     setUserData(initialData);
   };
 
+
   const getBase64 = (file) =>
     new Promise((resolve, reject) => {
       const reader = new FileReader();
@@ -193,6 +203,7 @@ function Profile() {
   );
   return (
     <>
+
       <div className={styles.sidebar}>
         <div className={styles.sidebarMenu}>
           <ul>
@@ -235,6 +246,7 @@ function Profile() {
 
         {activeTab === "account" && (
           <div className={styles.profileBox}>
+
             <div className={styles.userId}>
               <strong>User ID: </strong>
               {userData.id}
@@ -278,11 +290,13 @@ function Profile() {
                     value={userData.firstname}
                     onChange={(e) =>
                       setUserData({ ...userData, firstname: e.target.value })
+
                     }
                     disabled={!isEdit}
                   />
                 </Form.Item>
                 <Form.Item>
+
                   <label className={styles.formLabel}>Last name</label>
                   <Input
                     placeholder="Last name"
@@ -353,13 +367,16 @@ function Profile() {
                     disabled={!isEdit}
                   />
                 </Form.Item>
+
                 <div className={styles.profileButton}>
                   <div className={styles.twoButton}>
                     {isEdit ? (
                       <>
+
                         <button className={styles.btn1} onClick={handleUpdate}>
                           Save changes
                         </button>
+
                         <div onClick={handleReset} className={styles.btn2}>
                           Reset
                         </div>
@@ -369,6 +386,7 @@ function Profile() {
                         Edit
                       </div>
                     )}
+
 
                     <div className={styles.btn2} onClick={handleCancel}>
                       Cancel
@@ -399,13 +417,16 @@ function Profile() {
           </div>
         )}
 
+
         {activeTab === "activities" && (
           <div className="activitiesBox">
             <p>Activity content goes here</p>
           </div>
         )}
       </main>
+
     </>
+
   );
 }
 
