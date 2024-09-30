@@ -18,7 +18,9 @@ const Login = () => {
     values.preventDefault();
 
     try {
+
       const response = await api.post("account/login", { username, password });
+
       const data = response.data;
 
       // Save token to localStorage or sessionStorage
