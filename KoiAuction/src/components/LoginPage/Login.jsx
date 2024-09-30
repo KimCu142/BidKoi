@@ -6,36 +6,28 @@ import {
   EyeTwoTone,
 } from "@ant-design/icons";
 import { useState } from "react";
-import axios from "axios";
 import styles from "./Login.module.css"; // Importing CSS module
+import api from "../../configs/axios";
 
 const Login = () => {
   const navigate = useNavigate(); // Hook useNavigate to handle navigation
   const [username, setUsername] = useState("");
   const [password, setPassword] = useState("");
 
-  const handleLogin = async (e) => {
-    e.preventDefault();
+  const handleLogin = async (values) => {
+    values.preventDefault();
 
     try {
-      const response = await axios.post(
-        "http://localhost:8080/BidKoi/account/login",
-        {
-          username: username,
-          password: password,
-        }
-      );
+
+      const response = await api.post("account/login", { username, password });
 
       const data = response.data;
 
-      if (data.success) {
-        // Save token to localStorage or sessionStorage
-        localStorage.setItem("token", data.token);
-        message.success("Login successful!");
-        navigate("/"); // Redirect to dashboard page upon successful login
-      } else {
-        message.error("Login failed. Please check your credentials.");
-      }
+      // Save token to localStorage or sessionStorage
+      localStorage.setItem("token", data.token);
+      localStorage.setItem("user", JSON.stringify(response.data));
+      message.success("Login successful!");
+      navigate("/");
     } catch (error) {
       if (error.response) {
         // Extract error code and message from API response
