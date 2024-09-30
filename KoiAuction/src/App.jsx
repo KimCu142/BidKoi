@@ -7,7 +7,11 @@ import HomePage from "./components/pages/home/index.jsx";
 import Header from "./components/header/index.jsx";
 import Footer from "./components/footer/index.jsx";
 import Profile from "./components/pages/profile/index.jsx";
+
+import BreederRequest from "./components/pages/requestKoi/BreederRequest.jsx";
+
 import Auctions from "./components/pages/auctions/auctions.jsx";
+
 function App() {
   const router = createBrowserRouter([
     {
@@ -32,18 +36,18 @@ function App() {
         </>
       ),
     },
+
     {
       path: "/auctions",
 
       element: (
         <>
           <Header />
-          <Auctions/>
+          <Auctions />
           <Footer />
         </>
       ),
     },
-
     {
       path: "/Login",
       element: <Login />,
@@ -51,6 +55,10 @@ function App() {
     {
       path: "/Register",
       element: <Register />,
+    },
+    {
+      path: "/BreederRequest",
+      element: <BreederRequest />,
     },
   ]);
 

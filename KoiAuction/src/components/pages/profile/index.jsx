@@ -1,83 +1,155 @@
-import {
-  DatePicker,
-  Form,
-  Image,
-  Input,
-  // EyeInvisibleOutlined,
-  // EyeTwoTone,
-} from "antd";
+/* eslint-disable no-unused-vars */
+import { DatePicker, Form, Image, Input, Upload } from "antd";
 import styles from "./profile.module.scss";
 import TextArea from "antd/es/input/TextArea";
-import { useEffect, useState } from "react";
-import axios from "axios"; //Gọi API
+import { useCallback, useEffect, useState } from "react";
+import axios from "axios";
+import { toast } from "react-toastify";
 import moment from "moment"; //Chuyển đổi ngày tháng, DataPicker hiểu định dạng ngày
-
-// const { Option } = Select; //Định nghĩa Option cho Select
+import { PlusOutlined } from "@ant-design/icons";
+import uploadFile from "../../../utils/file";
 
 function Profile() {
   const [userData, setUserData] = useState({
-    firstName: "",
-    lastName: "",
+    id: "",
+    firstname: "",
+    lastname: "",
     gender: "None",
     phone: "",
     address: "",
     email: "",
     birthday: null,
+    avatar: "",
   });
 
   const [initialData, setInitialData] = useState({});
   const [isEdit, setIsEdit] = useState(false);
-
-  //============================ Cập nhật birthday khi chọn ngày
-  const onChange = (date, dateString) => {
-    setUserData((prev) => ({ ...prev, birthday: dateString }));
-  };
-
+  const [isUpdate, setIsUpdate] = useState(false);
+  const [previewOpen, setPreviewOpen] = useState(false);
+  const [previewImage, setPreviewImage] = useState("");
+  const [fileList, setFileList] = useState([]);
   const [activeTab, setActiveTab] = useState("account");
 
+
+  const apiView = "http://localhost:8080/BidKoi/account/view";
+  const apiUpdate = "http://localhost:8080/BidKoi/account/update-profile";
+
   // =========================== Gọi API để lấy thông tin người dùng
-  const fetchUserData = async () => {
+  const fetchUserData = useCallback(async () => {
     try {
-      const storedUser = localStorage.getItem("user");
+         const storedUser = localStorage.getItem("user");
       if (storedUser) {
-        const userData = JSON.parse(storedUser);
+      const token = localStorage.getItem("token");
+      const userId = localStorage.getItem("id");
+           const userData = JSON.parse(storedUser);
         const userId = userData.id; // Lấy user ID từ dữ liệu đã lưu
 
-        const response = await axios.get(
-          `http://localhost:8080/BidKoi/account/view/${userId}` // Sử dụng user ID trong URL
-        );
+
+      const response = await axios.get(`${apiView}/${userId}`, {
+        headers: {
+          Authorization: `Bearer ${token}`,
+        },
+      });
+
+      if (response.data) {
         setUserData(response.data);
         setInitialData(response.data);
-      } else {
-        // Xử lý trường hợp không tìm thấy thông tin người dùng trong localStorage
-        console.error("User data not found in localStorage");
-        // Có thể chuyển hướng đến trang đăng nhập hoặc hiển thị thông báo lỗi
+        setPreviewImage(response.data.avatar || "");
+        console.log("Fetched User Data after update: ", response.data); // In dữ liệu mới fetch xong
+
       }
     } catch (error) {
       console.error("Error fetching user data", error);
     }
-  };
-  // Sử dụng useEffect để gọi API khi component render lần đầu
+
+  }, [apiView]);
+
+  // ===================================================
+
+  // useEffect(() => {
+  //   const storedUserData = localStorage.getItem("userData");
+  //   if (storedUserData) {
+  //     setUserData(JSON.parse(storedUserData));
+  //     setInitialData(JSON.parse(storedUserData));
+  //     setPreviewImage(JSON.parse(storedUserData).avatar || "");
+  //   } else {
+  //     fetchUserData();
+  //   }
+  // }, [fetchUserData]);
+
   useEffect(() => {
-    fetchUserData(); // Gọi hàm lấy dữ liệu người dùng khi component được render
-  }, []); // Mảng rỗng [] để đảm bảo chỉ gọi một lần khi component mount
+    fetchUserData();
+  }, [fetchUserData]);
+
 
   // =========================== Gắn API để cập nhật thông tin mới
   const handleUpdate = async () => {
+    console.log("Hàm handleUpdate được gọi");
     try {
-      const response = await axios.put("");
+      const storedUser = localStorage.getItem("user");
+      setIsUpdate(true);
+
+      let updatedData = { ...userData };
+
+      if (fileList.length > 0) {
+        const file = fileList[0];
+        const url = await uploadFile(file.originFileObj);
+        updatedData = { ...updatedData, avatar: url };
+        setPreviewImage(url);
+      }
+
+      // const userId = localStorage.getItem("id");
+      const token = localStorage.getItem("token");
+      const userData = JSON.parse(storedUser);
+      const userId = userData.id;
+
+      console.log("Dữ liệu trước khi gửi:", updatedData);
+
+      const response = await axios.put(`${apiUpdate}/${userId}`, updatedData, {
+        headers: {
+          Authorization: `Bearer ${token}`,
+          "Content-Type": "application/json",
+        },
+      });
+
+      console.log("Response from update API: ", response.data);
+      toast.success("Update successfully!");
+
+      localStorage.setItem("userData", JSON.stringify(response.data));
+
       setUserData(response.data);
       setInitialData(response.data);
+      setPreviewImage(response.data.avatar || "");
+
+      // Gọi lại hàm fetchUserData() và đợi nó hoàn thành
+
+      // await fetchUserData();
+      console.log("User Data after fetched: ", userData);
+
       setIsEdit(false);
     } catch (error) {
-      console.error("Error updating user data", error);
+      console.error(
+        "Error updating user data",
+        error.response ? error.response.data : error
+      );
+      toast.error("Error updating user data");
+    } finally {
+      setIsUpdate(false);
     }
   };
-
-  // ========================== Cập nhật birthday khi nhập ngày
+  // ===========================================================
 
   const handleChangeTab = (tab) => {
     setActiveTab(tab);
+    const tabContent = document.getElementById(tab);
+    if (tabContent) {
+      tabContent.scrollIntoView({ behavior: "smooth", block: "start" });
+    }
+  };
+
+  //============================ Cập nhật birthday khi chọn ngày
+  const onChange = (date, dateString) => {
+    setUserData((prev) => ({ ...prev, birthday: dateString }));
   };
 
   const handleEdit = () => {
@@ -86,6 +158,7 @@ function Profile() {
 
   const handleReset = () => {
     setUserData(initialData);
+    setPreviewImage(initialData.avatar);
   };
 
   const handleCancel = () => {
@@ -93,8 +166,44 @@ function Profile() {
     setUserData(initialData);
   };
 
+
+  const getBase64 = (file) =>
+    new Promise((resolve, reject) => {
+      const reader = new FileReader();
+      reader.readAsDataURL(file);
+      reader.onload = () => resolve(reader.result);
+      reader.onerror = (error) => reject(error);
+    });
+
+  const handlePreview = async (file) => {
+    if (!file.url && !file.preview) {
+      file.preview = await getBase64(file.originFileObj);
+    }
+    setPreviewImage(file.url || file.preview);
+    setPreviewOpen(true);
+  };
+  const handleChange = ({ fileList: newFileList }) => setFileList(newFileList);
+  const uploadButton = (
+    <button
+      style={{
+        border: 0,
+        background: "none",
+      }}
+      type="button"
+    >
+      <PlusOutlined />
+      <div
+        style={{
+          marginTop: 8,
+        }}
+      >
+        Upload
+      </div>
+    </button>
+  );
   return (
-    <div className={styles.body}>
+    <>
+
       <div className={styles.sidebar}>
         <div className={styles.sidebarMenu}>
           <ul>
@@ -137,17 +246,39 @@ function Profile() {
 
         {activeTab === "account" && (
           <div className={styles.profileBox}>
+
+            <div className={styles.userId}>
+              <strong>User ID: </strong>
+              {userData.id}
+            </div>
             <Form className={styles.profileContainer}>
               <div className={styles.imageFields}>
-                <Form.Item>
-                  <Image
-                    width={280}
-                    height={280}
-                    src="https://zos.alipayobjects.com/rmsportal/jkjgkEfvpUPVyRjUImniVslZfWPnJuuZ.png"
-                  />
-                  <div className={styles.textlight}>
-                    Allowed JPG, GIF or PNG.
-                  </div>
+                <Form.Item name="avatar">
+                  <h3 className={styles.avatarTitle}>Avatar</h3>
+                  {previewImage && !isEdit ? (
+                    <Image
+                      src={previewImage}
+                      alt="Avatar"
+                      style={{ width: "280px", height: "auto" }}
+                    />
+                  ) : (
+                    <Upload
+                      action="https://660d2bd96ddfa2943b33731c.mockapi.io/api/upload"
+                      listType="picture-card"
+                      fileList={fileList}
+                      onPreview={handlePreview}
+                      onChange={handleChange}
+                      disabled={!isEdit}
+                    >
+                      {fileList.length == 0 && isEdit ? uploadButton : null}
+                    </Upload>
+                  )}
+
+                  {isEdit && (
+                    <div className={styles.textlight}>
+                      Allowed JPG, GIF or PNG.
+                    </div>
+                  )}
                 </Form.Item>
               </div>
 
@@ -156,39 +287,28 @@ function Profile() {
                   <label className={styles.formLabel}>First name</label>
                   <Input
                     placeholder="First name"
-                    value={userData.firstName}
+                    value={userData.firstname}
                     onChange={(e) =>
-                      setUserData({ ...userData, firstName: e.target.value })
+                      setUserData({ ...userData, firstname: e.target.value })
+
                     }
                     disabled={!isEdit}
                   />
                 </Form.Item>
                 <Form.Item>
+
                   <label className={styles.formLabel}>Last name</label>
                   <Input
                     placeholder="Last name"
-                    value={userData.lastName}
+                    value={userData.lastname}
                     onChange={(e) =>
-                      setUserData({ ...userData, lastName: e.target.value })
+                      setUserData({ ...userData, lastname: e.target.value })
                     }
                     disabled={!isEdit}
                   />
                 </Form.Item>
                 <Form.Item>
                   <label className={styles.formLabel}>Gender</label>
-                  {/* <Select
-                      placeholder="Select gender"
-                      value={userData.gender}
-                      onChange={(e) =>
-                        setUserData({ ...userData, gender: e.target.value })
-                      }
-                      disabled={!isEdit}
-                    >
-                      <Option value="Nam">Nam</Option>
-                      <Option value="Nữ">Nữ</Option>
-                      <Option value="Khác">Khác</Option>
-                      <Option value="None">None</Option>
-                    </Select> */}
                   <Input
                     placeholder="Gender"
                     value={userData.gender}
@@ -247,13 +367,16 @@ function Profile() {
                     disabled={!isEdit}
                   />
                 </Form.Item>
+
                 <div className={styles.profileButton}>
                   <div className={styles.twoButton}>
                     {isEdit ? (
                       <>
-                        <div className={styles.btn1} onClick={handleUpdate}>
+
+                        <button className={styles.btn1} onClick={handleUpdate}>
                           Save changes
-                        </div>
+                        </button>
+
                         <div onClick={handleReset} className={styles.btn2}>
                           Reset
                         </div>
@@ -263,6 +386,7 @@ function Profile() {
                         Edit
                       </div>
                     )}
+
 
                     <div className={styles.btn2} onClick={handleCancel}>
                       Cancel
@@ -293,13 +417,16 @@ function Profile() {
           </div>
         )}
 
+
         {activeTab === "activities" && (
           <div className="activitiesBox">
             <p>Activity content goes here</p>
           </div>
         )}
       </main>
-    </div>
+
+    </>
+
   );
 }
 
