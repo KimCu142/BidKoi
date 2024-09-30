@@ -24,7 +24,9 @@ const Auctions = () => {
   return (
     <div className={styles.body}>
       <AuctionInfo />
-      <KoiCard />
+      <div className={styles.KoiCards}>
+        <KoiCard />
+      </div>
     </div>
   );
 };
@@ -35,7 +37,9 @@ const AuctionInfo = () => {
       <div className={styles.auctionTitle}>
         <span>Auction #1</span>
         <div className={styles.time}>
-          <p>28/9/2024 -</p> <p>30/9/2024</p>
+          <p className={styles.dateRange}>28/9/2024 -</p>{" "}
+          <p className={styles.dateRange}>30/9/2024</p>
+          <p className={styles.ended}>Ended 7 days Ago</p>
         </div>
       </div>
       <div>

@@ -20,7 +20,6 @@ const Login = () => {
     try {
       const response = await api.post("account/login", { username, password });
       const data = response.data;
-
       // Save token to localStorage or sessionStorage
       localStorage.setItem("token", data.token);
       localStorage.setItem("user", JSON.stringify(response.data));
