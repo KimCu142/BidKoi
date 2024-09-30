@@ -1,79 +1,143 @@
-import {
-  DatePicker,
-  Form,
-  Image,
-  Input,
-  // EyeInvisibleOutlined,
-  // EyeTwoTone,
-} from "antd";
+/* eslint-disable no-unused-vars */
+import { DatePicker, Form, Image, Input, Upload } from "antd";
 import styles from "./profile.module.scss";
 import TextArea from "antd/es/input/TextArea";
-import { useEffect, useState } from "react";
-import axios from "axios"; //Gọi API
+import { useCallback, useEffect, useState } from "react";
+import axios from "axios";
+import { toast } from "react-toastify";
 import moment from "moment"; //Chuyển đổi ngày tháng, DataPicker hiểu định dạng ngày
-
-// const { Option } = Select; //Định nghĩa Option cho Select
+import { PlusOutlined } from "@ant-design/icons";
+import uploadFile from "../../../utils/file";
 
 function Profile() {
   const [userData, setUserData] = useState({
-    firstName: "",
-    lastName: "",
+    id: "",
+    firstname: "",
+    lastname: "",
     gender: "None",
     phone: "",
     address: "",
     email: "",
     birthday: null,
+    avatar: "",
   });
 
   const [initialData, setInitialData] = useState({});
   const [isEdit, setIsEdit] = useState(false);
+  const [isUpdate, setIsUpdate] = useState(false);
+  const [previewOpen, setPreviewOpen] = useState(false);
+  const [previewImage, setPreviewImage] = useState("");
+  const [fileList, setFileList] = useState([]);
+  const [activeTab, setActiveTab] = useState("account");
+
+  const apiView = "http://localhost:8080/BidKoi/account/view";
+  const apiUpdate = "http://localhost:8080/BidKoi/account/update-profile";
+
+  // =========================== Gọi API để lấy thông tin người dùng
+  const fetchUserData = useCallback(async () => {
+    try {
+      const token = localStorage.getItem("token");
+      const userId = localStorage.getItem("id");
+
+      const response = await axios.get(`${apiView}/${userId}`, {
+        headers: {
+          Authorization: `Bearer ${token}`,
+        },
+      });
+
+      if (response.data) {
+        setUserData(response.data);
+        setInitialData(response.data);
+        setPreviewImage(response.data.avatar || "");
+        console.log("Fetched User Data after update: ", response.data); // In dữ liệu mới fetch xong
+      }
+    } catch (error) {
+      console.error("Error fetching user data", error);
+    }
+  }, [apiView]);
+
+  // ===================================================
+
+  // useEffect(() => {
+  //   const storedUserData = localStorage.getItem("userData");
+  //   if (storedUserData) {
+  //     setUserData(JSON.parse(storedUserData));
+  //     setInitialData(JSON.parse(storedUserData));
+  //     setPreviewImage(JSON.parse(storedUserData).avatar || "");
+  //   } else {
+  //     fetchUserData();
+  //   }
+  // }, [fetchUserData]);
+
+  useEffect(() => {
+    fetchUserData();
+  }, [fetchUserData]);
+
+  // =========================== Gắn API để cập nhật thông tin mới
+  const handleUpdate = async () => {
+    console.log("Hàm handleUpdate được gọi");
+    try {
+      setIsUpdate(true);
+
+      let updatedData = { ...userData };
+
+      if (fileList.length > 0) {
+        const file = fileList[0];
+        const url = await uploadFile(file.originFileObj);
+        updatedData = { ...updatedData, avatar: url };
+        setPreviewImage(url);
+      }
+
+      const userId = localStorage.getItem("id");
+      const token = localStorage.getItem("token");
+
+      console.log("Dữ liệu trước khi gửi:", updatedData);
+
+      const response = await axios.put(`${apiUpdate}/${userId}`, updatedData, {
+        headers: {
+          Authorization: `Bearer ${token}`,
+          "Content-Type": "application/json",
+        },
+      });
+
+      console.log("Response from update API: ", response.data);
+      toast.success("Update successfully!");
+
+      localStorage.setItem("userData", JSON.stringify(response.data));
+
+      setUserData(response.data);
+      setInitialData(response.data);
+      setPreviewImage(response.data.avatar || "");
+
+      // Gọi lại hàm fetchUserData() và đợi nó hoàn thành
+
+      // await fetchUserData();
+      console.log("User Data after fetched: ", userData);
+
+      setIsEdit(false);
+    } catch (error) {
+      console.error(
+        "Error updating user data",
+        error.response ? error.response.data : error
+      );
+      toast.error("Error updating user data");
+    } finally {
+      setIsUpdate(false);
+    }
+  };
+  // ===========================================================
+
+  const handleChangeTab = (tab) => {
+    setActiveTab(tab);
+    const tabContent = document.getElementById(tab);
+    if (tabContent) {
+      tabContent.scrollIntoView({ behavior: "smooth", block: "start" });
+    }
+  };
 
   //============================ Cập nhật birthday khi chọn ngày
   const onChange = (date, dateString) => {
     setUserData((prev) => ({ ...prev, birthday: dateString }));
-  };
-
-  const [activeTab, setActiveTab] = useState("account");
-
-  // =========================== Gọi API để lấy thông tin người dùng
-
-
- // =========================== Gọi API để lấy thông tin người dùng
- const fetchUserData = async () => {
-  try {
-    const response = await axios.get(
-      "http://localhost:8080/BidKoi/account/view/185f4923-8212-480b-8769-b549c00bb0d3"
-    );
-    setUserData(response.data); // Đặt dữ liệu vào state
-    setInitialData(response.data); // Lưu lại dữ liệu ban đầu để có thể reset
-  } catch (error) {
-    console.error("Error fetching user data", error);
-  }
-};
-
-// Sử dụng useEffect để gọi API khi component render lần đầu
-useEffect(() => {
-  fetchUserData(); // Gọi hàm lấy dữ liệu người dùng khi component được render
-}, []); // Mảng rỗng [] để đảm bảo chỉ gọi một lần khi component mount
-
-
-
-  // =========================== Gắn API để cập nhật thông tin mới
-  const handleUpdate = async () => {
-    try {
-      const response = await axios.put("");
-      setUserData(response.data);
-      setInitialData(response.data);
-      setIsEdit(false);
-    } catch (error) {
-      console.error("Error updating user data", error);
-    }
-  };
-
-  // ========================== Cập nhật birthday khi nhập ngày
-
-  const handleChangeTab = (tab) => {
-    setActiveTab(tab);
   };
 
   const handleEdit = () => {
@@ -82,6 +146,7 @@ useEffect(() => {
 
   const handleReset = () => {
     setUserData(initialData);
+    setPreviewImage(initialData.avatar);
   };
 
   const handleCancel = () => {
@@ -89,8 +154,41 @@ useEffect(() => {
     setUserData(initialData);
   };
 
-  return (
+  const getBase64 = (file) =>
+    new Promise((resolve, reject) => {
+      const reader = new FileReader();
+      reader.readAsDataURL(file);
+      reader.onload = () => resolve(reader.result);
+      reader.onerror = (error) => reject(error);
+    });
 
+  const handlePreview = async (file) => {
+    if (!file.url && !file.preview) {
+      file.preview = await getBase64(file.originFileObj);
+    }
+    setPreviewImage(file.url || file.preview);
+    setPreviewOpen(true);
+  };
+  const handleChange = ({ fileList: newFileList }) => setFileList(newFileList);
+  const uploadButton = (
+    <button
+      style={{
+        border: 0,
+        background: "none",
+      }}
+      type="button"
+    >
+      <PlusOutlined />
+      <div
+        style={{
+          marginTop: 8,
+        }}
+      >
+        Upload
+      </div>
+    </button>
+  );
+  return (
     <>
       <div className={styles.sidebar}>
         <div className={styles.sidebarMenu}>
@@ -129,179 +227,181 @@ useEffect(() => {
         </div>
       </div>
 
-     
-        <main className={styles.mainBox}>
-          {/*============= Nội dung của tab Account ====================*/}
+      <main className={styles.mainBox}>
+        {/*============= Nội dung của tab Account ====================*/}
 
-          {activeTab === "account" && (
-            <div className={styles.profileBox}>
-              <Form className={styles.profileContainer}>
-                <div className={styles.imageFields}>
-                  <Form.Item>
+        {activeTab === "account" && (
+          <div className={styles.profileBox}>
+            <div className={styles.userId}>
+              <strong>User ID: </strong>
+              {userData.id}
+            </div>
+            <Form className={styles.profileContainer}>
+              <div className={styles.imageFields}>
+                <Form.Item name="avatar">
+                  <h3 className={styles.avatarTitle}>Avatar</h3>
+                  {previewImage && !isEdit ? (
                     <Image
-                      width={280}
-                      height={280}
-                      src="https://zos.alipayobjects.com/rmsportal/jkjgkEfvpUPVyRjUImniVslZfWPnJuuZ.png"
+                      src={previewImage}
+                      alt="Avatar"
+                      style={{ width: "280px", height: "auto" }}
                     />
+                  ) : (
+                    <Upload
+                      action="https://660d2bd96ddfa2943b33731c.mockapi.io/api/upload"
+                      listType="picture-card"
+                      fileList={fileList}
+                      onPreview={handlePreview}
+                      onChange={handleChange}
+                      disabled={!isEdit}
+                    >
+                      {fileList.length == 0 && isEdit ? uploadButton : null}
+                    </Upload>
+                  )}
+
+                  {isEdit && (
                     <div className={styles.textlight}>
                       Allowed JPG, GIF or PNG.
                     </div>
-                  </Form.Item>
-                </div>
+                  )}
+                </Form.Item>
+              </div>
 
-                <div className={styles.formFields}>
-                  <Form.Item>
-                    <label className={styles.formLabel}>First name</label>
-                    <Input
-                      placeholder="First name"
-                      value={userData.firstName}
-                      onChange={(e) =>
-                        setUserData({ ...userData, firstName: e.target.value })
-                      }
-                      disabled={!isEdit}
-                    />
-                  </Form.Item>
-                  <Form.Item>
-                    <label className={styles.formLabel}>Last name</label>
-                    <Input
-                      placeholder="Last name"
-                      value={userData.lastName}
-                      onChange={(e) =>
-                        setUserData({ ...userData, lastName: e.target.value })
-                      }
-                      disabled={!isEdit}
-                    />
-                  </Form.Item>
-                  <Form.Item>
-                    <label className={styles.formLabel}>Gender</label>
-                    {/* <Select
-                      placeholder="Select gender"
-                      value={userData.gender}
-                      onChange={(e) =>
-                        setUserData({ ...userData, gender: e.target.value })
-                      }
-                      disabled={!isEdit}
-                    >
-                      <Option value="Nam">Nam</Option>
-                      <Option value="Nữ">Nữ</Option>
-                      <Option value="Khác">Khác</Option>
-                      <Option value="None">None</Option>
-                    </Select> */}
-                    <Input
-                      placeholder="Gender"
-                      value={userData.gender}
-                      onChange={(e) =>
-                        setUserData({ ...userData, gender: e.target.value })
-                      }
-                      disabled={!isEdit}
-                    ></Input>
-                  </Form.Item>
-                  <Form.Item>
-                    <label className={styles.formLabel}>Phone number</label>
-                    <Input
-                      placeholder="Phone number"
-                      value={userData.phone}
-                      onChange={(e) =>
-                        setUserData({
-                          ...userData,
-                          phone: e.target.value,
-                        })
-                      }
-                      disabled={!isEdit}
-                    />
-                  </Form.Item>
-                  <Form.Item className={styles.addressFields}>
-                    <label className={styles.formLabel}>Address</label>
-                    <TextArea
-                      placeholder="Address"
-                      rows={4}
-                      value={userData.address}
-                      onChange={(e) =>
-                        setUserData({ ...userData, address: e.target.value })
-                      }
-                      disabled={!isEdit}
-                    />
-                  </Form.Item>
-                  <Form.Item>
-                    <label className={styles.formLabel}>Birthday</label>
-                    <DatePicker
-                      onChange={onChange}
-                      value={
-                        userData.birthday ? moment(userData.birthday) : null
-                      }
-                      disabled={!isEdit}
-                      className={styles.birthdayDatepicker}
-                    />
-                  </Form.Item>
-                  <Form.Item>
-                    <label className={styles.formLabel}>Email</label>
-                    <Input
-                      placeholder="Email"
-                      value={userData.email}
-                      onChange={(e) =>
-                        setUserData({
-                          ...userData,
-                          email: e.target.value,
-                        })
-                      }
-                      disabled={!isEdit}
-                    />
-                  </Form.Item>
-                  <div className={styles.profileButton}>
-                    <div className={styles.twoButton}>
-                      {isEdit ? (
-                        <>
-                          <div className={styles.btn1} onClick={handleUpdate}>
-                            Save changes
-                          </div>
-                          <div onClick={handleReset} className={styles.btn2}>
-                            Reset
-                          </div>
-                        </>
-                      ) : (
-                        <div className={styles.btn1} onClick={handleEdit}>
-                          Edit
+              <div className={styles.formFields}>
+                <Form.Item>
+                  <label className={styles.formLabel}>First name</label>
+                  <Input
+                    placeholder="First name"
+                    value={userData.firstname}
+                    onChange={(e) =>
+                      setUserData({ ...userData, firstname: e.target.value })
+                    }
+                    disabled={!isEdit}
+                  />
+                </Form.Item>
+                <Form.Item>
+                  <label className={styles.formLabel}>Last name</label>
+                  <Input
+                    placeholder="Last name"
+                    value={userData.lastname}
+                    onChange={(e) =>
+                      setUserData({ ...userData, lastname: e.target.value })
+                    }
+                    disabled={!isEdit}
+                  />
+                </Form.Item>
+                <Form.Item>
+                  <label className={styles.formLabel}>Gender</label>
+                  <Input
+                    placeholder="Gender"
+                    value={userData.gender}
+                    onChange={(e) =>
+                      setUserData({ ...userData, gender: e.target.value })
+                    }
+                    disabled={!isEdit}
+                  ></Input>
+                </Form.Item>
+                <Form.Item>
+                  <label className={styles.formLabel}>Phone number</label>
+                  <Input
+                    placeholder="Phone number"
+                    value={userData.phone}
+                    onChange={(e) =>
+                      setUserData({
+                        ...userData,
+                        phone: e.target.value,
+                      })
+                    }
+                    disabled={!isEdit}
+                  />
+                </Form.Item>
+                <Form.Item className={styles.addressFields}>
+                  <label className={styles.formLabel}>Address</label>
+                  <TextArea
+                    placeholder="Address"
+                    rows={4}
+                    value={userData.address}
+                    onChange={(e) =>
+                      setUserData({ ...userData, address: e.target.value })
+                    }
+                    disabled={!isEdit}
+                  />
+                </Form.Item>
+                <Form.Item>
+                  <label className={styles.formLabel}>Birthday</label>
+                  <DatePicker
+                    onChange={onChange}
+                    value={userData.birthday ? moment(userData.birthday) : null}
+                    disabled={!isEdit}
+                    className={styles.birthdayDatepicker}
+                  />
+                </Form.Item>
+                <Form.Item>
+                  <label className={styles.formLabel}>Email</label>
+                  <Input
+                    placeholder="Email"
+                    value={userData.email}
+                    onChange={(e) =>
+                      setUserData({
+                        ...userData,
+                        email: e.target.value,
+                      })
+                    }
+                    disabled={!isEdit}
+                  />
+                </Form.Item>
+                <div className={styles.profileButton}>
+                  <div className={styles.twoButton}>
+                    {isEdit ? (
+                      <>
+                        <button className={styles.btn1} onClick={handleUpdate}>
+                          Save changes
+                        </button>
+                        <div onClick={handleReset} className={styles.btn2}>
+                          Reset
                         </div>
-                      )}
-
-                      <div className={styles.btn2} onClick={handleCancel}>
-                        Cancel
+                      </>
+                    ) : (
+                      <div className={styles.btn1} onClick={handleEdit}>
+                        Edit
                       </div>
+                    )}
+
+                    <div className={styles.btn2} onClick={handleCancel}>
+                      Cancel
                     </div>
                   </div>
                 </div>
-              </Form>
-            </div>
-          )}
+              </div>
+            </Form>
+          </div>
+        )}
 
-          {activeTab === "password" && (
-            <div className={styles.passwordBox}>
-              <Form className={styles.passwordContainer}>
-                <Form.Item>
-                  <label className={styles.formLabel}>Current Password</label>
-                  <Input.Password placeholder="Input current password" />
-                </Form.Item>
-                <Form.Item>
-                  <label className={styles.formLabel}>New Password</label>
-                  <Input.Password placeholder="Input new password" />
-                </Form.Item>
-                <Form.Item>
-                  <label className={styles.formLabel}>
-                    Confirm New Password
-                  </label>
-                  <Input.Password placeholder="Confirm new password" />
-                </Form.Item>
-              </Form>
-            </div>
-          )}
+        {activeTab === "password" && (
+          <div className={styles.passwordBox}>
+            <Form className={styles.passwordContainer}>
+              <Form.Item>
+                <label className={styles.formLabel}>Current Password</label>
+                <Input.Password placeholder="Input current password" />
+              </Form.Item>
+              <Form.Item>
+                <label className={styles.formLabel}>New Password</label>
+                <Input.Password placeholder="Input new password" />
+              </Form.Item>
+              <Form.Item>
+                <label className={styles.formLabel}>Confirm New Password</label>
+                <Input.Password placeholder="Confirm new password" />
+              </Form.Item>
+            </Form>
+          </div>
+        )}
 
-          {activeTab === "activities" && (
-            <div className="activitiesBox">
-              <p>Activity content goes here</p>
-            </div>
-          )}
-        </main>
-     
+        {activeTab === "activities" && (
+          <div className="activitiesBox">
+            <p>Activity content goes here</p>
+          </div>
+        )}
+      </main>
     </>
   );
 }

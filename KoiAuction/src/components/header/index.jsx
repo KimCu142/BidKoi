@@ -24,7 +24,7 @@ function Header() {
     { name: "Auctions", path: "/auction", icon: "majesticons--megaphone-line" },
     {
       name: "Profile",
-      path: "/profile",
+      path: "/Profile",
       icon: "majesticons--question-circle-line",
     },
   ];

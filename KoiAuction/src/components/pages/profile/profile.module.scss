@@ -1,15 +1,16 @@
-@keyframes slide-down {
+@keyframes slideIn {
   0% {
-    transform: translateY(-30px);
+    transform: translateX(-100%);
     opacity: 0;
   }
   100% {
-    transform: translateY(0);
+    transform: translateX(0);
     opacity: 1;
   }
 }
 
 * {
+  font-family: "Montserrat", sans-serif;
   padding: 0;
   margin: 0;
   box-sizing: border-box;
@@ -31,6 +32,7 @@
   top: 0;
   background: #f6f6f68c;
   z-index: 10;
+  animation: slideIn 0.6s ease forwards;
 }
 
 .sidebarMenu {
@@ -45,9 +47,9 @@
   padding-left: 1rem;
 }
 
-.sidebarMenu a {
+.sidebarMenu .activetab {
   display: block;
-  color:#222;
+  color: #222;
   font-size: 1.1rem;
   padding-left: 1rem;
   text-decoration: none;
@@ -66,7 +68,16 @@
   padding-right: 1rem;
 }
 
+.tabContent {
+  opacity: 0;
+  transform: translateX(-20px);
+  transition: opacity 0, 5s ease-in-out, transform 0, 5s ease-in-out;
 
+  &.active {
+    opacity: 1;
+    transform: translateX(0);
+  }
+}
 
 .mainHeaderItem {
   display: flex;
@@ -115,13 +126,34 @@
   background-color: #f0f0f0;
   margin-left: 250px;
   height: 100vh;
-  
+  animation: slideIn 0.6s ease forwards;
+}
+
+.avatarTitle {
+  font-size: 1.5rem; // Kích thước chữ
+  margin-bottom: 8px; // Khoảng cách dưới tiêu đề
+  color: #333;
 }
 
 .profileBox {
+  .userId {
+    width: 500px;
+    height: 100px;
+    font-size: 24px;
+    background-color: #d4163c;
+    align-items: center;
+    color: white;
+    display: inline-flex;
+    border-radius: 24px;
+    padding: 9px 20px;
+    margin-right: 16px;
+    cursor: pointer;
+    font-weight: 600;
+  }
   .profileContainer {
     display: flex;
-    background-color: #d5d5d99f;
+    background-color: white;
+    margin-top: 24px;
     border-radius: 24px;
     width: 1100px;
     box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
@@ -147,10 +179,23 @@
       .formLabel {
         font-size: 16px;
         font-weight: 600;
+        border-radius: 24px;
+      }
+      input,
+      textarea {
+        width: 100%;
+        padding: 10px;
+        font-size: 19px;
+      }
+
+      input::placeholder,
+      textarea::placeholder {
+        color: #333;
+        opacity: 1;
       }
 
       .birthdayDatepicker {
-        margin-left: 20px;
+        margin-left: 0px;
       }
     }
   }

@@ -29,8 +29,10 @@ const Login = () => {
       const data = response.data;
 
       if (data.success) {
-        // Save token to localStorage or sessionStorage
+        // Kiểm tra xem userId có tồn tại trong phản hồi không
+        // Lưu token và userId vào localStorage
         localStorage.setItem("token", data.token);
+        localStorage.setItem("id", data.id);
         message.success("Login successful!");
         navigate("/"); // Redirect to dashboard page upon successful login
       } else {

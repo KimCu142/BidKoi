@@ -1,7 +1,7 @@
 $primary-color: rgb(70, 133, 175);
 $second-color: #d4163c;
 $font-family: "Montserrat", sans-serif;
-$main-bg: "D:\Ky5\FER\demovite\KoiAuction\src\assets\Picsart_24-09-25_16-28-33-038.png";
+$main-bg: "D:\git\BidKoi\KoiAuction\src\assets\Picsart_24-09-25_16-28-33-038.png";
 @keyframes slide-down {
   0% {
     transform: translateY(-30px);
@@ -14,8 +14,6 @@ $main-bg: "D:\Ky5\FER\demovite\KoiAuction\src\assets\Picsart_24-09-25_16-28-33-0
 }
 
 .app {
-
-
   .container {
     max-width: 100%;
     margin: 0 auto;
@@ -106,7 +104,7 @@ $main-bg: "D:\Ky5\FER\demovite\KoiAuction\src\assets\Picsart_24-09-25_16-28-33-0
                 font-size: 72px;
                 font-weight: 700;
                 line-height: 99px;
-                color:#fff;
+                color: black;
                 margin: 0px auto 32px;
                 text-align: center;
                 text-transform: capitalize;
