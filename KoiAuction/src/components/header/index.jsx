@@ -3,7 +3,7 @@ import "./index.scss";
 import { useState, useEffect } from "react";
 import { Button, Dropdown, message, Space } from "antd";
 import { DownOutlined, UserOutlined } from "@ant-design/icons";
-import jwt_decode from "jwt-decode"; 
+
 function Header() {
   const location = useLocation();
   const navigate = useNavigate();
@@ -58,17 +58,13 @@ function Header() {
   const [username, setUsername] = useState("");
 
   useEffect(() => {
-    const token = localStorage.getItem("token");
-    if (token) {
-      const decodedToken = decode(token); // Dùng jwt_decode như default import
-      if (decodedToken && decodedToken.sub) {
-        setIsLoggedIn(true);
-        setUsername(decodedToken.sub); // "sub" chứa username trong token
-      }
+    const storedUser = localStorage.getItem("user");
+    if (storedUser) {
+      const userData = JSON.parse(storedUser);
+      setIsLoggedIn(true);
+      setUsername(userData.username);
     }
   }, []);
-  
-  
 
   return (
     <header className="header">

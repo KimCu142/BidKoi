@@ -2,8 +2,9 @@ import React, { useState, useEffect } from "react";
 import axios from "axios";
 import { InfoCircleOutlined } from "@ant-design/icons";
 import { Popover, Button, Space } from "antd";
-import KoiCard from "../../KoiCard/KoiCard";
+
 import styles from "./Auctions.module.css";
+import KoiCard from "../../components/KoiCard/KoiCard";
 
 const auctionInfoContent = (
   <div>
