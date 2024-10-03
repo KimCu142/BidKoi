@@ -9,6 +9,8 @@ import { useState } from "react";
 import styles from "./Login.module.css"; // Importing CSS module
 import api from "../../configs/axios";
 
+
+
 const Login = () => {
   const navigate = useNavigate(); // Hook useNavigate to handle navigation
   const [username, setUsername] = useState("");
@@ -18,14 +20,13 @@ const Login = () => {
     values.preventDefault();
 
     try {
-
       const response = await api.post("account/login", { username, password });
 
       const data = response.data;
-
       // Save token to localStorage or sessionStorage
       localStorage.setItem("token", data.token);
       localStorage.setItem("user", JSON.stringify(response.data));
+      console.log(localStorage.getItem("user"));
       message.success("Login successful!");
       navigate("/");
     } catch (error) {

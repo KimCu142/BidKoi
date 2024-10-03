@@ -1,0 +1,251 @@
+@keyframes slideIn {
+  0% {
+    transform: translateX(-100%);
+    opacity: 0;
+  }
+  100% {
+    transform: translateX(0);
+    opacity: 1;
+  }
+}
+
+* {
+  font-family: "Montserrat", sans-serif;
+  padding: 0;
+  margin: 0;
+  box-sizing: border-box;
+  list-style-type: none;
+  text-decoration: none;
+}
+
+:global {
+  .las {
+    font-family: "Line Awesome Free";
+  }
+}
+
+.sidebar {
+  width: 250px;
+  height: 100vh;
+  position: fixed;
+  left: 0;
+  top: 0;
+  background: #f6f6f68c;
+  z-index: 10;
+  animation: slideIn 0.6s ease forwards;
+}
+
+.sidebarMenu {
+  height: calc(100vh - 100px);
+  padding-top: 100px;
+  margin-top: 1rem;
+}
+
+.sidebarMenu li {
+  width: 100%;
+  margin-bottom: 1.3rem;
+  padding-left: 1rem;
+}
+
+.sidebarMenu .activetab {
+  display: block;
+  color: #222;
+  font-size: 1.1rem;
+  padding-left: 1rem;
+  text-decoration: none;
+}
+
+.sidebarMenu a.active {
+  background: #f0f0f0;
+  padding-top: 1rem;
+  padding-bottom: 1rem;
+  border-radius: 30px 0px 0px 30px;
+  color: var(--main-color);
+}
+
+.sidebarMenu a span:first-child {
+  font-size: 1.5rem;
+  padding-right: 1rem;
+}
+
+.tabContent {
+  opacity: 0;
+  transform: translateX(-20px);
+  transition: opacity 0, 5s ease-in-out, transform 0, 5s ease-in-out;
+
+  &.active {
+    opacity: 1;
+    transform: translateX(0);
+  }
+}
+
+.mainHeaderItem {
+  display: flex;
+  justify-content: space-between;
+  padding: 1rem;
+  box-shadow: 2px 2px 5px rgba(0, 0, 0, 0.2);
+  position: fixed;
+  left: 345px;
+  width: calc(100% - 345px);
+  // top: 0;
+  // z-index: 100;
+}
+
+.mainHeaderItem h2 {
+  color: #222;
+}
+
+.mainHeaderItem label span {
+  font-size: 1.7rem;
+  padding-right: 1rem;
+}
+
+.userWrapper {
+  display: flex;
+  gap: 1rem;
+  align-items: center;
+}
+
+.userWrapper img {
+  margin-right: 1rem;
+}
+
+.userWrapper h4 {
+  margin: 0;
+}
+
+.userWrapper small {
+  display: inline-block;
+  color: gray;
+}
+
+.mainBox {
+  display: grid;
+  margin-top: 70px;
+  padding: 5rem 5rem;
+  background-color: #f0f0f0;
+  margin-left: 250px;
+  height: 100vh;
+  animation: slideIn 0.6s ease forwards;
+}
+
+.avatarTitle {
+  font-size: 1.5rem; // Kích thước chữ
+  margin-bottom: 8px; // Khoảng cách dưới tiêu đề
+  color: #333;
+}
+
+.profileBox {
+  .userId {
+    width: 500px;
+    height: 100px;
+    font-size: 24px;
+    background-color: #d4163c;
+    align-items: center;
+    color: white;
+    display: inline-flex;
+    border-radius: 24px;
+    padding: 9px 20px;
+    margin-right: 16px;
+    cursor: pointer;
+    font-weight: 600;
+  }
+  .profileContainer {
+    display: flex;
+    background-color: white;
+    margin-top: 24px;
+    border-radius: 24px;
+    width: 1100px;
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+
+    .imageFields {
+      max-width: 300px;
+      flex-shrink: 0;
+      padding: 24px 15px;
+    }
+
+    .textlight {
+      color: gray !important;
+      margin-top: 12px;
+    }
+
+    .formFields {
+      display: grid;
+      grid-template-columns: repeat(2, 1fr);
+      margin: 18px 14px;
+      gap: 20px;
+      width: 100%;
+
+      .formLabel {
+        font-size: 16px;
+        font-weight: 600;
+        border-radius: 24px;
+      }
+      input,
+      textarea {
+        width: 100%;
+        padding: 10px;
+        font-size: 19px;
+      }
+
+      input::placeholder,
+      textarea::placeholder {
+        color: #333;
+        opacity: 1;
+      }
+
+      .birthdayDatepicker {
+        margin-left: 0px;
+      }
+    }
+  }
+}
+
+.profileButton {
+  .twoButton {
+    text-align: right;
+    margin-top: 45px;
+    .btn1,
+    .btn2 {
+      display: inline-flex;
+      border-radius: 24px;
+      padding: 9px 20px;
+      margin-right: 16px;
+      cursor: pointer;
+      font-weight: 600;
+    }
+
+    .btn1 {
+      background-color: #d4163c;
+      color: #fff;
+      border-color: #d4163c0f;
+    }
+
+    .btn1:hover {
+      background-color: #f41844;
+    }
+
+    .btn2 {
+      background-color: #d5adbb;
+      color: black;
+      border-color: #d4163c;
+    }
+  }
+}
+
+//===================== Style của Password
+
+.passwordBox {
+  background-color: #d5d5d99f;
+  border: 1px solid #e0e0e0;
+  border-radius: 24px;
+  padding: 20px;
+  height: 300px;
+  width: 900px;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+}
+
+.formLabel {
+  font-size: 16px;
+  font-weight: 600;
+}

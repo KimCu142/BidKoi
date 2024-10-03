@@ -3,11 +3,16 @@ import { createBrowserRouter } from "react-router-dom";
 
 import Login from "./components/LoginPage/Login";
 import Register from "./components/LoginPage/Register";
-import HomePage from "./components/pages/home/index.jsx";
+import HomePage from "./pages/home/index.jsx";
 import Header from "./components/header/index.jsx";
 import Footer from "./components/footer/index.jsx";
-import Profile from "./components/pages/profile/index.jsx";
-import Auctions from "./components/pages/auctions/auctions.jsx";
+import Profile from "./pages/profile/index.jsx";
+
+import Auctions from "./pages/auctions/auctions.jsx";
+import BreederRequest from "./pages/breeder/manage-request/index.jsx";
+import Dashboard from "./components/dashboard/index.jsx";
+
+
 function App() {
   const router = createBrowserRouter([
     {
@@ -16,7 +21,7 @@ function App() {
       element: (
         <>
           <Header />
-          <HomePage />,
+          <HomePage />
           <Footer />
         </>
       ),
@@ -27,23 +32,23 @@ function App() {
       element: (
         <>
           <Header />
-          <Profile />,
+          <Profile />
           <Footer />
         </>
       ),
     },
+
     {
       path: "/auctions",
 
       element: (
         <>
           <Header />
-          <Auctions/>
+          <Auctions />
           <Footer />
         </>
       ),
     },
-
     {
       path: "/Login",
       element: <Login />,
@@ -51,6 +56,17 @@ function App() {
     {
       path: "/Register",
       element: <Register />,
+    },
+    {
+      path: "/dashboard",
+      element: <Dashboard />,
+      children: [
+        {
+          path: "request",
+          element: <BreederRequest />,
+        },
+       
+      ],
     },
   ]);
 
