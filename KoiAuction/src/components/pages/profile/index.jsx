@@ -29,42 +29,54 @@ function Profile() {
   const [previewImage, setPreviewImage] = useState("");
   const [fileList, setFileList] = useState([]);
   const [activeTab, setActiveTab] = useState("account");
+  const [userId, setuserId] = useState("");
 
 
   const apiView = "http://localhost:8080/BidKoi/account/view";
   const apiUpdate = "http://localhost:8080/BidKoi/account/update-profile";
 
+ 
+
   // =========================== Gọi API để lấy thông tin người dùng
   const fetchUserData = useCallback(async () => {
+    const source = axios.CancelToken.source();
+  
     try {
-         const storedUser = localStorage.getItem("user");
+      const storedUser = localStorage.getItem("user");
       if (storedUser) {
-      const token = localStorage.getItem("token");
-      const userId = localStorage.getItem("id");
-           const userData = JSON.parse(storedUser);
-        const userId = userData.id; // Lấy user ID từ dữ liệu đã lưu
+        const token = localStorage.getItem("token");
+        const userData = JSON.parse(storedUser);
 
-
-      const response = await axios.get(`${apiView}/${userId}`, {
-        headers: {
-          Authorization: `Bearer ${token}`,
-        },
-      });
-
-      if (response.data) {
-        setUserData(response.data);
-        setInitialData(response.data);
-        setPreviewImage(response.data.avatar || "");
-        console.log("Fetched User Data after update: ", response.data); // In dữ liệu mới fetch xong
-
+  
+        const response = await axios.get(`${apiView}/${userId}`, {
+          headers: {
+            Authorization: `Bearer ${token}`,
+          },
+          cancelToken: source.token,
+        });
+  
+        if (response.data) {
+          setUserData(response.data);
+          setInitialData(response.data);
+          setPreviewImage(response.data.avatar || "");
+          console.log("Fetched User Data after update: ", response.data);
+        }
       }
     } catch (error) {
-      console.error("Error fetching user data", error);
+      if (axios.isCancel(error)) {
+        console.log("Request canceled", error.message);
+      } else {
+        console.error("Error fetching user data", error);
+      }
     }
-
+  
+    return () => {
+      source.cancel("Component unmounted, request canceled.");
+    };
   }, [apiView]);
+  
 
-  // ===================================================
+
 
   // useEffect(() => {
   //   const storedUserData = localStorage.getItem("userData");
@@ -77,9 +89,17 @@ function Profile() {
   //   }
   // }, [fetchUserData]);
 
-  useEffect(() => {
+  useEffect(() => { 
+    const storedUser = localStorage.getItem("user");
+  
+    if (storedUser) {
+      const UserData = JSON.parse(storedUser); // Parse the JSON string
+      setuserId(UserData.id); // Set userId from parsed data
+    }
+  
     fetchUserData();
   }, [fetchUserData]);
+  
 
 
   // =========================== Gắn API để cập nhật thông tin mới
@@ -100,8 +120,8 @@ function Profile() {
 
       // const userId = localStorage.getItem("id");
       const token = localStorage.getItem("token");
-      const userData = JSON.parse(storedUser);
-      const userId = userData.id;
+      const UserData = JSON.parse(storedUser);
+      const userId = UserData.id;
 
       console.log("Dữ liệu trước khi gửi:", updatedData);
 
@@ -249,7 +269,7 @@ function Profile() {
 
             <div className={styles.userId}>
               <strong>User ID: </strong>
-              {userData.id}
+              {userId}
             </div>
             <Form className={styles.profileContainer}>
               <div className={styles.imageFields}>

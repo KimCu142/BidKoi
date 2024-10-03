@@ -8,6 +8,9 @@ import {
 import { useState } from "react";
 import styles from "./Login.module.css"; // Importing CSS module
 import api from "../../configs/axios";
+import { decode } from "jwt-decode";
+
+
 
 const Login = () => {
   const navigate = useNavigate(); // Hook useNavigate to handle navigation
@@ -24,6 +27,7 @@ const Login = () => {
       // Save token to localStorage or sessionStorage
       localStorage.setItem("token", data.token);
       localStorage.setItem("user", JSON.stringify(response.data));
+      console.log(localStorage.getItem("user"));
       message.success("Login successful!");
       navigate("/");
     } catch (error) {

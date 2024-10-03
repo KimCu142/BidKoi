@@ -1,6 +1,7 @@
 import { Link } from "react-router-dom";
 import "./home.scss";
 import KoiLogo from "../../logo/koi_logo";
+
 function HomePage() {
   return (
     <div className="app">

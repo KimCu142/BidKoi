@@ -1,3 +1,5 @@
+import React, { useState, useEffect } from "react";
+import axios from "axios";
 import { InfoCircleOutlined } from "@ant-design/icons";
 import { Popover, Button, Space } from "antd";
 import KoiCard from "../../KoiCard/KoiCard";
@@ -21,11 +23,29 @@ const auctionInfoContent = (
 );
 
 const Auctions = () => {
+  const [koiData, setKoiData] = useState([]);
+
+  useEffect(() => {
+    // Fetch data using Axios
+    axios
+      .get("https://66fa0ff3afc569e13a9a4a68.mockapi.io/Auctions")
+      .then((response) => setKoiData(response.data))
+      .catch((error) => console.error("Error fetching data:", error));
+  }, []);
+
   return (
     <div className={styles.body}>
       <AuctionInfo />
       <div className={styles.KoiCards}>
-        <KoiCard />
+        {koiData.map((koi) => (
+          <KoiCard
+            key={koi.id}
+            name={koi.name}
+            price={koi.price}
+            img={koi.image}
+            id={koi.id}
+          />
+        ))}
       </div>
     </div>
   );
@@ -48,7 +68,6 @@ const AuctionInfo = () => {
             content={auctionInfoContent}
             title="In-House Auction Info"
             trigger="click"
-            // Thêm thuộc tính borderRadius vào đây
           >
             <Button className={styles.Button}>
               <InfoCircleOutlined style={{ color: "rgba(0,0,0,.45)" }} />{" "}

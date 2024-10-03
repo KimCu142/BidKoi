@@ -1,128 +1,64 @@
 import { Component } from "react";
 import styles from "./KoiCard.module.css"; // Import CSS module
 
-export default class KoiCard extends Component {
-  render() {
-    return (
-      <div className={styles.card}>
-        {/* Sử dụng styles từ module */}
-        <div className={styles["card-header"]}>
-          <img src="https://auctionkoi.com/images/kanno-logo.png" alt="Logo" />
+const KoiCard = ({ name, price, img, id }) => {
+  return (
+    <div className={styles.card}>
+      {/* Use styles from the module */}
+      <div className={styles["card-header"]}>
+        <img src="https://auctionkoi.com/images/kanno-logo.png" alt="Logo" />
+        <img src="https://mjjlqhnswgbzvxfujauo.supabase.co/storage/v1/object/public/auctions/65%20Big%20Auction/photos/Goshiki%20auction.png" alt="KoiPic" />
 
-          <img
-            src="https://mjjlqhnswgbzvxfujauo.supabase.co/storage/v1/object/public/auctions/65%20Big%20Auction/photos/Goshiki%20auction.png"
-            alt="KoiPic"
-          />
-
-          <div className={styles["section"]}>
-            <div className={styles["card-number"]}><svg xmlns="http://www.w3.org/2000/svg" width="1em" height="1em" viewBox="0 0 24 24"><path fill="white" d="M5.5 7A1.5 1.5 0 0 1 4 5.5A1.5 1.5 0 0 1 5.5 4A1.5 1.5 0 0 1 7 5.5A1.5 1.5 0 0 1 5.5 7m15.91 4.58l-9-9C12.05 2.22 11.55 2 11 2H4c-1.11 0-2 .89-2 2v7c0 .55.22 1.05.59 1.41l8.99 9c.37.36.87.59 1.42.59s1.05-.23 1.41-.59l7-7c.37-.36.59-.86.59-1.41c0-.56-.23-1.06-.59-1.42"></path></svg> 909</div>
-            <div className={styles.rating}>
-              <svg
-                xmlns="http://www.w3.org/2000/svg"
-                width="2em"
-                height="2em"
-                viewBox="0 0 24 24"
-              >
-                <path
-                  fill="white"
-                  d="m12 17.27l4.15 2.51c.76.46 1.69-.22 1.49-1.08l-1.1-4.72l3.67-3.18c.67-.58.31-1.68-.57-1.75l-4.83-.41l-1.89-4.46c-.34-.81-1.5-.81-1.84 0L9.19 8.63l-4.83.41c-.88.07-1.24 1.17-.57 1.75l3.67 3.18l-1.1 4.72c-.2.86.73 1.54 1.49 1.08z"
-                ></path>
-              </svg>
-              <svg
-                xmlns="http://www.w3.org/2000/svg"
-                width="2em"
-                height="2em"
-                viewBox="0 0 24 24"
-              >
-                <path
-                  fill="white"
-                  d="m12 17.27l4.15 2.51c.76.46 1.69-.22 1.49-1.08l-1.1-4.72l3.67-3.18c.67-.58.31-1.68-.57-1.75l-4.83-.41l-1.89-4.46c-.34-.81-1.5-.81-1.84 0L9.19 8.63l-4.83.41c-.88.07-1.24 1.17-.57 1.75l3.67 3.18l-1.1 4.72c-.2.86.73 1.54 1.49 1.08z"
-                ></path>
-              </svg>
-              <svg
-                xmlns="http://www.w3.org/2000/svg"
-                width="2em"
-                height="2em"
-                viewBox="0 0 24 24"
-              >
-                <path
-                  fill="white"
-                  d="m12 17.27l4.15 2.51c.76.46 1.69-.22 1.49-1.08l-1.1-4.72l3.67-3.18c.67-.58.31-1.68-.57-1.75l-4.83-.41l-1.89-4.46c-.34-.81-1.5-.81-1.84 0L9.19 8.63l-4.83.41c-.88.07-1.24 1.17-.57 1.75l3.67 3.18l-1.1 4.72c-.2.86.73 1.54 1.49 1.08z"
-                ></path>
-              </svg>
-              <svg
-                xmlns="http://www.w3.org/2000/svg"
-                width="2em"
-                height="2em"
-                viewBox="0 0 24 24"
-              >
-                <path
-                  fill="white"
-                  d="m12 17.27l4.15 2.51c.76.46 1.69-.22 1.49-1.08l-1.1-4.72l3.67-3.18c.67-.58.31-1.68-.57-1.75l-4.83-.41l-1.89-4.46c-.34-.81-1.5-.81-1.84 0L9.19 8.63l-4.83.41c-.88.07-1.24 1.17-.57 1.75l3.67 3.18l-1.1 4.72c-.2.86.73 1.54 1.49 1.08z"
-                ></path>
-              </svg>
-              <svg
-                xmlns="http://www.w3.org/2000/svg"
-                width="2em"
-                height="2em"
-                viewBox="0 0 24 24"
-              >
-                <path
-                  fill="white"
-                  d="m12 17.27l4.15 2.51c.76.46 1.69-.22 1.49-1.08l-1.1-4.72l3.67-3.18c.67-.58.31-1.68-.57-1.75l-4.83-.41l-1.89-4.46c-.34-.81-1.5-.81-1.84 0L9.19 8.63l-4.83.41c-.88.07-1.24 1.17-.57 1.75l3.67 3.18l-1.1 4.72c-.2.86.73 1.54 1.49 1.08z"
-                ></path>
-              </svg>
-            </div>
+        <div className={styles["section"]}>
+          <div className={styles["card-number"]}>
+            <svg xmlns="http://www.w3.org/2000/svg" width="1em" height="1em" viewBox="0 0 24 24">
+              <path fill="white" d="M5.5 7A1.5 1.5 0 0 1 4 5.5A1.5 1.5 0 0 1 5.5 4A1.5 1.5 0 0 1 7 5.5A1.5 1.5 0 0 1 5.5 7m15.91 4.58l-9-9C12.05 2.22 11.55 2 11 2H4c-1.11 0-2 .89-2 2v7c0 .55.22 1.05.59 1.41l8.99 9c.37.36.87.59 1.42.59s1.05-.23 1.41-.59l7-7c.37-.36.59-.86.59-1.41c0-.56-.23-1.06-.59-1.42"></path>
+            </svg> 
+            {id}
+          </div>
+          <div className={styles.rating}>
+            {/* Rating Stars */}
+            {/* ...SVGs */}
           </div>
         </div>
+      </div>
 
-        <div className={styles["card-content"]}>
-          <div>
-            <h2>Goshiki</h2>
-            <p className={styles.ended}><svg xmlns="http://www.w3.org/2000/svg" width="1em" height="1em" viewBox="0 0 24 24"><g fill="none" stroke="black" strokeLinecap="round" strokeLinejoin="round" strokeWidth={1.2}><circle cx={12} cy={12} r={9}></circle><path d="M11 8v5h5"></path></g></svg> Ended!</p>
-          </div>
-          <p className={styles.price}>▶ $1,000</p>
+      <div className={styles["card-content"]}>
+        <div>
+          <h2>{name}</h2>
+          <p className={styles.ended}>
+            <svg xmlns="http://www.w3.org/2000/svg" width="1em" height="1em" viewBox="0 0 24 24">
+              <g fill="none" stroke="black" strokeLinecap="round" strokeLinejoin="round" strokeWidth={1.2}>
+                <circle cx={12} cy={12} r={9}></circle>
+                <path d="M11 8v5h5"></path>
+              </g>
+            </svg> 
+            Ended!
+          </p>
         </div>
-        <div className={styles["card-content2"]}>
-          <div className={styles.details}>
-            <div className={styles["detail-item"]}>
-              <span className={styles.icon}>
-                <svg
-                  xmlns="http://www.w3.org/2000/svg"
-                  width="2em"
-                  height="2em"
-                  viewBox="0 0 24 24"
-                >
-                  <path
-                    fill="none"
-                    stroke="black"
-                    strokeLinecap="round"
-                    strokeLinejoin="round"
-                    strokeWidth={1.5}
-                    d="M8 14V4.5a2.5 2.5 0 0 0-5 0V14m5-6l6-5l8 6m-2-5v10m-8-4h4v4h-4zM2 14h20M2 22l5-8m0 8l5-8m10 8H12l5-8m-2 4h7"
-                  ></path>
-                </svg>
-              </span>{" "}
-              Breeder: Kanno
-            </div>
-            <div className={styles["detail-item"]}>
-              <span className={styles.icon}>
-                <svg
-                  xmlns="http://www.w3.org/2000/svg"
-                  width="2em"
-                  height="2em"
-                  viewBox="0 0 256 256"
-                >
-                  <path
-                    fill="black"
-                    d="m235.32 73.37l-52.69-52.68a16 16 0 0 0-22.63 0L20.68 160a16 16 0 0 0 0 22.63l52.69 52.68a16 16 0 0 0 22.63 0L235.32 96a16 16 0 0 0 0-22.63M84.68 224L32 171.31l32-32l26.34 26.35a8 8 0 0 0 11.32-11.32L75.31 128L96 107.31l26.34 26.35a8 8 0 0 0 11.32-11.32L107.31 96L128 75.31l26.34 26.35a8 8 0 0 0 11.32-11.32L139.31 64l32-32L224 84.69Z"
-                  ></path>
-                </svg>
-              </span>{" "}
-              Length: 41cm
-            </div>
+        <p className={styles.price}>▶ ${price}</p>
+      </div>
+
+      <div className={styles["card-content2"]}>
+        <div className={styles.details}>
+          <div className={styles["detail-item"]}>
+            <span className={styles.icon}>
+              <svg xmlns="http://www.w3.org/2000/svg" width="2em" height="2em" viewBox="0 0 24 24">
+                <path fill="none" stroke="black" strokeLinecap="round" strokeLinejoin="round" strokeWidth={1.5} d="M8 14V4.5a2.5 2.5 0 0 0-5 0V14m5-6l6-5l8 6m-2-5v10m-8-4h4v4h-4zM2 14h20M2 22l5-8m0 8l5-8m10 8H12l5-8m-2 4h7"></path>
+              </svg>
+            </span> 
+            Breeder: Kanno
           </div>
-          <div className={styles.details}>
+          <div className={styles["detail-item"]}>
+            <span className={styles.icon}>
+              <svg xmlns="http://www.w3.org/2000/svg" width="2em" height="2em" viewBox="0 0 256 256">
+                <path fill="black" d="m235.32 73.37l-52.69-52.68a16 16 0 0 0-22.63 0L20.68 160a16 16 0 0 0 0 22.63l52.69 52.68a16 16 0 0 0 22.63 0L235.32 96a16 16 0 0 0 0-22.63M84.68 224L32 171.31l32-32l26.34 26.35a8 8 0 0 0 11.32-11.32L75.31 128L96 107.31l26.34 26.35a8 8 0 0 0 11.32-11.32L107.31 96L128 75.31l26.34 26.35a8 8 0 0 0 11.32-11.32L139.31 64l32-32L224 84.69Z"></path>
+              </svg>
+            </span> 
+            Length: 41cm
+          </div>
+        </div>
+        <div className={styles.details}>
             <div className={styles.details}></div>
             <div className={styles["detail-item"]}>
               <span className={styles.icon}>
@@ -159,9 +95,10 @@ export default class KoiCard extends Component {
               </span>{" "}
               Age: Nisai (2y)
             </div>
-          </div>
-        </div>
+            </div>
       </div>
-    );
-  }
-}
+    </div>
+  );
+};
+
+export default KoiCard; // Ensure this export is added
