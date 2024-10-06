@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from "react";
+import { useState, useEffect } from "react";
 import axios from "axios";
 import { InfoCircleOutlined } from "@ant-design/icons";
 import { Popover, Button, Space } from "antd";

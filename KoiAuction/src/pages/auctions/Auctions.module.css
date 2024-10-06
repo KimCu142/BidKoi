@@ -1,7 +1,6 @@
 .body {
   padding-top: 80px;
-
-  height: 1000px;
+padding-bottom: 50px;
 }
 .KoiCards {
   display: flex;

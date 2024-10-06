@@ -8,9 +8,24 @@ import {
 import { useState } from "react";
 import styles from "./Login.module.css"; // Importing CSS module
 import api from "../../configs/axios";
+import { Buffer } from 'buffer';
+window.Buffer = Buffer; // Polyfill Buffer in the browser
+
+function decodeJwt(token) {
+  try {
+    const base64Url = token.split('.')[1];
+    const base64 = base64Url.replace(/-/g, '+').replace(/_/g, '/');
+    const jsonPayload = decodeURIComponent(atob(base64).split('').map(function(c) {
+        return '%' + ('00' + c.charCodeAt(0).toString(16)).slice(-2);
+    }).join(''));   
 
 
-
+    return JSON.parse(jsonPayload);
+  } catch (error) {
+    console.error("Error decoding JWT:", error);
+    return null;
+  }
+}
 const Login = () => {
   const navigate = useNavigate(); // Hook useNavigate to handle navigation
   const [username, setUsername] = useState("");
@@ -25,13 +40,19 @@ const Login = () => {
       const data = response.data;
       // Save token to localStorage or sessionStorage
       localStorage.setItem("token", data.token);
-      localStorage.setItem("user", JSON.stringify(response.data));
-      console.log(localStorage.getItem("user"));
+
+      // const decodedToken = jwt_decode(data.token); // Decode JWT without the Node.js 'util' module
+      // console.log("Token", decodedToken);
+      
+
+      const decodedToken = decodeJwt(data.token);
+console.log(decodedToken);
+ localStorage.setItem("user", JSON.stringify(decodedToken));
       message.success("Login successful!");
+
       navigate("/");
     } catch (error) {
       if (error.response) {
-        // Extract error code and message from API response
         const errorMessage = error.response.data.message;
         message.error(`Login failed. : ${errorMessage}`);
         console.error("Login error:", error.response.data);

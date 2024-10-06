@@ -7,11 +7,10 @@ import HomePage from "./pages/home/index.jsx";
 import Header from "./components/header/index.jsx";
 import Footer from "./components/footer/index.jsx";
 import Profile from "./pages/profile/index.jsx";
-
-import Auctions from "./pages/auctions/auctions.jsx";
+import Availableaution from "./pages/availableauction/availableauction.jsx";
+import Auctions from "./pages/auctions/Auctions.jsx";
 import BreederRequest from "./pages/breeder/manage-request/index.jsx";
 import Dashboard from "./components/dashboard/index.jsx";
-
 
 function App() {
   const router = createBrowserRouter([
@@ -50,14 +49,38 @@ function App() {
       ),
     },
     {
+      path: "/availableaution",
+
+      element: (
+        <>
+          <Header />
+  
+       <Availableaution/>
+          <Footer />
+        </>
+      ),
+    },
+    {
       path: "/Login",
       element: <Login />,
     },
+   
     {
       path: "/Register",
       element: <Register />,
     },
     {
+      path: "/dashboard",
+      element: <Dashboard />,
+      children: [
+        {
+          path: "request",
+          element: <BreederRequest />,
+        },
+       
+      ],
+    },
+      {
       path: "/dashboard",
       element: <Dashboard />,
       children: [
