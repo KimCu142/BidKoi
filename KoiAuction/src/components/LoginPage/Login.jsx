@@ -7,9 +7,7 @@ import {
 } from "@ant-design/icons";
 import { useState } from "react";
 import styles from "./Login.module.css"; // Importing CSS module
-import api from "../../configs/axios";
-
-
+import api from "../../config/axios";
 
 const Login = () => {
   const navigate = useNavigate(); // Hook useNavigate to handle navigation

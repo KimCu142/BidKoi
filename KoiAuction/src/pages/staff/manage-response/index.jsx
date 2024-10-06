@@ -1,100 +1,203 @@
-import { Button, Table, Modal, Input, Form } from "antd";
-import axios from "axios";
+import { Button, Table, Image, Popconfirm } from "antd";
 import { useEffect, useState } from "react";
 import { toast } from "react-toastify";
+import api from "../../../config/axios";
 
 function StaffResponse() {
-  const api = "https://66f83af72a683ce9730f0194.mockapi.io/KoiRequest";
   const [kois, setKois] = useState([]);
+  const [breeders, setBreeders] = useState({});
 
   //GET
-  const fetchData = async () => {
+  const fetchKoiAndBreeder = async () => {
     try {
-      const response = await axios.get(api);
-      setKois(response.data);
-    } catch (err) {
-      toast.error(err.response.data);
+      // Fetch thông tin koi
+      const koiResponse = await api.get(`/koi`);
+      setKois(koiResponse.data);
+
+      // Fetch thông tin breeder
+      const breederResponse = await api.get(`/breeder`);
+      if (breederResponse.status === 200) {
+        setBreeders(breederResponse.data[0]);
+      }
+    } catch (error) {
+      console.error("Error fetching data:", error);
     }
   };
 
-  // CREATE OR UPDATE
-  const handleSubmit = () => {};
-
-  //DELETE
-  const handleDelete = (id) => {};
-
   useEffect(() => {
-    fetchData();
+    fetchKoiAndBreeder();
   }, []);
+
+  const handleApprove = async (koiId) => {
+    try {
+      await api.post(`/staff/${koiId}/approve`);
+      toast.success("Koi request has been approved");
+      fetchKoiAndBreeder();
+    } catch (error) {
+      console.error("Error accepting request:", error);
+      toast.error("Failed to approve the koi request");
+    }
+  };
+
+  const handleReject = async (koiId) => {
+    try {
+      await api.post(`/staff/${koiId}/reject`);
+      toast.success("Koi reuqest has been rejected");
+      fetchKoiAndBreeder();
+    } catch (error) {
+      console.error("Error rejecting request:", error);
+      toast.error("Failed to rejecte the koi request");
+    }
+  };
+
+  const statusColors = {
+    // 0: "#d9d9d9",
+    // 1: "#52c41a",
+    // 2: "#ff4d4f",
+    PENDING: "#d9d9d9", // Trạng thái Pending
+    ACCEPTED: "#52c41a", // Trạng thái Approve
+    REJECTED: "#ff4d4f",
+  };
+
+  const columns = [
+    {
+      title: "",
+      dataIndex: "status",
+      key: "status",
+      render: (status) => (
+        <div
+          style={{
+            width: "20px",
+            height: "20px",
+            borderRadius: "50%",
+            backgroundColor: statusColors[status],
+            border: "1px solid #d9d9d9",
+          }}
+        />
+      ),
+    },
+    {
+      title: "Koi Id",
+      dataIndex: "koiId",
+      key: "koiId",
+    },
+    {
+      title: "Varieties",
+      dataIndex: "varieties",
+      key: "varieties",
+    },
+    {
+      title: "Length",
+      dataIndex: "length",
+      key: "length",
+    },
+    {
+      title: "Sex",
+      dataIndex: "sex",
+      key: "sex",
+    },
+    {
+      title: "Age",
+      dataIndex: "age",
+      key: "age",
+    },
+    {
+      title: "Breeder",
+      dataIndex: ["breeder", "name"],
+      key: "breeder",
+      render: (_, record) => record.breeder?.name || breeders.name,
+      // record: đối tượng đại diện cho 1 hàng trong bảng
+      // truy cập thuộc tính "breeder" của từng koi
+      // Nếu `breeder` tồn tại và có `name`, nó sẽ hiển thị `name`
+      // Nếu không, nó sẽ hiển thị tên mặc định từ `breeders` trong state
+    },
+    {
+      title: "Description",
+      dataIndex: "description",
+      key: "description",
+    },
+    {
+      title: "Intitial price",
+      dataIndex: "initialPrice",
+      key: "initialPrice",
+      // render: (price) => `$${price.toFixed(2)}`,
+    },
+    {
+      title: "Bidding method",
+      dataIndex: "method",
+      key: "method",
+      render: (method) => {
+        switch (method) {
+          case 1:
+            return "Fixed Price Selling";
+          case 2:
+            return "One-Time Bid";
+          case 3:
+            return "Ascending Bid";
+          case 4:
+            return "Descending Bid";
+        }
+      },
+    },
+    {
+      title: "Image",
+      dataIndex: "image",
+      key: "image",
+      render: (image) => {
+        return <Image src={image} alt="" width={115}></Image>;
+      },
+    },
+    {
+      title: "Video",
+      dataIndex: "video",
+      key: "video",
+      render: (video) => {
+        return (
+          <video src={video} type="video/mp4" alt="" width={230} controls />
+        );
+      },
+    },
+    {
+      title: "Action",
+      dataIndex: "status", // Kiểm tra trạng thái của yêu cầu
+      key: "koiId",
+      render: (status, { koiId }) => {
+        if (status === "PENDING") {
+          return (
+            <>
+              <Popconfirm
+                title="Accept"
+                description="Do you want to accept this request?"
+                onConfirm={() => handleApprove(koiId)}
+              >
+                <Button type="primary">Accept</Button>
+              </Popconfirm>
+
+              <Popconfirm
+                title="Reject"
+                description="Do you want to reject this request?"
+                onConfirm={() => handleReject(koiId)}
+              >
+                <Button type="primary" danger>
+                  Reject
+                </Button>
+              </Popconfirm>
+            </>
+          );
+        } else {
+          return (
+            <div style={{ color: statusColors[status], fontWeight: "700" }}>
+              {status === "ACCEPTED" ? "Accepted" : "Rejected"}
+            </div>
+          );
+        }
+      },
+    },
+  ];
 
   return (
     <div>
-      <Table dataSource={kois} />
-      <Form>
-        <Form.Item
-          label="Koi Id"
-          name="KoiID"
-          rules={[
-            {
-              required: true,
-              message: "Please enter Koi Id",
-            },
-          ]}
-        >
-          <Input />
-        </Form.Item>
-        <Form.Item
-          label="Koi Varieties"
-          name="Varieties"
-          rules={[
-            {
-              required: true,
-              message: "Please enter Koi's varieties",
-            },
-          ]}
-        >
-          <Input />
-        </Form.Item>
-        <Form.Item label="Breeder" name="Breeder">
-          <Input />
-        </Form.Item>
-        <Form.Item
-          label="Length"
-          name="Length"
-          rules={[
-            {
-              required: true,
-              message: "Please enter Koi's Length",
-            },
-          ]}
-        >
-          <Input />
-        </Form.Item>
-        <Form.Item
-          label="Sex"
-          name="Sex"
-          rules={[
-            {
-              required: true,
-              message: "Please enter Koi's Sex",
-            },
-          ]}
-        >
-          <Input />
-        </Form.Item>
-        <Form.Item
-          label="Age"
-          name="Age"
-          rules={[
-            {
-              required: true,
-              message: "Please enter Koi's Age",
-            },
-          ]}
-        >
-          <Input />
-        </Form.Item>
-      </Form>
+      <Table columns={columns} dataSource={kois} />
     </div>
   );
 }
