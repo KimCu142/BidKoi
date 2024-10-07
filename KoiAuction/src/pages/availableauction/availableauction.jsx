@@ -4,8 +4,10 @@ import { motion, MotionConfig, useMotionValue } from "framer-motion";
 import { Shapes } from "./Shapes";
 import { transition } from "./settings";
 import useMeasure from "react-use-measure";
-function availableaution() {
+import { useNavigate } from "react-router-dom"; // Import useNavigate
 
+function AvailableAuction() {
+  const navigate = useNavigate(); // Khởi tạo navigate
   const [ref, bounds] = useMeasure({ scroll: false });
   const [isHover, setIsHover] = useState(false);
   const [isPress, setIsPress] = useState(false);
@@ -17,11 +19,13 @@ function availableaution() {
     mouseY.set(0);
   };
 
+  const handleNavigate = () => {
+    navigate("/auctions");
+  };
 
   return (
-
     <div className="IntoAuction">
-      <div >
+      <div>
         <MotionConfig transition={transition}>
           <motion.button
             ref={ref}
@@ -42,7 +46,10 @@ function availableaution() {
               setIsHover(false);
             }}
             onTapStart={() => setIsPress(true)}
-            onTap={() => setIsPress(false)}
+            onTap={() => {
+              setIsPress(false);
+              handleNavigate(); // Gọi hàm điều hướng khi ấn
+            }}
             onTapCancel={() => setIsPress(false)}
             onPointerMove={(e) => {
               mouseX.set(e.clientX - bounds.x - bounds.width / 2);
@@ -74,8 +81,6 @@ function availableaution() {
               className="label"
             >
               Auction #1
-
-
             </motion.div>
           </motion.button>
         </MotionConfig>
@@ -85,10 +90,9 @@ function availableaution() {
           <p>End Date: 2024-10-10</p>
           <p>Status: Ongoing</p>
         </div>
-
       </div>
     </div>
-  )
+  );
 }
 
-export default availableaution
+export default AvailableAuction;
