@@ -10,7 +10,11 @@ import Profile from "./pages/profile/index.jsx";
 import Availableaution from "./pages/availableauction/availableauction.jsx";
 import Auctions from "./pages/auctions/Auctions.jsx";
 import BreederRequest from "./pages/breeder/manage-request/index.jsx";
-import Dashboard from "./components/dashboard/index.jsx";
+
+import BreederDashboard from "./pages/breeder/breeder-dashboard/index.jsx";
+import StaffDashboard from "./pages/staff/staff-dashboard/index.jsx";
+import StaffResponse from "./pages/staff/manage-response/index.jsx";
+
 
 function App() {
   const router = createBrowserRouter([
@@ -70,14 +74,23 @@ function App() {
       element: <Register />,
     },
     {
-      path: "/dashboard",
-      element: <Dashboard />,
+      path: "/breeder-dashboard",
+      element: <BreederDashboard />,
       children: [
         {
-          path: "request",
+          path: "breeder-request",
           element: <BreederRequest />,
         },
-       
+      ],
+    },
+    {
+      path: "/staff-dashboard",
+      element: <StaffDashboard />,
+      children: [
+        {
+          path: "staff-request",
+          element: <StaffResponse />,
+        },
       ],
     },
       {
