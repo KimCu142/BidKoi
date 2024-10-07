@@ -4,6 +4,7 @@ import {
   FileOutlined,
   PieChartOutlined,
   TeamOutlined,
+  ToTopOutlined,
   UserOutlined,
 } from "@ant-design/icons";
 import { Breadcrumb, Layout, Menu, theme } from "antd";
@@ -19,7 +20,7 @@ function getItem(label, key, icon, children) {
 }
 const items = [
   getItem("Koi Request", "staff-request", <TeamOutlined />),
-  // getItem("Create Auction", "createAuction", <DesktopOutlined />),
+  getItem("Create Auction", "create-auction", <ToTopOutlined />),
   //   getItem("User", "sub1", <UserOutlined />, [
   //     getItem("Tom", "3"),
   //     getItem("Bill", "4"),

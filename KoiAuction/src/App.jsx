@@ -13,6 +13,7 @@ import BreederRequest from "./pages/breeder/manage-request/index.jsx";
 import BreederDashboard from "./pages/breeder/breeder-dashboard/index.jsx";
 import StaffDashboard from "./pages/staff/staff-dashboard/index.jsx";
 import StaffResponse from "./pages/staff/manage-response/index.jsx";
+import CreateAuction from "./pages/staff/manage-auction/index.jsx";
 
 function App() {
   const router = createBrowserRouter([
@@ -75,6 +76,10 @@ function App() {
         {
           path: "staff-request",
           element: <StaffResponse />,
+        },
+        {
+          path: "create-auction",
+          element: <CreateAuction />,
         },
       ],
     },

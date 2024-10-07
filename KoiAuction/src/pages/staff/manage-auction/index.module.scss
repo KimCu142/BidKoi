@@ -1,0 +1,17 @@
+.auctionInfo {
+  display: grid;
+  grid-template-columns: repeat(2, 1fr);
+  margin: 18px 14px;
+  gap: 20px;
+  width: 100%;
+}
+
+.timePickerContainer {
+  display: flex;
+  justify-content: space-between;
+  gap: 10px;
+}
+
+.timePickerContainer .ant-form-item {
+  flex: 1;
+}

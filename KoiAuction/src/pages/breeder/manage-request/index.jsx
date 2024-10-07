@@ -230,7 +230,7 @@ function BreederRequest() {
         } else {
           return (
             <div style={{ color: statusColors[status], fontWeight: "700" }}>
-              {status === "ACCEPTED" ? "Approved" : "Rejected"}
+              {status === "ACCEPTED" ? "Accepted" : "Rejected"}
             </div>
           );
         }
