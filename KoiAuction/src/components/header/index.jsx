@@ -46,7 +46,7 @@ function Header() {
 
   const pages = [
     { name: "Home", path: "/", icon: "majesticons--home-line" },
-    { name: "Auctions", path: "/auctions", icon: "majesticons--megaphone-line" },
+    { name: "Auctions", path: "/availableaution", icon: "majesticons--megaphone-line" },
     {
       name: "Profile",
       path: "/Profile",

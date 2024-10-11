@@ -46,7 +46,7 @@ function Profile() {
       if (storedUser) {
         const token = localStorage.getItem("token");
         const userData = JSON.parse(storedUser);
-
+    
   
         const response = await axios.get(`${apiView}/${userId}`, {
           headers: {
@@ -94,7 +94,7 @@ function Profile() {
   
     if (storedUser) {
       const UserData = JSON.parse(storedUser); // Parse the JSON string
-      setuserId(UserData.id); // Set userId from parsed data
+      setuserId(UserData.sub); // Set userId from parsed data
     }
   
     fetchUserData();
