@@ -12,11 +12,12 @@
 
 /* Phần header */
 .card-header {
+  height: 380px;
   display: flex;
   flex-direction: column;
   position: relative;
   align-items: center;
-  justify-content: center;
+  justify-content: flex-end;
   padding: 10px;
   background-color: #2980b9; /* Màu xanh dương đậm */
   color: white;
@@ -29,6 +30,12 @@
   z-index: 1; /* Đảm bảo logo hiển thị trên hình ảnh */
   height: 48px;
   margin: 5px;
+}
+
+.card-header img[alt="KoiPic"] {
+  position: absolute;
+height: 100%;
+
 }
 
 .section {
@@ -45,16 +52,14 @@
 
 /* Hình ảnh cá Koi */
 
-.card-header img[alt="KoiPic"] {
-  width: auto;
-  width: 150px;
-}
+
 
 /* Nội dung chính */
 .card-content {
+
   padding: 15px;
   display: flex;
-  justify-content: space-between;
+ flex-direction: column;
 }
 
 .card-content h2 {
@@ -62,13 +67,18 @@
 }
 
 .ended {
+  width: 50%;
   font-weight: 600;
   color: #d4163c;
   font-family: "Montserrat", sans-serif;
 font-size: 20px;
 }
+.content2{
+  display: flex;
+}
 
 .price {
+  width: 50%;
   font-size: 1.5em;
   font-weight: bold;
   color: green;

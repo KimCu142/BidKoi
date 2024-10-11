@@ -1,6 +1,6 @@
 import { RouterProvider } from "react-router-dom";
 import { createBrowserRouter } from "react-router-dom";
-
+import { useParams } from "react-router-dom";
 import Login from "./components/LoginPage/Login";
 import Register from "./components/LoginPage/Register";
 import HomePage from "./pages/home/index.jsx";
@@ -10,15 +10,26 @@ import Profile from "./pages/profile/index.jsx";
 import Availableaution from "./pages/availableauction/availableauction.jsx";
 import Auctions from "./pages/auctions/Auctions.jsx";
 import BreederRequest from "./pages/breeder/manage-request/index.jsx";
-
 import BreederDashboard from "./pages/breeder/breeder-dashboard/index.jsx";
 import StaffDashboard from "./pages/staff/staff-dashboard/index.jsx";
 import StaffResponse from "./pages/staff/manage-response/index.jsx";
+import Bidding from "./pages/bidding/Bidding.jsx";
 
 
 function App() {
   const router = createBrowserRouter([
     {
+      path: "/auctions/active/:roomId", // Correct path format for dynamic parameters
+      element: (
+        <>
+          <Header />
+          <Bidding/> 
+          <Footer />
+        </>
+      ),
+    },
+    {
+    
       path: "/",
 
       element: (
@@ -42,7 +53,7 @@ function App() {
     },
 
     {
-      path: "/auctions",
+      path: "/auctions/active",
 
       element: (
         <>
@@ -58,8 +69,8 @@ function App() {
       element: (
         <>
           <Header />
-  
-       <Availableaution/>
+
+          <Availableaution />
           <Footer />
         </>
       ),
@@ -68,7 +79,14 @@ function App() {
       path: "/Login",
       element: <Login />,
     },
-   
+    {
+      path: "/Bid",
+      element: <>
+        <Header/>
+        <Bidding/>
+        <Footer/></>,
+    },
+
     {
       path: "/Register",
       element: <Register />,
@@ -93,17 +111,18 @@ function App() {
         },
       ],
     },
-      {
+    {
       path: "/dashboard",
-      element: <Dashboard />,
+      element: <BreederDashboard />,
       children: [
         {
           path: "request",
           element: <BreederRequest />,
         },
-       
+
       ],
     },
+    
   ]);
 
   return <RouterProvider router={router} />;
