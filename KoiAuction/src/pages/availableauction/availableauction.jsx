@@ -1,10 +1,11 @@
 import "./availableauction.css";
-import { Suspense, useState } from "react";
+import { Suspense, useState, useEffect } from "react";
 import { motion, MotionConfig, useMotionValue } from "framer-motion";
 import { Shapes } from "./Shapes";
 import { transition } from "./settings";
 import useMeasure from "react-use-measure";
 import { useNavigate } from "react-router-dom"; // Import useNavigate
+import api from "../../config/axios";
 
 function AvailableAuction() {
   const navigate = useNavigate(); // Khởi tạo navigate
@@ -14,18 +15,44 @@ function AvailableAuction() {
   const mouseX = useMotionValue(0);
   const mouseY = useMotionValue(0);
 
+  
+
+  // State for holding auction data
+  const [auctionData, setAuctionData] = useState(null);
+
+  useEffect(() => {
+    const fetchAuctionData = async () => {
+      try {
+        const response = await api.get("/auctions/active");
+        if (response.data && response.data.data) {
+          setAuctionData(response.data.data); 
+        }
+      } catch (error) {
+        console.error("Error fetching auction data:", error);
+      }
+    };
+
+    fetchAuctionData();
+  }, []);
+
+
+
   const resetMousePosition = () => {
     mouseX.set(0);
     mouseY.set(0);
   };
 
+
   const handleNavigate = () => {
-    navigate("/auctions");
+    if (auctionData?.auctionId) {
+      navigate(`/auctions/active`); 
+    }
   };
+  
 
   return (
     <div className="IntoAuction">
-      <div>
+      <div className="AuctionBox">
         <MotionConfig transition={transition}>
           <motion.button
             ref={ref}
@@ -80,15 +107,15 @@ function AvailableAuction() {
               variants={{ hover: { scale: 0.85 }, press: { scale: 1.1 } }}
               className="label"
             >
-              Auction #1
+              Auction #{auctionData?.auctionId}
             </motion.div>
           </motion.button>
         </MotionConfig>
 
         <div className="AuctionInfo">
-          <p>Start Date: 2024-10-07</p>
-          <p>End Date: 2024-10-10</p>
-          <p>Status: Ongoing</p>
+          <p>Start Date: {new Date(auctionData?.startTime).toLocaleString()}</p>
+          <p>End Date: {new Date(auctionData?.endTime).toLocaleString()}</p>
+          <p>Status: {auctionData?.status}</p>
         </div>
       </div>
     </div>
