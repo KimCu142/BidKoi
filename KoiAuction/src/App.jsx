@@ -1,8 +1,8 @@
 import { RouterProvider } from "react-router-dom";
 import { createBrowserRouter } from "react-router-dom";
 
-import Login from "./components/LoginPage/Login";
-import Register from "./components/LoginPage/Register";
+import Login from "./pages/LoginPage/Login.jsx";
+import Register from "./pages/LoginPage/Register.jsx";
 import HomePage from "./pages/home/index.jsx";
 import Header from "./components/header/index.jsx";
 import Footer from "./components/footer/index.jsx";
@@ -14,7 +14,8 @@ import BreederRequest from "./pages/breeder/manage-request/index.jsx";
 import BreederDashboard from "./pages/breeder/breeder-dashboard/index.jsx";
 import StaffDashboard from "./pages/staff/staff-dashboard/index.jsx";
 import StaffResponse from "./pages/staff/manage-response/index.jsx";
-
+import CreateAuction from "./pages/staff/manage-auction/index.jsx";
+import AuctionDetail from "./pages/staff/manage-room/index.jsx";
 
 function App() {
   const router = createBrowserRouter([
@@ -58,8 +59,8 @@ function App() {
       element: (
         <>
           <Header />
-  
-       <Availableaution/>
+
+          <Availableaution />
           <Footer />
         </>
       ),
@@ -68,7 +69,7 @@ function App() {
       path: "/Login",
       element: <Login />,
     },
-   
+
     {
       path: "/Register",
       element: <Register />,
@@ -91,17 +92,14 @@ function App() {
           path: "staff-request",
           element: <StaffResponse />,
         },
-      ],
-    },
-      {
-      path: "/dashboard",
-      element: <Dashboard />,
-      children: [
         {
-          path: "request",
-          element: <BreederRequest />,
+          path: "create-auction",
+          element: <CreateAuction />,
         },
-       
+        {
+          path: "create-auction/:auctionId",
+          element: <AuctionDetail />,
+        },
       ],
     },
   ]);
