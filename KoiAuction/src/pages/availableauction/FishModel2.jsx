@@ -1,4 +1,4 @@
-import { useGLTF, useAnimations } from '@react-three/drei';
+import { useGLTF, useAnimations, Preload } from '@react-three/drei';
 import { useEffect } from 'react';
 
 export function FishModel2() {
@@ -24,5 +24,10 @@ export function FishModel2() {
   }, [actions]);
 
   // Điều chỉnh góc độ với thuộc tính rotation
-  return <primitive object={scene} scale={0.3} rotation={[Math.PI / 2.7, -0.4, 0.2]} />;
+  return (
+    <>
+      <primitive object={scene} scale={0.3} rotation={[Math.PI / 2.7, -0.4, 0.2]} />
+      <Preload all />
+    </>
+  );
 }

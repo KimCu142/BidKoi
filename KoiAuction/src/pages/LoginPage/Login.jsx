@@ -8,8 +8,8 @@ import {
 import { useState } from "react";
 import styles from "./Login.module.css"; // Importing CSS module
 
+import api from "../../configs/axios";
 import { Buffer } from "buffer";
-import api from "../../config/axios";
 window.Buffer = Buffer; // Polyfill Buffer in the browser
 
 function decodeJwt(token) {

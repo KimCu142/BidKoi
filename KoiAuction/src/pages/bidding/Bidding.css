@@ -1,0 +1,117 @@
+.BiddingPage {
+    padding-top: 80px;
+    padding-bottom: 50px;
+}
+.Bidding{
+    display: flex;
+gap: 16px;
+    justify-content: center;
+    height: 100%;
+
+}
+.KoiTable {
+    display: flex;
+    flex-direction: column;
+   
+
+}
+.Visual{
+    width: 30%;
+
+}
+.KoiTable{
+    width: 50%;
+}
+
+.img {
+    padding: 0px 24px;
+    border-radius: 24px;
+
+    
+    display: flex;
+    flex-direction: column;
+    position: relative;
+    align-items: center;
+    justify-content: center;
+    background-color: #2980b9;
+    /* Màu xanh dương đậm */
+    color: white;
+    margin-bottom: 10px;
+}
+
+.auctionsInfo {
+    display: flex;
+    flex-direction: row;
+    justify-content: space-between;
+    width: 80%;
+    height: 100px;
+    margin-left: 5%;
+    align-items: center;
+    font-family: "QuickSand", sans-serif;
+    font-size: 24px;
+    font-weight: 600;
+    color: #15171f;
+    line-height: 32px;
+}
+
+.time {
+    display: flex;
+    width: 300px;
+    font-size: 20px;
+}
+
+.time p {
+    width: 140px;
+}
+
+.auctionTitle {
+    span {
+        height: 24px;
+    }
+
+    p {
+        height: 24px;
+    }
+
+    .time .ended {
+        opacity: 0;
+        /* Ban đầu trong suốt */
+        /* Chuyển tiếp mờ dần trong 0.5 giây */
+        width: 200px;
+        position: absolute;
+    }
+
+    .time:hover .dateRange {
+        opacity: 0;
+    }
+
+    .time:hover .ended {
+        transition: opacity 0.5s;
+        opacity: 1;
+        display: block;
+        position: absolute;
+    }
+
+    display: flex;
+    flex-direction: column;
+    /* Sắp xếp các phần tử theo cột */
+}
+
+video{
+    border-radius: 24px;
+}
+
+.Button {
+    background-color: #7eaac733;
+    border-radius: 24px;
+    align-items: center;
+    color: #356483;
+    display: flex;
+    font-family: Montserrat;
+    font-weight: 600;
+    justify-content: center;
+    line-height: 24px;
+    padding: 9px 20px;
+    text-align: center;
+  }
+  
