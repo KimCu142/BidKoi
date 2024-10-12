@@ -15,7 +15,6 @@ import StaffDashboard from "./pages/staff/staff-dashboard/index.jsx";
 import StaffResponse from "./pages/staff/manage-response/index.jsx";
 import Bidding from "./pages/bidding/Bidding.jsx";
 
-
 function App() {
   const router = createBrowserRouter([
     {
@@ -23,13 +22,12 @@ function App() {
       element: (
         <>
           <Header />
-          <Bidding/> 
+          <Bidding />
           <Footer />
         </>
       ),
     },
     {
-    
       path: "/",
 
       element: (
@@ -81,10 +79,13 @@ function App() {
     },
     {
       path: "/Bid",
-      element: <>
-        <Header/>
-        <Bidding/>
-        <Footer/></>,
+      element: (
+        <>
+          <Header />
+          <Bidding />
+          <Footer />
+        </>
+      ),
     },
 
     {
@@ -116,13 +117,11 @@ function App() {
       element: <BreederDashboard />,
       children: [
         {
-          path: "request",
-          element: <BreederRequest />,
+          path: "create-auction/:auctionId",
+          element: <AuctionDetail />,
         },
-
       ],
     },
-    
   ]);
 
   return <RouterProvider router={router} />;

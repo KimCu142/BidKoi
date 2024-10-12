@@ -31,30 +31,27 @@ function Profile() {
   const [activeTab, setActiveTab] = useState("account");
   const [userId, setuserId] = useState("");
 
-
   const apiView = "http://localhost:8080/BidKoi/account/view";
   const apiUpdate = "http://localhost:8080/BidKoi/account/update-profile";
-
- 
 
   // =========================== Gọi API để lấy thông tin người dùng
   const fetchUserData = useCallback(async () => {
     const source = axios.CancelToken.source();
-  
+
     try {
       const storedUser = localStorage.getItem("user");
       if (storedUser) {
         const token = localStorage.getItem("token");
+        const userId = localStorage.getItem("userId");
         const userData = JSON.parse(storedUser);
-    
-  
+
         const response = await axios.get(`${apiView}/${userId}`, {
           headers: {
             Authorization: `Bearer ${token}`,
           },
           cancelToken: source.token,
         });
-  
+
         if (response.data) {
           setUserData(response.data);
           setInitialData(response.data);
@@ -69,14 +66,11 @@ function Profile() {
         console.error("Error fetching user data", error);
       }
     }
-  
+
     return () => {
       source.cancel("Component unmounted, request canceled.");
     };
   }, [apiView]);
-  
-
-
 
   // useEffect(() => {
   //   const storedUserData = localStorage.getItem("userData");
@@ -89,18 +83,16 @@ function Profile() {
   //   }
   // }, [fetchUserData]);
 
-  useEffect(() => { 
+  useEffect(() => {
     const storedUser = localStorage.getItem("user");
-  
+
     if (storedUser) {
       const UserData = JSON.parse(storedUser); // Parse the JSON string
       setuserId(UserData.sub); // Set userId from parsed data
     }
-  
+
     fetchUserData();
   }, [fetchUserData]);
-  
-
 
   // =========================== Gắn API để cập nhật thông tin mới
   const handleUpdate = async () => {
@@ -186,7 +178,6 @@ function Profile() {
     setUserData(initialData);
   };
 
-
   const getBase64 = (file) =>
     new Promise((resolve, reject) => {
       const reader = new FileReader();
@@ -223,7 +214,6 @@ function Profile() {
   );
   return (
     <>
-
       <div className={styles.sidebar}>
         <div className={styles.sidebarMenu}>
           <ul>
@@ -266,7 +256,6 @@ function Profile() {
 
         {activeTab === "account" && (
           <div className={styles.profileBox}>
-
             <div className={styles.userId}>
               <strong>User ID: </strong>
               {userId}
@@ -310,13 +299,11 @@ function Profile() {
                     value={userData.firstname}
                     onChange={(e) =>
                       setUserData({ ...userData, firstname: e.target.value })
-
                     }
                     disabled={!isEdit}
                   />
                 </Form.Item>
                 <Form.Item>
-
                   <label className={styles.formLabel}>Last name</label>
                   <Input
                     placeholder="Last name"
@@ -392,7 +379,6 @@ function Profile() {
                   <div className={styles.twoButton}>
                     {isEdit ? (
                       <>
-
                         <button className={styles.btn1} onClick={handleUpdate}>
                           Save changes
                         </button>
@@ -406,7 +392,6 @@ function Profile() {
                         Edit
                       </div>
                     )}
-
 
                     <div className={styles.btn2} onClick={handleCancel}>
                       Cancel
@@ -437,16 +422,13 @@ function Profile() {
           </div>
         )}
 
-
         {activeTab === "activities" && (
           <div className="activitiesBox">
             <p>Activity content goes here</p>
           </div>
         )}
       </main>
-
     </>
-
   );
 }
 
