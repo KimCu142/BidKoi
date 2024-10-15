@@ -1,0 +1,11 @@
+.custome-card{
+    border-radius: 24px;
+    text-align: center;
+    background-color: #e9eaed;
+font-size: larger;
+
+}
+
+.custom-card .ant-card-head {
+    font-size: 30px;
+}
