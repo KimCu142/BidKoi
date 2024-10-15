@@ -3,6 +3,7 @@ import { useState, useEffect } from "react";
 
 export default function KoiTable({ name, id, rating, sex, length, breeder, age, status, endTime }) {
     return (
+        <>
         <div className="table-container">
             <div className="table-header">
                 <div className="table-title">
@@ -70,8 +71,10 @@ export default function KoiTable({ name, id, rating, sex, length, breeder, age, 
                     Age: {age}
                 </div>
             </div>
-            <CountdownTimer endTime={endTime} />
+           
         </div>
+        <>   <CountdownTimer endTime={endTime} /></>
+        </>
     );
 }
 
@@ -127,9 +130,18 @@ const CountdownTimer = ({ endTime }) => {
         <div className="countdown-timer">
             <h2>Time left:</h2>
             <div className="time">
-                <span>{timeLeft.hours || "0"}<small>Hours</small></span>
-                <span>{timeLeft.minutes || "0"}<small>Minutes</small></span>
-                <span>{timeLeft.seconds || "0"}<small>Seconds</small></span>
+                <span>
+                    {timeLeft.hours || "00"}
+                    <small>Hours</small>
+                </span>
+                <span>
+                    {timeLeft.minutes || "00"}
+                    <small>Minutes</small>
+                </span>
+                <span>
+                    {timeLeft.seconds || "00"}
+                    <small>Seconds</small>
+                </span>
             </div>
         </div>
     );
