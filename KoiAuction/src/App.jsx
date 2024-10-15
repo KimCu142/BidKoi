@@ -1,6 +1,5 @@
 import { RouterProvider } from "react-router-dom";
 import { createBrowserRouter } from "react-router-dom";
-import { useParams } from "react-router-dom";
 import Login from "./components/LoginPage/Login";
 import Register from "./components/LoginPage/Register";
 import HomePage from "./pages/home/index.jsx";
@@ -14,6 +13,7 @@ import BreederDashboard from "./pages/breeder/breeder-dashboard/index.jsx";
 import StaffDashboard from "./pages/staff/staff-dashboard/index.jsx";
 import StaffResponse from "./pages/staff/manage-response/index.jsx";
 import Bidding from "./pages/bidding/Bidding.jsx";
+import ComfirmShipping from "./pages/ComfirmShipping/ComfirmShipping.jsx";
 
 
 function App() {
@@ -29,7 +29,6 @@ function App() {
       ),
     },
     {
-    
       path: "/",
 
       element: (
@@ -121,6 +120,17 @@ function App() {
         },
 
       ],
+    },
+    {
+      path: "/comfirmship",
+
+      element: (
+        <>
+          <Header />
+          <ComfirmShipping/>
+          <Footer />
+        </>
+      ),
     },
     
   ]);
