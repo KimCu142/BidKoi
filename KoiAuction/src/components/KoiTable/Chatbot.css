@@ -1,0 +1,52 @@
+/* ChatBox styles */
+.ChatBox {
+    padding: 20px;
+    border: 1px solid #ddd;
+    border-radius: 24px;
+    background-color: #f9f9f9;
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+    overflow: hidden;
+    height: 100%;
+}
+
+/* Message list styles */
+.ChatBox .ant-list {
+    max-height: 350px;
+    overflow-y: auto;
+    padding: 10px;
+}
+
+/* Typing indicator styles */
+.TypingIndicator {
+    padding: 10px;
+    color: #999;
+    text-align: center;
+}
+
+/* TextArea styles */
+.MessageInput {
+    margin-top: 10px;
+    width: 100%;
+    resize: none;
+}
+
+/* Send button styles */
+.SendButton {
+    width: 100%;
+    margin-top: 5px;
+}
+
+/* Avatar styles */
+.ChatBox .ant-avatar {
+    background-color: #1890ff;
+    color: #fff;
+}
+
+/* User and Bot message differentiation */
+.UserMessage .ant-list-item-meta-title {
+    color: #007acc;
+}
+
+.BotMessage .ant-list-item-meta-title {
+    color: #ff4d4f;
+}
