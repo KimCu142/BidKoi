@@ -3,10 +3,15 @@ import { Image } from 'antd';
 import axios from "axios";
 import { useState, useEffect } from "react";
 import { InfoCircleOutlined } from "@ant-design/icons";
-import { Popover, Button, Space } from "antd";
+import { Popover, Button, Space, Modal } from "antd";
 import KoiTable from "../../components/KoiTable/KoiTable";
 import { useParams } from "react-router-dom";
-
+import BidTable from "../../components/KoiTable/BidTable";
+import PastBids from "../../components/KoiTable/PastBid";
+import ChatBot from "../../components/KoiTable/ChatBot";
+import Chat from "../Chat/Chat";
+import { ToastContainer, toast } from 'react-toastify';
+import 'react-toastify/dist/ReactToastify.css';
 
 const auctionInfoContent = (
     <div>
@@ -25,11 +30,13 @@ const auctionInfoContent = (
     </div>
 );
 
-
 export default function Bidding() {
     const { roomId } = useParams();
     const [auctionDetails, setAuctionDetails] = useState({});
     const [room, setRoom] = useState([null]);
+    const [winnerInfo, setWinnerInfo] = useState(null);
+    const [isModalVisible, setIsModalVisible] = useState(false);
+    const currentUserId = JSON.parse(localStorage.getItem("user"))?.sub;
 
     useEffect(() => {
         // Fetch data using Axios
@@ -41,14 +48,45 @@ export default function Bidding() {
                 const selectedRoom = auctionData.rooms.find(
                     (room) => room.roomId === parseInt(roomId)
                 );
-                setRoom(selectedRoom);             
-
+                setRoom(selectedRoom);
             })
             .catch((error) => console.error("Error fetching data:", error));
     }, [roomId]);
+
+    useEffect(() => { 
+        if (auctionDetails.endTime && room) {
+            const endTime = new Date(auctionDetails.endTime).getTime();
+            const interval = setInterval(() => {
+                if (new Date().getTime() >= endTime) {
+                    clearInterval(interval);
+                    axios.get(`/api/auction/room/${roomId}/winner`)
+                        .then((response) => {
+                            const winnerId = response.data.winnerId;
+                            if (currentUserId === winnerId) {
+                                axios.get(`http://localhost:8080/BidKoi/account/view/${currentUserId}`)
+                                    .then((response) => {
+                                        setWinnerInfo(response.data);
+                                        setIsModalVisible(true);
+                                        toast.success("Congratulations, you've won this auction! Click here", {
+                                            onClick: () => window.location.href = `/auction/${roomId}/details`,
+                                            style: { backgroundColor: '#d4edda', color: '#155724' },
+                                        });
+                                    })
+                                    .catch((error) => console.error("Error fetching winner info:", error));
+                            }
+                        })
+                        .catch((error) => console.error("Error fetching winner:", error));
+                }
+            }, 1000);
+
+            return () => clearInterval(interval);
+        }
+    }, [auctionDetails.endTime, roomId, room, currentUserId]);
+
     if (!room || !room.koi) {
         return <div>Loading...</div>;
     }
+
     return (
         <div className="BiddingPage ">
             <AuctionInfo />
@@ -65,7 +103,6 @@ export default function Bidding() {
                     >
                         Your browser does not support the video tag.
                     </video>
-
                 </div>
                 <div className="KoiTable">
                     <KoiTable
@@ -80,19 +117,53 @@ export default function Bidding() {
                         endTime={auctionDetails.startTime}
                         className={auctionDetails.endTime}
                     />
-
+                    <div className="Bidding2">
+                        <div className="Bidding2mini" >
+                            <BidTable />
+                            <PastBids />
+                        </div> 
+                        <div className="Chat">
+                            <Chat />  
+                        </div>
+                        <div className="ChatBot" >
+                            <ChatBot />
+                        </div>
+                    </div>
                 </div>
             </div>
+            <Modal
+                title="Shipping Information"
+                visible={isModalVisible}
+                onCancel={() => setIsModalVisible(false)}
+                footer={null}
+            >
+                {winnerInfo && (
+                    <div className="ship-info">
+                        <h3>Ship Information</h3>
+                        <div className="info-row">
+                            <span>Address</span>
+                            <span>{winnerInfo.address}</span>
+                            <span>Shipping time</span>
+                            <span>13 - 10 - 2024 19:14 PM</span>
+                        </div>
+                        <div className="info-row">
+                            <span>Phone Number</span>
+                            <span>{winnerInfo.phoneNumber}</span>
+                        </div>
+                        <div className="info-row">
+                            <span>Full Name</span>
+                            <span>{winnerInfo.fullName}</span>
+                        </div>
+                    </div>
+                )}
+            </Modal>
         </div>
-    )
+    );
 }
-
 
 const AuctionInfo = () => {
     return (
         <div >
-
-
             <div className="auctionsInfo">
                 <div className="auctionTitle">
                     <span>Auction #1</span>
