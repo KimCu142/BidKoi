@@ -13,6 +13,8 @@
     "eject": "react-scripts eject"
   },
   "dependencies": {
+    "@chatscope/chat-ui-kit-react": "^2.0.3",
+    "@google/generative-ai": "^0.21.0",
     "@iconify-icons/circle-flags": "^1.2.41",
     "@iconify/react": "^5.0.2",
     "@react-three/drei": "7.26.1",
@@ -23,6 +25,8 @@
     "axios": "^1.7.7",
     "buffer": "^6.0.3",
     "firebase": "^10.13.2",
+
+    "framer-motion": "6.0.0-beta.5",
     "framer-motion": "^6.0.0-beta.5",
     "framer-motion-3d": "6.0.0-beta.5",
     "jwt-decode": "^4.0.0",
@@ -38,7 +42,9 @@
     "react-toastify": "^10.0.5",
     "react-use-measure": "^2.1.1",
     "rimraf": "^4.0.0",
+    "sockjs-client": "^1.6.1",
     "stats.js": "^0.17.0",
+    "stompjs": "^2.3.3",
     "three": "0.135.0"
   },
   "devDependencies": {

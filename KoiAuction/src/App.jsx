@@ -1,7 +1,5 @@
 import { RouterProvider } from "react-router-dom";
 import { createBrowserRouter } from "react-router-dom";
-import { useParams } from "react-router-dom";
-
 import HomePage from "./pages/home/index.jsx";
 import Header from "./components/header/index.jsx";
 import Footer from "./components/footer/index.jsx";
@@ -13,6 +11,7 @@ import BreederDashboard from "./pages/breeder/breeder-dashboard/index.jsx";
 import StaffDashboard from "./pages/staff/staff-dashboard/index.jsx";
 import StaffResponse from "./pages/staff/manage-response/index.jsx";
 import Bidding from "./pages/bidding/Bidding.jsx";
+import ComfirmShipping from "./pages/ComfirmShipping/ComfirmShipping.jsx";
 import Login from "./pages/LoginPage/Login.jsx";
 import Register from "./pages/LoginPage/Register.jsx";
 import CreateAuction from "./pages/staff/manage-auction/index.jsx";
@@ -24,6 +23,17 @@ import { AuthProvider } from "./components/AuthContext.jsx";
 
 function App() {
   const router = createBrowserRouter([
+    {
+
+      path: "/auctions/active/:roomId", // Correct path format for dynamic parameters
+      element: (
+        <>
+          <Header />
+          <Bidding/> 
+          <Footer />
+        </>
+      ),
+    },
     {
       path: "/",
 
@@ -137,11 +147,14 @@ function App() {
       ],
     },
     {
-      path: "/auctions/active/:roomId",
+
+      path: "/comfirmship",
+
       element: (
         <>
           <Header />
-          <Bidding />
+          <ComfirmShipping/>
+
           <Footer />
         </>
       ),
