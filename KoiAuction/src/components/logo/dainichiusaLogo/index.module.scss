@@ -1,0 +1,25 @@
+.myIcon {
+  height: 100%;
+  fill: #6b6d79;
+  transition: fill 0.3s ease;
+}
+
+.myIcon:hover {
+  fill: #fff;
+  background-color: #d4163c;
+}
+
+.myIcon:focus {
+  fill: #fff;
+  background-color: #d4163c;
+}
+
+.insideKoi {
+  fill: #d5d5d9;
+  transition: fill 0.3s ease;
+}
+
+.myIcon:hover .insideKoi,
+.myIcon:focus .insideKoi {
+  fill: #d4163c;
+}

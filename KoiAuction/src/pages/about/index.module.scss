@@ -1,0 +1,257 @@
+* {
+  margin: 0;
+  padding: 0;
+  box-sizing: border-box;
+}
+
+.appShell {
+  display: flex;
+  flex-direction: column;
+  min-height: 100vh;
+}
+
+.pageContent {
+  padding: 70px 74px 32px;
+  flex: 1;
+}
+
+.welcomeSection {
+  padding: 32px 16px;
+}
+
+.card {
+  background-color: #f4f4f4;
+  border-radius: 20px;
+  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+}
+
+.cardHeader {
+  color: #15171f;
+  font-family: "Quicksand", sans-serif;
+  font-size: 18px;
+  font-weight: 700;
+  padding: 16px 16px 0;
+}
+
+.cardContent {
+  padding: 20px;
+}
+
+p {
+  margin-bottom: 10px;
+}
+
+.accordion {
+  margin-top: 28px;
+}
+
+.accordionHeader {
+  font-size: 18px;
+  font-weight: 700;
+  padding: 16px 16px 0;
+  font-family: "Quicksand", sans-serif;
+  color: #15171f;
+}
+
+.accordionItem {
+  margin: 4px 0 0;
+  padding: 8px;
+}
+
+.accordionControl {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 8px 16px;
+  background-color: #f0f0f0;
+  cursor: pointer;
+  background: none;
+  border: none;
+  width: 100%;
+  text-align: left;
+  border-radius: 24px;
+  transition: background-color 0.3s ease;
+}
+
+.accordionControl:hover {
+  background-color: #d4163c1a;
+}
+
+.accordionText {
+  flex: 1;
+  font-weight: 600;
+  margin: 0;
+  padding-left: 10px;
+}
+
+.accordionSummaryCaret {
+  transition: transform 0.3s ease;
+}
+
+.accordionPanel {
+  display: none;
+  padding: 8px 16px;
+  font-size: 18px;
+  line-height: 1.6;
+}
+
+.accordionPanel p {
+  font-family: "Montserrat", sans-serif;
+  color: #15171f;
+  font-size: 18px;
+  margin: 0;
+  padding: 8px 0;
+}
+
+.caretIcon {
+  fill: currentColor;
+  transition: transform 0.3s ease;
+}
+
+.accordionControl[aria-expanded="true"] .caretIcon {
+  transform: rotate(180deg);
+}
+
+.accordionControl[aria-expanded="true"] .accordionPanel {
+  display: block;
+}
+
+.rotate {
+  transform: rotate(180deg);
+  transition: transform 0.1s ease;
+}
+
+// ===================== Contact us================
+
+.contactSection {
+  margin-bottom: 16px;
+}
+
+.sectionHeader {
+  padding: 16px 16px 0;
+  font-size: 18px;
+  font-weight: 700;
+  font-family: "Quicksand", sans-serif;
+}
+
+.contactInfo {
+  display: flex;
+  flex-direction: column;
+  padding: 16px;
+}
+
+.contactBox {
+  display: flex;
+  width: fit-content;
+}
+
+.contactItem {
+  padding: 9px 20px;
+  text-decoration: none;
+  color: #15171f;
+}
+
+.contactItem:hover {
+  background-color: rgba(0, 0, 0, 0.1);
+  border-radius: 24px;
+}
+
+.contactText {
+  margin: 0 0 0 8px;
+}
+
+.btnIcon {
+  opacity: 0;
+  transition: opacity 0.3s ease, background-color 0.3s ease;
+  background-color: transparent;
+  border: none;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  border-radius: 50%;
+  width: 40px;
+}
+
+.btnIcon:hover {
+  background-color: rgba(0, 0, 0, 0.1);
+}
+
+.contactBox:hover .btnIcon {
+  opacity: 1;
+}
+
+// ====================== Sponsor ============================
+
+.title {
+  font-family: "Quicksand", sans-serif;
+  color: #aaabb3;
+  font-size: 20px;
+  font-weight: 700;
+  text-align: center;
+}
+
+.logoCloud {
+  gap: 4px;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+
+.logoItem1,
+.logoItem2,
+.logoItem3 {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 32px 0;
+  background: #d5d5d9;
+  width: 495px;
+  height: 144px;
+}
+.logoItem1 {
+  border-radius: 24px 0 0 24px;
+}
+
+.logoItem3 {
+  border-radius: 0 24px 24px 0;
+}
+
+.logoItem1:hover,
+.logoItem2:hover,
+.logoItem3:hover,
+.logoItem1:focus,
+.logoItem2:focus,
+.logoItem3:focus {
+  background-color: #d4163c;
+}
+
+.logo {
+  text-align: center;
+  flex: 1;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  width: 222.84px;
+  height: 80px;
+}
+
+// .detailLogo {
+//   flex: 1;
+//   display: flex;
+//   justify-content: center;
+//   align-items: center;
+// }
+
+@media (min-width: 1280px) {
+  .logoCloud {
+    grid-template-columns: repeat(3, 1fr);
+    gap: 8px;
+  }
+}
+
+@media (min-width: 1280px) {
+  .element {
+    height: 80px;
+  }
+}

@@ -8,8 +8,8 @@ import {
 import { useState } from "react";
 import styles from "./Login.module.css"; // Importing CSS module
 
-import api from "../../configs/axios";
 import { Buffer } from "buffer";
+import api from "../../config/axios";
 window.Buffer = Buffer; // Polyfill Buffer in the browser
 
 function decodeJwt(token) {
@@ -41,21 +41,26 @@ const Login = () => {
 
     try {
       const response = await api.post("account/login", { username, password });
-
       const data = response.data;
       // Save token to localStorage or sessionStorage
       localStorage.setItem("token", data.token);
-      localStorage.setItem("userId", data.userId);
 
       // const decodedToken = jwt_decode(data.token); // Decode JWT without the Node.js 'util' module
       // console.log("Token", decodedToken);
 
       const decodedToken = decodeJwt(data.token);
+      const role = decodedToken?.role || response.data.role;
+
       console.log(decodedToken);
       localStorage.setItem("user", JSON.stringify(decodedToken));
+
+      if (role) {
+        localStorage.setItem("role", role);
+      }
+
       message.success("Login successful!");
 
-      if (data.role === "STAFF") {
+      if (role === "STAFF") {
         navigate("/staff-dashboard");
       } else if (data.role === "BREEDER") {
         navigate("/breeder-dashboard");
