@@ -13,6 +13,8 @@
     "eject": "react-scripts eject"
   },
   "dependencies": {
+    "@iconify-icons/circle-flags": "^1.2.41",
+    "@iconify/react": "^5.0.2",
     "@react-three/drei": "7.26.1",
     "@react-three/fiber": "7.0.21",
     "@typescript-eslint/eslint-plugin": "^8.8.0",
@@ -21,12 +23,13 @@
     "axios": "^1.7.7",
     "buffer": "^6.0.3",
     "firebase": "^10.13.2",
-    "framer-motion": "6.0.0-beta.5",
+    "framer-motion": "^6.0.0-beta.5",
     "framer-motion-3d": "6.0.0-beta.5",
     "jwt-decode": "^4.0.0",
     "moment": "^2.30.1",
     "moment-timezone": "^0.5.46",
     "popmotion": "^11.0.3",
+    "prop-types": "^15.8.1",
     "react": "^18.3.1",
     "react-datepicker": "^7.4.0",
     "react-dom": "^18.3.1",
