@@ -1,0 +1,54 @@
+.Page{
+
+    padding-top: 80px;
+    padding-bottom: 50px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 32px;
+}
+
+.status {
+    background-color: #e8e8e8;
+    padding: 10px;
+    border-radius: 10px 10px 0 0;
+    font-size: 18px;
+    font-weight: bold;
+}
+
+.status-text {
+    color: #e60023;
+}
+
+.ship-info {
+    background-color: #e0e0e0;
+    padding: 20px;
+    border-radius: 0 0 10px 10px;
+}
+
+.info-row {
+    display: flex;
+    justify-content: space-between;
+    margin: 8px 0;
+}
+
+h3 {
+    font-size: 18px;
+    margin-bottom: 15px;
+}
+
+.image-fields {
+    padding: 24px 15px;
+}
+
+.avatar-title {
+    font-size: 1.5rem; /* Kích thước chữ */
+    margin-bottom: 8px; /* Khoảng cách dưới tiêu đề */
+    color: #333;
+}
+
+.text-light2 {
+    font-size: 0.875rem;
+    color: #f80505;
+    margin-top: 5px;
+}
