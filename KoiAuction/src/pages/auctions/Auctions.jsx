@@ -28,9 +28,15 @@ const Auctions = () => {
   // const [koiData, setKoiData] = useState([]);
   const [auctionDetails, setAuctionDetails] = useState({});
   const [rooms, setRooms] = useState([]);
+  const token = localStorage.getItem("token");
+
   useEffect(() => {
     axios
-      .get(`http://localhost:8080/BidKoi/auctions/active`)
+      .get(`http://localhost:8080/BidKoi/auctions/active`, {
+        headers: {
+          Authorization: `Bearer ${token}`,
+        }
+      })
       .then((response) => {
         const auctionData = response.data.data;
         setAuctionDetails(auctionData);
