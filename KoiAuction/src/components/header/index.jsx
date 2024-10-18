@@ -8,7 +8,7 @@ function Header() {
   const location = useLocation();
   const navigate = useNavigate();
   const handleMenuClick = (e) => {
-  
+
     console.log("click", e);
   };
 
@@ -17,8 +17,8 @@ function Header() {
     localStorage.removeItem("token"); // Xóa token
     localStorage.removeItem("user"); // Xóa thông tin người dùng
     setIsLoggedIn(false); // Cập nhật trạng thái đăng nhập
-    setUsername(""); 
-    navigate('/'); 
+    setUsername("");
+    navigate('/');
     message.info("Logout rùi nha");
   };
 
@@ -27,7 +27,7 @@ function Header() {
       label: "Profile",
       key: "1",
       icon: <UserOutlined />,
-      onClick: () => navigate('/profile'), 
+      onClick: () => navigate('/profile'),
     },
 
     {
@@ -59,12 +59,21 @@ function Header() {
 
   useEffect(() => {
     const storedUser = localStorage.getItem("user");
+  
     if (storedUser) {
-      const userData = JSON.parse(storedUser);
-      setIsLoggedIn(true);
-      setUsername(userData.username);
+      const userData = JSON.parse(storedUser);  // Parse dữ liệu JSON từ localStorage
+      
+      // Kiểm tra và lấy dữ liệu từ userData
+      if (userData) {
+        setIsLoggedIn(true);
+        setUsername(userData.bidder.account.username);  // Đặt username
+      } else {
+        console.error("Token or username is undefined");
+      }
     }
   }, []);
+  
+  
 
   return (
     <header className="header">
@@ -85,9 +94,8 @@ function Header() {
               <li key={page.name}>
                 <Link
                   to={page.path}
-                  className={`nav-button ${
-                    location.pathname === page.path ? "active" : ""
-                  }`}
+                  className={`nav-button ${location.pathname === page.path ? "active" : ""
+                    }`}
                 >
                   <span className={`majesticons ${page.icon}`} />
                   <span className="nav__name">{page.name}</span>
@@ -101,16 +109,16 @@ function Header() {
             {isLoggedIn ? (
               <li>
                 <div className="Loged-Box">
-                <Dropdown menu={menuProps}>
-                  <Button>
-                    <Space>
-                      <div className="username-display">
-                        Welcome, {username}
-                      </div>
-                      <DownOutlined />
-                    </Space>
-                  </Button>
-                </Dropdown>
+                  <Dropdown menu={menuProps}>
+                    <Button>
+                      <Space>
+                        <div className="username-display">
+                          Welcome, {username}
+                        </div>
+                        <DownOutlined />
+                      </Space>
+                    </Button>
+                  </Dropdown>
                 </div>
               </li>
             ) : (
@@ -118,9 +126,8 @@ function Header() {
                 <li>
                   <Link
                     to="/login"
-                    className={`log-button ${
-                      location.pathname === "/login" ? "active" : ""
-                    }`}
+                    className={`log-button ${location.pathname === "/login" ? "active" : ""
+                      }`}
                   >
                     Login
                   </Link>
@@ -128,9 +135,8 @@ function Header() {
                 <li>
                   <Link
                     to="/register"
-                    className={`reg-button ${
-                      location.pathname === "/register" ? "active" : ""
-                    }`}
+                    className={`reg-button ${location.pathname === "/register" ? "active" : ""
+                      }`}
                   >
                     Register
                   </Link>
