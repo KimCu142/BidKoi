@@ -30,8 +30,13 @@ function StaffResponse() {
 
   const handleApprove = async (koiId) => {
     try {
+      // Xác nhận yêu cầu cá
       await api.post(`/staff/${koiId}/approve`);
-      toast.success("Koi request has been approved");
+
+      // Tạo room cho Koi
+      await api.post(`/room/create/${koiId}`);
+
+      toast.success("Koi request has been approved and room created");
       fetchKoiAndBreeder();
     } catch (error) {
       console.error("Error accepting request:", error);

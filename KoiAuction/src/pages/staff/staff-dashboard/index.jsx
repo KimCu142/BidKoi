@@ -1,13 +1,16 @@
-import React, { useState } from "react";
+/* eslint-disable no-unused-vars */
+import React, { useEffect, useState } from "react";
 import {
   DesktopOutlined,
   FileOutlined,
   PieChartOutlined,
   TeamOutlined,
+  ToTopOutlined,
   UserOutlined,
 } from "@ant-design/icons";
 import { Breadcrumb, Layout, Menu, theme } from "antd";
 import { Outlet, useNavigate } from "react-router-dom";
+import api from "../../../config/axios";
 const { Header, Content, Footer, Sider } = Layout;
 function getItem(label, key, icon, children) {
   return {
@@ -17,31 +20,48 @@ function getItem(label, key, icon, children) {
     label,
   };
 }
-const items = [
-  getItem("Koi Request", "staff-request", <TeamOutlined />),
-  // getItem("Create Auction", "createAuction", <DesktopOutlined />),
-  //   getItem("User", "sub1", <UserOutlined />, [
-  //     getItem("Tom", "3"),
-  //     getItem("Bill", "4"),
-  //     getItem("Alex", "5"),
-  //   ]),
-  //   getItem("Team", "sub2", <TeamOutlined />, [PieChartOutlined
-  //     getItem("Team 1", "6"),
-  //     getItem("Team 2", "8"),
-  //   ]),
-  //   getItem("Files", "9", <FileOutlined />),
-];
+
 const StaffDashboard = () => {
   const [collapsed, setCollapsed] = useState(false);
+  const [auctions, setAuctions] = useState([]);
   const {
     token: { colorBgContainer, borderRadiusLG },
   } = theme.useToken();
-
   const navigate = useNavigate(); // Hook for navigation
+
+  const fetchAuctions = async () => {
+    try {
+      const response = await api.get("/auctions");
+      setAuctions(response.data);
+    } catch (error) {
+      console.error("Failed to fetch auctions:", error);
+    }
+  };
+
+  useEffect(() => {
+    fetchAuctions();
+  }, []);
+
+  const items = [
+    getItem("Koi Request", "staff-request", <TeamOutlined />),
+    getItem("Manage Auction", "create-auction", <ToTopOutlined />, [
+      getItem("Create New Auction", "create-auction/main"),
+      ...auctions.map((auction) =>
+        getItem(
+          `Auction #${auction.auctionId}`,
+          `create-auction/${auction.auctionId}`
+        )
+      ),
+    ]),
+  ];
 
   // Handle Menu item click
   const onMenuClick = (e) => {
-    navigate(`/staff-dashboard/${e.key}`); // Navigate to the clicked route
+    if (e.key === "create-auction/main") {
+      navigate("/staff-dashboard/create-auction");
+    } else {
+      navigate(`/staff-dashboard/${e.key}`);
+    }
   };
 
   return (
@@ -54,6 +74,7 @@ const StaffDashboard = () => {
         collapsible
         collapsed={collapsed}
         onCollapse={(value) => setCollapsed(value)}
+        width={220}
       >
         <div className="demo-logo-vertical" />
         <Menu

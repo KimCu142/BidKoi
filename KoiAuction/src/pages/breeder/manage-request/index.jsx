@@ -42,9 +42,6 @@ function BreederRequest() {
   const [uploadProgress, setUploadProgress] = useState(0); // Phần trăm upload
   const [methodInfoVisible, setMethodInfoVisible] = useState(false);
 
-  // const api = "http://localhost:8080/BidKoi/koi";
-  // const apiP = "http://localhost:8080/BidKoi/koi/create/100";
-
   // const fetchKoi = async () => {
   //   try {
   //     const response = await api.get(`/koi`);
@@ -89,10 +86,25 @@ function BreederRequest() {
     fetchKoiAndBreeder();
   }, []);
 
+  const getJapaneseAge = (age) => {
+    age = Number(age);
+
+    const baseLabel = [
+      "To",
+      "Ni",
+      "San",
+      "Yon",
+      "Go",
+      "Roku",
+      "Nana",
+      "Hachi",
+      "Kyu",
+      "Jyu",
+    ];
+    return age >= 1 && age <= 10 ? `${baseLabel[age - 1]}sai` : `${age}y`;
+  };
+
   const statusColors = {
-    // 0: "#d9d9d9",
-    // 1: "#52c41a",
-    // 2: "#ff4d4f",
     PENDING: "#d9d9d9", // Trạng thái Pending
     ACCEPTED: "#52c41a", // Trạng thái Approve
     REJECTED: "#ff4d4f",
@@ -129,6 +141,7 @@ function BreederRequest() {
       title: "Length",
       dataIndex: "length",
       key: "length",
+      render: (length) => `${length} cm`,
     },
     {
       title: "Sex",
@@ -139,6 +152,14 @@ function BreederRequest() {
       title: "Age",
       dataIndex: "age",
       key: "age",
+      render: (age) => {
+        const ageLabel = getJapaneseAge(age);
+        return (
+          <span>
+            {ageLabel} ({age}y)
+          </span>
+        );
+      },
     },
     {
       title: "Breeder",
@@ -159,7 +180,7 @@ function BreederRequest() {
       title: "Intitial price",
       dataIndex: "initialPrice",
       key: "initialPrice",
-      // render: (price) => `$${price.toFixed(2)}`,
+      render: (price) => `$${price}`,
     },
     {
       title: "Bidding method",
@@ -199,7 +220,7 @@ function BreederRequest() {
     {
       title: "Action",
       dataIndex: "status",
-      key: "koiId",
+      key: "action",
       render: (status, koiRequest) => {
         if (status === "PENDING") {
           return (
@@ -208,10 +229,7 @@ function BreederRequest() {
                 type="primary"
                 onClick={() => {
                   setOpenModal(true);
-                  form.setFieldsValue({
-                    ...koiRequest,
-                    breeder: koiRequest.breeder?.name || breeders.name,
-                  });
+                  form.setFieldsValue(koiRequest);
                 }}
               >
                 Edit
@@ -239,10 +257,6 @@ function BreederRequest() {
   ];
 
   const handleOpenModal = () => {
-    form.resetFields();
-    setFileList([]);
-    setVideoFileList([]);
-    setUploadProgress(0);
     setOpenModal(true);
   };
 
@@ -261,30 +275,12 @@ function BreederRequest() {
     }
   };
 
-  // Check koi exist
-  const checkKoiIdExists = async (koiId) => {
-    try {
-      const response = await api.get(`/koi`);
-      // Giả sử response.data là mảng các đối tượng Koi
-      const koiList = response.data;
-
-      // Kiểm tra xem koiId có trong danh sách không
-      return koiList.some((koi) => koi.koiId === koiId);
-      // Trả về true nếu tồn tại, false nếu không
-    } catch (err) {
-      console.error("Lỗi khi kiểm tra koiId:", err); // In ra lỗi nếu có
-      return false; // Nếu có lỗi, trả về false
-    }
-  };
-
   //CREATE OR UPDATE
   const handleSubmitKoi = async (kois) => {
     kois.status = "PENDING";
 
     try {
       setLoading(true);
-
-      const exists = await checkKoiIdExists(kois.koiId);
 
       if (fileList.length > 0) {
         const file = fileList[0];
@@ -314,15 +310,16 @@ function BreederRequest() {
           break;
       }
 
-      if (exists) {
+      if (kois.koiId) {
         // => update
         const response = await api.put(`/koi/update/${kois.koiId}`, kois);
+        toast.success("Update Koi request sucessfully!");
       } else {
         // => create
         const response = await api.post(`/koi/create/100`, kois);
+        toast.success("Create Koi request sucessfully!");
       }
 
-      toast.success("Create Koi request sucessfully!");
       await fetchKoiAndBreeder();
       setOpenModal(false);
       form.resetFields();
@@ -426,13 +423,13 @@ function BreederRequest() {
             <Form.Item
               label="KoiID"
               name="koiId"
-              // hidden
-              rules={[
-                {
-                  required: true,
-                  message: "Please enter KoiID",
-                },
-              ]}
+              hidden
+              // rules={[
+              //   {
+              //     required: true,
+              //     message: "Please enter KoiID",
+              //   },
+              // ]}
             >
               <Input />
             </Form.Item>
@@ -468,7 +465,7 @@ function BreederRequest() {
                 },
               ]}
             >
-              <Input />
+              <Input addonAfter="cm" />
             </Form.Item>
             <Form.Item
               label="Sex"
@@ -480,7 +477,11 @@ function BreederRequest() {
                 },
               ]}
             >
-              <Input />
+              <Select placeholder="Select sex">
+                <Option value="Female">Female</Option>
+                <Option value="Male">Male</Option>
+                <Option value="Unknown">Unknown</Option>
+              </Select>
             </Form.Item>
             <Form.Item
               label="Age"
@@ -492,7 +493,13 @@ function BreederRequest() {
                 },
               ]}
             >
-              <Input />
+              <Select placeholder="Select age">
+                {Array.from({ length: 10 }, (_, i) => (
+                  <Select.Option key={i + 1} value={i + 1}>
+                    {getJapaneseAge(i + 1)} ({i + 1}y)
+                  </Select.Option>
+                ))}
+              </Select>
             </Form.Item>
             <Form.Item
               label="Description"
@@ -504,7 +511,7 @@ function BreederRequest() {
                 },
               ]}
             >
-              <TextArea />
+              <TextArea rows={4} />
             </Form.Item>
             <Form.Item
               label="Initial price"
@@ -516,7 +523,7 @@ function BreederRequest() {
                 },
               ]}
             >
-              <Input />
+              <Input addonBefore="$" />
             </Form.Item>
           </div>
           <div className={styles.koiDetail}>

@@ -1,0 +1,27 @@
+.customIcon {
+  height: 100%;
+  fill: #6b6d79;
+  transition: fill 0.3s ease-in-out;
+
+  &:hover,
+  &:focus {
+    fill: #fff;
+
+    .customFillPath {
+      fill: #d4163c;
+    }
+    .customFill {
+      fill: #fff;
+    }
+  }
+}
+
+.customFill {
+  fill: #6b6d79;
+  transition: fill 0.3s ease;
+}
+
+.customFillPath {
+  fill: #fff;
+  transition: fill 0.3s ease;
+}

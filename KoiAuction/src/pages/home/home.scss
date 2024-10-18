@@ -14,7 +14,6 @@ $main-bg: "D:\git\BidKoi\KoiAuction\src\assets\Picsart_24-09-25_16-28-33-038.png
 }
 
 .app {
-
   .container {
     max-width: 100%;
     margin: 0 auto;
@@ -131,7 +130,9 @@ $main-bg: "D:\git\BidKoi\KoiAuction\src\assets\Picsart_24-09-25_16-28-33-038.png
                 animation-delay: 0.2s;
 
                 .btn1,
-                .btn2 {
+                .btn2,
+                .btn-view-auction,
+                .btn-learn-more {
                   font-family: "Montserrat", sans-serif;
                   font-size: 20px;
                   color: #fff;
@@ -171,6 +172,30 @@ $main-bg: "D:\git\BidKoi\KoiAuction\src\assets\Picsart_24-09-25_16-28-33-038.png
                 }
                 .btn2:hover {
                   background-color: #6ba5cb;
+                  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
+                  transform: translateY(-3px);
+                }
+                .btn-view-auction {
+                  background-color: #d4163c;
+                  grid-template-columns: 150.76px;
+                  font-weight: 700;
+                  padding: 16px 32px;
+                }
+                .btn-view-auction:hover {
+                  background-color: #f41844;
+                  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
+                  transform: translateY(-3px);
+                }
+                .btn-learn-more {
+                  grid-template-columns: 85.9896px;
+                  background-color: #dcb7c1;
+                  border: 1px solid #d4163c;
+                  font-weight: 600;
+                  padding: 16px 36px;
+                  color: black;
+                }
+                .btn-learn-more:hover {
+                  background-color: #d9c1c8;
                   box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
                   transform: translateY(-3px);
                 }
