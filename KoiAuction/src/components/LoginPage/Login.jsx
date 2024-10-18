@@ -15,9 +15,9 @@ function decodeJwt(token) {
   try {
     const base64Url = token.split('.')[1];
     const base64 = base64Url.replace(/-/g, '+').replace(/_/g, '/');
-    const jsonPayload = decodeURIComponent(atob(base64).split('').map(function(c) {
-        return '%' + ('00' + c.charCodeAt(0).toString(16)).slice(-2);
-    }).join(''));   
+    const jsonPayload = decodeURIComponent(atob(base64).split('').map(function (c) {
+      return '%' + ('00' + c.charCodeAt(0).toString(16)).slice(-2);
+    }).join(''));
 
 
     return JSON.parse(jsonPayload);
@@ -39,16 +39,10 @@ const Login = () => {
       const response = await api.post("account/login", { username, password });
 
       const data = response.data;
-      // Save token to localStorage or sessionStorage
+
       localStorage.setItem("token", data.token);
-
-      // const decodedToken = jwt_decode(data.token); // Decode JWT without the Node.js 'util' module
-      // console.log("Token", decodedToken);
-      
-
-      const decodedToken = decodeJwt(data.token);
-console.log(decodedToken);
- localStorage.setItem("user", JSON.stringify(decodedToken));
+      localStorage.setItem("user", JSON.stringify(data));
+      console.log(data);
       message.success("Login successful!");
 
       navigate("/");
