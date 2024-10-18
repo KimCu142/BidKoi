@@ -126,14 +126,13 @@ video {
     align-items: stretch; /* Kéo dài các phần tử con để có chiều cao bằng nhau */
     gap: 16px;
 }
-.Chat, .ChatBot {
-    flex: 1;
-}
+
 
 .Bidding2mini {
     display: flex;
     flex-direction: column;
+    width: 40%;
 }
-.Chat{
-    width: 100%;
+.Chat2{
+    width: 60%;
 }

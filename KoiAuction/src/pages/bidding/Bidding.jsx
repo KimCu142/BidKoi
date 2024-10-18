@@ -2,8 +2,8 @@ import "./Bidding.css";
 import { Image } from 'antd';
 import axios from "axios";
 import { useState, useEffect } from "react";
-import { InfoCircleOutlined } from "@ant-design/icons";
-import { Popover, Button, Space, Modal } from "antd";
+import { InfoCircleOutlined, CustomerServiceOutlined } from "@ant-design/icons";
+import { Popover, Button, Space, Modal, FloatButton } from "antd";
 import KoiTable from "../../components/KoiTable/KoiTable";
 import { useParams } from "react-router-dom";
 import BidTable from "../../components/KoiTable/BidTable";
@@ -12,6 +12,8 @@ import ChatBot from "../../components/KoiTable/ChatBot";
 import Chat from "../Chat/Chat";
 import { ToastContainer, toast } from 'react-toastify';
 import 'react-toastify/dist/ReactToastify.css';
+import confetti from "canvas-confetti";
+
 
 const auctionInfoContent = (
     <div>
@@ -31,17 +33,74 @@ const auctionInfoContent = (
 );
 
 export default function Bidding() {
+    const token = localStorage.getItem("token");
+    const [username, setUsername] = useState("");
+
+    useEffect(() => {
+        const storedUser = localStorage.getItem("user");
+
+        if (storedUser) {
+            const userData = JSON.parse(storedUser);  // Parse dữ liệu JSON từ localStorage
+
+            // Kiểm tra và lấy dữ liệu từ userData
+            if (userData) {
+                setUsername(userData.bidder.account.username);  // Đặt username
+            } else {
+                console.error("Token or username is undefined");
+            }
+        }
+    }, []);
+
+    const [isModalVisible2, setIsModalVisible2] = useState(false);
+    const showModal = () => {
+        setIsModalVisible2(true);
+    };
+    const handleCancel = () => {
+        setIsModalVisible2(false);
+    };
+
     const { roomId } = useParams();
     const [auctionDetails, setAuctionDetails] = useState({});
     const [room, setRoom] = useState([null]);
     const [winnerInfo, setWinnerInfo] = useState(null);
     const [isModalVisible, setIsModalVisible] = useState(false);
-    const currentUserId = JSON.parse(localStorage.getItem("user"))?.sub;
+    const currentUserId = JSON.parse(localStorage.getItem("user"))?.bidder.id;
+    const fireConfetti = () => {
+        const duration = 5 * 1000; // Thời gian kéo dài của pháo hoa
+        const animationEnd = Date.now() + duration;
+        const interval = setInterval(() => {
+            const timeLeft = animationEnd - Date.now();
+
+            if (timeLeft <= 0) {
+                clearInterval(interval);
+                return;
+            }
+
+            const particleCount = 100; // Số hạt mỗi lần bắn
+            confetti({
+                particleCount,
+                startVelocity: 30,
+                spread: 360,
+                ticks: 60,
+                origin: {
+                    x: Math.random(),
+                    y: Math.random() - 0.2
+                },
+                colors: ['#bb0000', '#ffffff'], // Tùy chỉnh màu sắc
+            });
+        }, 200); // Tần suất mỗi lần bắn pháo
+    };
 
     useEffect(() => {
         // Fetch data using Axios
+        const token = localStorage.getItem("token");
+
         axios
-            .get(`http://localhost:8080/BidKoi/auctions/active`)
+            .get(`http://localhost:8080/BidKoi/auctions/active`, {
+                headers: {
+                    Authorization: `Bearer ${token}`,
+                }
+            })
             .then((response) => {
                 const auctionData = response.data.data;
                 setAuctionDetails(auctionData);
@@ -53,35 +112,51 @@ export default function Bidding() {
             .catch((error) => console.error("Error fetching data:", error));
     }, [roomId]);
 
-    useEffect(() => { 
+
+
+    useEffect(() => {
         if (auctionDetails.endTime && room) {
             const endTime = new Date(auctionDetails.endTime).getTime();
-            const interval = setInterval(() => {
+            const interval = setInterval(async () => {
                 if (new Date().getTime() >= endTime) {
-                    clearInterval(interval);
-                    axios.get(`/api/auction/room/${roomId}/winner`)
-                        .then((response) => {
-                            const winnerId = response.data.winnerId;
-                            if (currentUserId === winnerId) {
-                                axios.get(`http://localhost:8080/BidKoi/account/view/${currentUserId}`)
-                                    .then((response) => {
-                                        setWinnerInfo(response.data);
-                                        setIsModalVisible(true);
-                                        toast.success("Congratulations, you've won this auction! Click here", {
-                                            onClick: () => window.location.href = `/auction/${roomId}/details`,
-                                            style: { backgroundColor: '#d4edda', color: '#155724' },
-                                        });
-                                    })
-                                    .catch((error) => console.error("Error fetching winner info:", error));
-                            }
-                        })
-                        .catch((error) => console.error("Error fetching winner:", error));
+                    clearInterval(interval); // Xoá interval khi kết thúc thời gian đấu giá
+                    try {
+                        console.log("Room :"+ roomId)
+                        const response = await axios.get(`http://localhost:8080/BidKoi/bid/winner/${roomId}`, {
+                            headers: {
+                                Authorization: `Bearer ${token}`,
+                                "Content-Type": "application/json",
+                            },
+                        });
+                        const winnerName = response.data.data.username;
+                        console.log("UserName " + winnerName);
+                        if (username === winnerName) {
+                            setIsModalVisible(true);
+
+                            // Kích hoạt pháo hoa
+                            fireConfetti();
+
+                            toast.success("Congratulations, you've won this auction! Click here", {
+                                onClick: () => window.location.href = `/auction/${roomId}/details`,
+                                style: { backgroundColor: '#d4edda', color: '#155724' },
+                            });
+                        } else {
+                            toast.info("Unfortunately, you didn't win this auction. Better luck next time!", {
+                                style: { backgroundColor: '#f8d7da', color: '#721c24' },
+                            });
+                        }
+                    } catch (error) {
+                        console.error("Error fetching winner:", error);
+                    }
                 }
             }, 1000);
 
-            return () => clearInterval(interval);
+            return () => clearInterval(interval); // Clear interval on component unmount
         }
-    }, [auctionDetails.endTime, roomId, room, currentUserId]);
+    }, [auctionDetails.endTime, roomId, room, username, token]);
+
+
+
 
     if (!room || !room.koi) {
         return <div>Loading...</div>;
@@ -121,42 +196,31 @@ export default function Bidding() {
                         <div className="Bidding2mini" >
                             <BidTable />
                             <PastBids />
-                        </div> 
-                        <div className="Chat">
-                            <Chat />  
                         </div>
-                        <div className="ChatBot" >
-                            <ChatBot />
+                        <div className="Chat2">
+                            <Chat />
                         </div>
+
                     </div>
                 </div>
             </div>
-            <Modal
-                title="Shipping Information"
-                visible={isModalVisible}
-                onCancel={() => setIsModalVisible(false)}
-                footer={null}
-            >
-                {winnerInfo && (
-                    <div className="ship-info">
-                        <h3>Ship Information</h3>
-                        <div className="info-row">
-                            <span>Address</span>
-                            <span>{winnerInfo.address}</span>
-                            <span>Shipping time</span>
-                            <span>13 - 10 - 2024 19:14 PM</span>
-                        </div>
-                        <div className="info-row">
-                            <span>Phone Number</span>
-                            <span>{winnerInfo.phoneNumber}</span>
-                        </div>
-                        <div className="info-row">
-                            <span>Full Name</span>
-                            <span>{winnerInfo.fullName}</span>
-                        </div>
-                    </div>
-                )}
-            </Modal>
+            <>
+                <FloatButton
+                    type="primary"
+                    style={{ insetInlineEnd: 24 }}
+                    icon={<CustomerServiceOutlined />}
+                    onClick={showModal}
+                />
+
+                <Modal
+                    title="Chat"
+                    visible={isModalVisible2}
+                    onCancel={handleCancel}
+                    footer={null}
+                >
+                    <ChatBot />
+                </Modal>
+            </>
         </div>
     );
 }
