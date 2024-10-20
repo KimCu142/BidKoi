@@ -42,6 +42,8 @@ const Login = () => {
     try {
       const response = await api.post("account/login", { username, password });
       const data = response.data;
+
+      console.log(data);
       // Save token to localStorage or sessionStorage
       localStorage.setItem("token", data.token);
 
@@ -49,10 +51,16 @@ const Login = () => {
       // console.log("Token", decodedToken);
 
       const decodedToken = decodeJwt(data.token);
+      const accountId = decodedToken?.sub;
       const role = decodedToken?.role || response.data.role;
 
+      console.log(username);
+
       console.log(decodedToken);
+      localStorage.setItem("accountId", accountId);
       localStorage.setItem("user", JSON.stringify(decodedToken));
+
+      console.log("AccountID:", accountId);
 
       if (role) {
         localStorage.setItem("role", role);

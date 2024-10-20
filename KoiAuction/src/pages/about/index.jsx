@@ -37,7 +37,6 @@ function AboutUs() {
   return (
     <body>
       <div className={styles.appShell}>
-        <Header />
         <main className={styles.pageContent}>
           <div>
             <section className={styles.welcomeSection}>
@@ -814,7 +813,6 @@ function AboutUs() {
             </div>
           </motion.div>
         </main>
-        <Footer />
       </div>
     </body>
   );
