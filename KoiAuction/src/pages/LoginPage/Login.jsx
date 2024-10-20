@@ -42,22 +42,10 @@ const Login = () => {
     try {
       const response = await api.post("account/login", { username, password });
       const data = response.data;
-      // Save token to localStorage or sessionStorage
+
       localStorage.setItem("token", data.token);
-
-      // const decodedToken = jwt_decode(data.token); // Decode JWT without the Node.js 'util' module
-      // console.log("Token", decodedToken);
-
-      const decodedToken = decodeJwt(data.token);
-      const role = decodedToken?.role || response.data.role;
-
-      console.log(decodedToken);
-      localStorage.setItem("user", JSON.stringify(decodedToken));
-
-      if (role) {
-        localStorage.setItem("role", role);
-      }
-
+      localStorage.setItem("user", JSON.stringify(data));
+      console.log(data);
       message.success("Login successful!");
 
       if (role === "STAFF") {

@@ -87,7 +87,7 @@ const Chat = () => {
     }
 
     return (
-        <div className="container">
+        <div className="Chat">
             <h2>Chat Room {roomId.toUpperCase()}</h2>
             {userData.connected ? (
                 <div className="chat-box">

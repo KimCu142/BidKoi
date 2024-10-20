@@ -1,9 +1,14 @@
-.custome-card{
+.custome-card {
+    display: flex;
+    flex-direction: column;
     border-radius: 24px;
     text-align: center;
     background-color: #e9eaed;
-font-size: larger;
-
+}
+.BidinPut{
+    display: flex;
+justify-content: space-around;
+align-items: center;
 }
 
 .custom-card .ant-card-head {

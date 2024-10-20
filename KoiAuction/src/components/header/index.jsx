@@ -59,14 +59,23 @@ function Header() {
   // const [username, setUsername] = useState("");
   // const [userRole, setUserRole] = useState(localStorage.getItem("role"));
 
-  // useEffect(() => {
-  //   const storedUser = localStorage.getItem("user");
-  //   if (storedUser) {
-  //     const userData = JSON.parse(storedUser);
-  //     setIsLoggedIn(true);
-  //     setUsername(userData.username);
-  //   }
-  // }, []);
+  useEffect(() => {
+    const storedUser = localStorage.getItem("user");
+  
+    if (storedUser) {
+      const userData = JSON.parse(storedUser);  // Parse dữ liệu JSON từ localStorage
+      
+      // Kiểm tra và lấy dữ liệu từ userData
+      if (userData) {
+        setIsLoggedIn(true);
+        setUsername(userData.bidder.account.username);  // Đặt username
+      } else {
+        console.error("Token or username is undefined");
+      }
+    }
+  }, []);
+  
+  
 
   return (
     <header className="header">
@@ -87,9 +96,8 @@ function Header() {
               <li key={page.name}>
                 <Link
                   to={page.path}
-                  className={`nav-button ${
-                    location.pathname === page.path ? "active" : ""
-                  }`}
+                  className={`nav-button ${location.pathname === page.path ? "active" : ""
+                    }`}
                 >
                   <span className={`majesticons ${page.icon}`} />
                   <span className="nav__name">{page.name}</span>
@@ -113,6 +121,16 @@ function Header() {
                       </Space>
                     </Button>
                   </Dropdown>
+                  <Dropdown menu={menuProps}>
+                    <Button>
+                      <Space>
+                        <div className="username-display">
+                          Welcome, {username}
+                        </div>
+                        <DownOutlined />
+                      </Space>
+                    </Button>
+                  </Dropdown>
                 </div>
               </li>
             ) : (
@@ -120,9 +138,8 @@ function Header() {
                 <li>
                   <Link
                     to="/login"
-                    className={`log-button ${
-                      location.pathname === "/login" ? "active" : ""
-                    }`}
+                    className={`log-button ${location.pathname === "/login" ? "active" : ""
+                      }`}
                   >
                     Login
                   </Link>
@@ -130,9 +147,8 @@ function Header() {
                 <li>
                   <Link
                     to="/register"
-                    className={`reg-button ${
-                      location.pathname === "/register" ? "active" : ""
-                    }`}
+                    className={`reg-button ${location.pathname === "/register" ? "active" : ""
+                      }`}
                   >
                     Register
                   </Link>
