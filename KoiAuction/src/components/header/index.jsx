@@ -26,10 +26,15 @@ function Header() {
       icon: <UserOutlined />,
       onClick: () => navigate("/profile"),
     },
-
+    {
+      label: "Wallet",
+      key: "2",
+      icon: <UserOutlined />,
+      onClick: () => navigate("/wallet"),
+    },
     {
       label: "Logout",
-      key: "2",
+      key: "3",
       icon: <UserOutlined />,
       danger: true,
       onClick: handleLogout,
@@ -55,9 +60,6 @@ function Header() {
     },
   ];
 
-
-
-
   return (
     <header className="header">
       {/* {`header ${isScroll ? "scroll" : ""}`} */}
@@ -77,8 +79,9 @@ function Header() {
               <li key={page.name}>
                 <Link
                   to={page.path}
-                  className={`nav-button ${location.pathname === page.path ? "active" : ""
-                    }`}
+                  className={`nav-button ${
+                    location.pathname === page.path ? "active" : ""
+                  }`}
                 >
                   <span className={`majesticons ${page.icon}`} />
                   <span className="nav__name">{page.name}</span>
@@ -95,10 +98,7 @@ function Header() {
                   <Dropdown menu={menuProps}>
                     <Button>
                       <Space>
-                    
                         <div className="username-display">
-
-
                           Welcome, {username}
                         </div>
                         <DownOutlined />
@@ -112,8 +112,9 @@ function Header() {
                 <li>
                   <Link
                     to="/login"
-                    className={`log-button ${location.pathname === "/login" ? "active" : ""
-                      }`}
+                    className={`log-button ${
+                      location.pathname === "/login" ? "active" : ""
+                    }`}
                   >
                     Login
                   </Link>
@@ -121,8 +122,9 @@ function Header() {
                 <li>
                   <Link
                     to="/register"
-                    className={`reg-button ${location.pathname === "/register" ? "active" : ""
-                      }`}
+                    className={`reg-button ${
+                      location.pathname === "/register" ? "active" : ""
+                    }`}
                   >
                     Register
                   </Link>
