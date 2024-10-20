@@ -31,6 +31,8 @@ import SuccessPage from "./pages/success/index.jsx";
 import Team from "./components/scenes/team/index.jsx";
 import Invoices from "./components/scenes/invoices/index.jsx";
 import Form from "./components/scenes/form/index.jsx";
+import FailPage from "./pages/fail/index.jsx";
+import Wallet from "./pages/wallet/index.jsx";
 
 function AppLayout({ children }) {
   return (
@@ -94,6 +96,17 @@ function App() {
         <>
           <AppLayout>
             <Profile />
+          </AppLayout>
+        </>
+      ),
+    },
+    {
+      path: "/wallet",
+
+      element: (
+        <>
+          <AppLayout>
+            <Wallet />
           </AppLayout>
         </>
       ),
@@ -241,6 +254,15 @@ function App() {
       element: (
         <>
           <SuccessPage />
+        </>
+      ),
+    },
+    {
+      path: "/fail",
+
+      element: (
+        <>
+          <FailPage />
         </>
       ),
     },
