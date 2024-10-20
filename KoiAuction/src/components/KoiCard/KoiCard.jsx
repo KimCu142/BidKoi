@@ -25,7 +25,7 @@ const Rating = ({ rating }) => {
   );
 };
 
-const KoiCard = ({ id, price, img, length, varieties, age, sex, status, breeder }) => {
+const KoiCard = ({ id, price, img, length, varieties, age, sex, status, breeder, rating }) => {
   return (
     <div className={styles.card}>
       {/* Use styles from the module */}
@@ -41,7 +41,7 @@ const KoiCard = ({ id, price, img, length, varieties, age, sex, status, breeder 
             {id}
           </div>
           <div className={styles.rating}>
-            <Rating rating={3} />
+            <Rating rating={ rating} />
           </div>
         </div>
       </div>

@@ -36,14 +36,18 @@ const Auctions = () => {
   const [isPaymentModal, setIsPaymentModal] = useState(false);
   const navigate = useNavigate();
   const bellAudioRef = useRef(null); // Sử dụng ref để giữ lại đối tượng Audio
-
   useEffect(() => {
     bellAudioRef.current = new Audio(bellSoundUrl); // Khởi tạo chỉ một lần
   }, []);
+  const token = localStorage.getItem("token");
 
   useEffect(() => {
     axios
-      .get(`http://localhost:8080/BidKoi/auctions/active`)
+      .get(`http://localhost:8080/BidKoi/auction/active`, {
+        headers: {
+          Authorization: `Bearer ${token}`,
+        }
+      })
       .then((response) => {
         const auctionData = response.data.data;
         setAuctionDetails(auctionData);
@@ -127,6 +131,8 @@ const Auctions = () => {
               sex={room.koi.sex}
               status={room.koi.status}
               breeder={room.koi.breeder.name}
+              rating={room.koi.rating}
+
             />
           </div>
         ))}

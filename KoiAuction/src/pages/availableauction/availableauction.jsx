@@ -19,11 +19,17 @@ function AvailableAuction() {
 
   // State for holding auction data
   const [auctionData, setAuctionData] = useState(null);
+  const token = localStorage.getItem("token");
+
 
   useEffect(() => {
     const fetchAuctionData = async () => {
       try {
-        const response = await api.get("/auctions/active");
+        const response = await api.get("/auction/active", {
+          headers: {
+            Authorization: `Bearer ${token}`,
+          }
+        });
         if (response.data && response.data.data) {
           setAuctionData(response.data.data); 
         }
@@ -33,7 +39,7 @@ function AvailableAuction() {
     };
 
     fetchAuctionData();
-  }, []);
+  }, [token]);
 
 
 
@@ -44,10 +50,11 @@ function AvailableAuction() {
 
 
   const handleNavigate = () => {
-    if (auctionData?.auctionId) {
-      navigate(`/auctions/active`); 
+    if (auctionData) {
+      navigate(`/auctions/active`);
     }
   };
+  
   
 
   return (
@@ -86,7 +93,7 @@ function AvailableAuction() {
             <motion.div
               className="shapes"
               variants={{
-                rest: { opacity: 0 },
+                rest: { opacity: 1 },
                 hover: { opacity: 1 }
               }}
             >

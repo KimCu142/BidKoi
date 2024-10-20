@@ -5,35 +5,22 @@ import {
   EyeInvisibleOutlined,
   EyeTwoTone,
 } from "@ant-design/icons";
-import { useState } from "react";
+import { useContext, useState } from "react";
 import styles from "./Login.module.css"; // Importing CSS module
 
 import { Buffer } from "buffer";
 import api from "../../config/axios";
+import { AuthContext } from "../../components/AuthContext";
 window.Buffer = Buffer; // Polyfill Buffer in the browser
 
-function decodeJwt(token) {
-  try {
-    const base64Url = token.split(".")[1];
-    const base64 = base64Url.replace(/-/g, "+").replace(/_/g, "/");
-    const jsonPayload = decodeURIComponent(
-      atob(base64)
-        .split("")
-        .map(function (c) {
-          return "%" + ("00" + c.charCodeAt(0).toString(16)).slice(-2);
-        })
-        .join("")
-    );
-    return JSON.parse(jsonPayload);
-  } catch (error) {
-    console.error("Error decoding JWT:", error);
-    return null;
-  }
-}
+
 
 const Login = () => {
+
+
   const navigate = useNavigate(); // Hook useNavigate to handle navigation
-  const [username, setUsername] = useState("");
+  const { setIsLoggedIn, setUsername, setUserRole } = useContext(AuthContext);
+  const [username, setUsernameInput] = useState("");
   const [password, setPassword] = useState("");
 
   const handleLogin = async (values) => {
@@ -42,6 +29,7 @@ const Login = () => {
     try {
       const response = await api.post("account/login", { username, password });
       const data = response.data;
+
 
       console.log(data);
       // Save token to localStorage or sessionStorage
@@ -66,9 +54,19 @@ const Login = () => {
         localStorage.setItem("role", role);
       }
 
+
+      localStorage.setItem("token", data.token);
+      localStorage.setItem("user", JSON.stringify(data)); 
+      localStorage.setItem("role", data.role);
+      console.log(data);
       message.success("Login successful!");
 
-      if (role === "STAFF") {
+      // Update AuthContext with new login information
+      setIsLoggedIn(true);
+      setUsername(data.username); // Update the username in context
+      setUserRole(data.role);
+
+      if (data.role === "STAFF") {
         navigate("/staff-dashboard");
       } else if (data.role === "BREEDER") {
         navigate("/breeder-dashboard");
@@ -111,7 +109,7 @@ const Login = () => {
               className={`${styles.formItem}`}
               required
               value={username}
-              onChange={(e) => setUsername(e.target.value)}
+              onChange={(e) => setUsernameInput(e.target.value)}
               style={{ width: "500px", height: "48px" }}
             />
 
