@@ -32,7 +32,7 @@ const Auctions = () => {
 
   useEffect(() => {
     axios
-      .get(`http://localhost:8080/BidKoi/auctions/active`, {
+      .get(`http://localhost:8080/BidKoi/auction/active`, {
         headers: {
           Authorization: `Bearer ${token}`,
         }
@@ -107,6 +107,8 @@ const Auctions = () => {
               sex={room.koi.sex}
               status={room.koi.status}
               breeder={room.koi.breeder.name}
+              rating={room.koi.rating}
+
             />
           </div>
 

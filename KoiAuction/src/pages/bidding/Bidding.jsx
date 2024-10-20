@@ -44,7 +44,7 @@ export default function Bidding() {
 
             // Kiểm tra và lấy dữ liệu từ userData
             if (userData) {
-                setUsername(userData.bidder.account.username);  // Đặt username
+                setUsername(userData.username);  // Đặt username
             } else {
                 console.error("Token or username is undefined");
             }
@@ -65,6 +65,8 @@ export default function Bidding() {
     const [winnerInfo, setWinnerInfo] = useState(null);
     const [isModalVisible, setIsModalVisible] = useState(false);
     const currentUserId = JSON.parse(localStorage.getItem("user"))?.bidder.id;
+
+
     const fireConfetti = () => {
         const duration = 5 * 1000; // Thời gian kéo dài của pháo hoa
         const animationEnd = Date.now() + duration;
@@ -96,7 +98,7 @@ export default function Bidding() {
         const token = localStorage.getItem("token");
 
         axios
-            .get(`http://localhost:8080/BidKoi/auctions/active`, {
+            .get(`http://localhost:8080/BidKoi/auction/active`, {
                 headers: {
                     Authorization: `Bearer ${token}`,
                 }
@@ -122,7 +124,7 @@ export default function Bidding() {
                     clearInterval(interval); // Xoá interval khi kết thúc thời gian đấu giá
                     try {
                         console.log("Room :"+ roomId)
-                        const response = await axios.get(`http://localhost:8080/BidKoi/bid/winner/${roomId}`, {
+                        const response = await axios.get(`http://localhost:8080/BidKoi/placeBid/winner/${roomId}`, {
                             headers: {
                                 Authorization: `Bearer ${token}`,
                                 "Content-Type": "application/json",
@@ -189,13 +191,12 @@ export default function Bidding() {
                         breeder={room.koi.breeder.name}
                         age={room.koi.age}
                         status={room.koi.status}
-                        endTime={auctionDetails.startTime}
+                        endTime={auctionDetails.endTime}
                         className={auctionDetails.endTime}
                     />
                     <div className="Bidding2">
                         <div className="Bidding2mini" >
                             <BidTable />
-                            <PastBids />
                         </div>
                         <div className="Chat2">
                             <Chat />

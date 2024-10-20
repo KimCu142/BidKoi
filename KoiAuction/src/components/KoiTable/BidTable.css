@@ -1,16 +1,52 @@
-.custome-card {
+.custom-card {
     display: flex;
     flex-direction: column;
     border-radius: 24px;
     text-align: center;
     background-color: #e9eaed;
 }
-.BidinPut{
+
+.BidinPut {
     display: flex;
-justify-content: space-around;
-align-items: center;
+    justify-content: space-around;
+    align-items: center;
 }
 
 .custom-card .ant-card-head {
     font-size: 30px;
+}
+
+.customCard {
+    margin-top: 16px;
+    border-radius: 24px;
+    text-align: center;
+    background-color: #e9eaed;
+    font-size: larger;
+    height: 360px;
+}
+
+.Bids {
+    background-color: #d3d3d3;
+    padding: 10px;
+    border-radius: 24px;
+    text-align: center;
+    max-height: 260px;
+    overflow: hidden;
+}
+
+.bidEntry {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 10px;
+    margin: 5px 0;
+    background-color: #d4163c;
+    border-radius: 8px;
+    overflow: hidden;
+}
+
+.bidEntry p {
+    margin: 0;
+    font-size: 14px;
+    color: white;
 }

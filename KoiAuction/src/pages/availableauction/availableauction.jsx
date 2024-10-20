@@ -21,10 +21,11 @@ function AvailableAuction() {
   const [auctionData, setAuctionData] = useState(null);
   const token = localStorage.getItem("token");
 
+
   useEffect(() => {
     const fetchAuctionData = async () => {
       try {
-        const response = await api.get("/auctions/active", {
+        const response = await api.get("/auction/active", {
           headers: {
             Authorization: `Bearer ${token}`,
           }
@@ -49,10 +50,11 @@ function AvailableAuction() {
 
 
   const handleNavigate = () => {
-    if (auctionData?.auctionId) {
-      navigate(`/auctions/active`); 
+    if (auctionData) {
+      navigate(`/auctions/active`);
     }
   };
+  
   
 
   return (

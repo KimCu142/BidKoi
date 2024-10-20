@@ -6,14 +6,29 @@ export function FishModel() {
   const { scene, animations } = useGLTF('/models/koi_3/scene.gltf'); // Đường dẫn tương đối từ thư mục public
   const { actions } = useAnimations(animations, scene);
 
+    // Giải phóng tài nguyên WebGL khi component unmount
+    useEffect(() => {
+      return () => {
+        if (scene) {
+          scene.traverse((object) => {
+            if (object.isMesh) {
+              object.geometry.dispose();
+              if (Array.isArray(object.material)) {
+                object.material.forEach((mat) => mat.dispose()); // Giải phóng tất cả các material
+              } else if (object.material.isMaterial) {
+                object.material.dispose(); // Giải phóng material đơn
+              }
+            }
+          });
+        }
+      };
+    }, [scene]);
   // Kích hoạt animation khi component được mount
   useEffect(() => {
     let timeout;
-  
     if (actions && actions['Take 001']) {
       const action = actions['Take 001'];
       action.play();
-  
       // Thiết lập bộ đếm thời gian để dừng animation
       timeout = setTimeout(() => {
         action.paused = true;
@@ -30,30 +45,13 @@ export function FishModel() {
   }, [actions]);
   
 
-  // Giải phóng tài nguyên WebGL khi component unmount
-  useEffect(() => {
-    return () => {
-      if (scene) {
-        scene.traverse((object) => {
-          if (object.isMesh) {
-            object.geometry.dispose();
-            if (Array.isArray(object.material)) {
-              object.material.forEach((mat) => mat.dispose()); // Giải phóng tất cả các material
-            } else if (object.material.isMaterial) {
-              object.material.dispose(); // Giải phóng material đơn
-            }
-          }
-        });
-      }
-    };
-  }, [scene]);
+
   
 
   // Điều chỉnh góc độ với thuộc tính rotation
   return (
     <>
       <primitive object={scene} scale={0.0005} rotation={[Math.PI / 3, -0.4, 0.2]} />
-      
     </>
   );
 }

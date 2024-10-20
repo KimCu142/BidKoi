@@ -1,17 +1,18 @@
 import { motion } from 'framer-motion-3d';
 import { MotionConfig } from "framer-motion";
-import { useRef, useLayoutEffect } from "react";
+import { useRef, useLayoutEffect, useEffect } from "react";
 import { transition } from "./settings";
 import { Canvas, useThree } from "@react-three/fiber";
 import { useSmoothTransform } from "./use-smooth-transform";
 import { FishModel } from './FishModel';
-import { useGLTF } from '@react-three/drei';
 import { FishModel2 } from './FishModel2';
 
+import { Suspense } from 'react';
 
 export function Shapes({ isHover, isPress, mouseX, mouseY }) {
   const lightRotateX = useSmoothTransform(mouseY, spring, mouseToLightRotation);
   const lightRotateY = useSmoothTransform(mouseX, spring, mouseToLightRotation);
+
 
   return (
     <Canvas shadows dpr={[1, 2]} resize={{ scroll: false, offsetSize: true }}>
@@ -26,16 +27,15 @@ export function Shapes({ isHover, isPress, mouseX, mouseY }) {
         <motion.group
           initial={false}
           animate={isHover ? "hover" : "rest"}
-          dispose={null}
           variants={{
             hover: { z: isPress ? -0.9 : 0 },
           }}
         >
-          <Sphere />
           <Cone />
-          <Torus />
-          <Icosahedron />
+          <Torus/>
         </motion.group>
+        <Sphere />
+        <Icosahedron />
       </MotionConfig>
     </Canvas>
   );
@@ -65,7 +65,7 @@ export function Sphere() {
 
 export function Cone() {
   return (
-    <motion.group
+    <motion.mesh
       position={[-0.8, 0.4, 0]}
       rotation={[-0.5, 0, -0.3]}
       variants={{
@@ -77,8 +77,8 @@ export function Cone() {
         },
       }}
     >
-      <FishModel/> 
-    </motion.group>
+      {/* <FishModel /> */}
+    </motion.mesh>
   );
 }
 
@@ -96,8 +96,8 @@ export function Torus() {
         },
       }}
     >
+
       <FishModel2/>
-      <Material />
     </motion.mesh>
   );
 }
@@ -106,7 +106,7 @@ export function Icosahedron() {
   return (
     <motion.mesh
       position={[1.1, 0, 0]}
-      rotation-z={0.5}
+      rotation={[0, 0, 0.5]}
       variants={{
         hover: {
           x: 1.8,

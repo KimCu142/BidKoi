@@ -9,11 +9,11 @@ export const AuthProvider = ({ children }) => {
     Boolean(localStorage.getItem("user"))
   );
   const [userRole, setUserRole] = useState(localStorage.getItem("role"));
-  const [username, setUsername] = useState(
-    localStorage.getItem("user")
-      ? JSON.parse(localStorage.getItem("user")).username
-      : ""
-  );
+  const [username, setUsername] = useState(() => {
+    const user = localStorage.getItem("user");
+    return user ? JSON.parse(user).username : "";
+  });
+  
 
   const logout = () => {
     localStorage.removeItem("token");
