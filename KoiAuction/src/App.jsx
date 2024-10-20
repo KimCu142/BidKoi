@@ -1,9 +1,10 @@
-import { RouterProvider } from "react-router-dom";
+/* eslint-disable react/prop-types */
+import { Outlet, RouterProvider } from "react-router-dom";
 import { createBrowserRouter } from "react-router-dom";
 import HomePage from "./pages/home/index.jsx";
 import Header from "./components/header/index.jsx";
 import Footer from "./components/footer/index.jsx";
-import Profile from "./pages/profile/index.jsx";
+
 import Availableaution from "./pages/availableauction/availableauction.jsx";
 import Auctions from "./pages/auctions/Auctions.jsx";
 import BreederRequest from "./pages/breeder/manage-request/index.jsx";
@@ -20,17 +21,48 @@ import Password from "./pages/profile/password/index.jsx";
 import ProtectedRoute from "./components/ProtectedRoute.jsx";
 import AboutUs from "./pages/about/index.jsx";
 import { AuthProvider } from "./components/AuthContext.jsx";
+import BidderActivities from "./pages/bidder/activities/index.jsx";
+import BidderConfirmImg from "./pages/bidder/confirm-image/index.jsx";
+import Profile from "./pages/profile/main-profile/index.jsx";
+import Topbar from "./components/scenes/global/topbar.jsx";
+import AdminDashboard from "./components/scenes/admin-dashboard/index.jsx";
+import Besidebar from "./components/scenes/global/sidebar.jsx";
+import SuccessPage from "./pages/success/index.jsx";
+import Team from "./components/scenes/team/index.jsx";
+import Invoices from "./components/scenes/invoices/index.jsx";
+import Form from "./components/scenes/form/index.jsx";
+
+function AppLayout({ children }) {
+  return (
+    <div className="appLayout ">
+      <Header />
+      <div className="contentWrapper ">{children}</div>
+      <Footer className="siteFooter" />
+    </div>
+  );
+}
+
+function DashboardLayout() {
+  return (
+    <div className="app">
+      <Besidebar />
+      <main className="content">
+        <Topbar />
+        <Outlet />
+      </main>
+    </div>
+  );
+}
 
 function App() {
   const router = createBrowserRouter([
     {
-
       path: "/auctions/active/:roomId", // Correct path format for dynamic parameters
       element: (
         <>
-          <Header />
-          <Bidding/> 
-          <Footer />
+          <AppLayout>
+            <Bidding />
+          </AppLayout>
         </>
       ),
     },
@@ -39,22 +71,52 @@ function App() {
 
       element: (
         <>
-          <HomePage />
+          <AppLayout>
+            <HomePage />
+          </AppLayout>
         </>
       ),
     },
     {
       path: "/about",
-      element: <AboutUs />,
+      element: (
+        <>
+          <AppLayout>
+            <AboutUs />
+          </AppLayout>
+        </>
+      ),
     },
     {
       path: "/profile",
 
       element: (
         <>
-          <Header />
-          <Profile />
-          <Footer />
+          <AppLayout>
+            <Profile />
+          </AppLayout>
+        </>
+      ),
+    },
+    {
+      path: "/bidder-activities",
+
+      element: (
+        <>
+          <AppLayout>
+            <BidderActivities />
+          </AppLayout>
+        </>
+      ),
+    },
+    {
+      path: "/koi-details/:koiId",
+
+      element: (
+        <>
+          <AppLayout>
+            <BidderConfirmImg />
+          </AppLayout>
         </>
       ),
     },
@@ -63,9 +125,9 @@ function App() {
 
       element: (
         <>
-          <Header />
-          <Auctions />
-          <Footer />
+          <AppLayout>
+            <Auctions />
+          </AppLayout>
         </>
       ),
     },
@@ -74,9 +136,9 @@ function App() {
 
       element: (
         <>
-          <Header />
-          <Availableaution />
-          <Footer />
+          <AppLayout>
+            <Availableaution />
+          </AppLayout>
         </>
       ),
     },
@@ -88,13 +150,12 @@ function App() {
       path: "/Bid",
       element: (
         <>
-          <Header />
-          <Bidding />
-          <Footer />
+          <AppLayout>
+            <Bidding />
+          </AppLayout>
         </>
       ),
     },
-
     {
       path: "/Register",
       element: <Register />,
@@ -147,15 +208,39 @@ function App() {
       ],
     },
     {
-
       path: "/comfirmship",
 
       element: (
         <>
           <Header />
-          <ComfirmShipping/>
-
+          <ComfirmShipping />
           <Footer />
+        </>
+      ),
+    },
+    {
+      path: "/admin-dashboard",
+      element: <DashboardLayout />,
+      children: [
+        { path: "dashboard", element: <AdminDashboard /> },
+        { path: "team", element: <Team /> },
+        // { path: "/contacts", element: <Contacts /> },
+        { path: "invoices", element: <Invoices /> },
+        { path: "form", element: <Form /> },
+        // { path: "/bar", element: <Bar /> },
+        // { path: "/pie", element: <Pie /> },
+        // { path: "/line", element: <Line /> },
+        // { path: "/faq", element: <FAQ /> },
+        // { path: "/geography", element: <Geography /> },
+        // { path: "/calendar", element: <Calendar /> },
+      ],
+    },
+    {
+      path: "/success",
+
+      element: (
+        <>
+          <SuccessPage />
         </>
       ),
     },

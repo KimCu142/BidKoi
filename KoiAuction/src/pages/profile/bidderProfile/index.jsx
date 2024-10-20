@@ -1,18 +1,18 @@
 /* eslint-disable no-unused-vars */
-import { Avatar, DatePicker, Form, Image, Input, Upload } from "antd";
-import styles from "./profile.module.scss";
+import { DatePicker, Form, Image, Input, Upload } from "antd";
+import styles from "./index.module.scss";
 import TextArea from "antd/es/input/TextArea";
 import { useCallback, useEffect, useState } from "react";
 import axios from "axios";
 import { toast } from "react-toastify";
-import moment from "moment"; //Chuyển đổi ngày tháng, DataPicker hiểu định dạng ngày
+import moment from "moment";
 import { PlusOutlined } from "@ant-design/icons";
-import uploadFile from "../../utils/file";
+import uploadAvatarFile from "../../../utils/avatarFile";
 import { Link } from "react-router-dom";
-import api from "../../config/axios";
-import uploadAvatarFile from "../../utils/avatarFile";
 
-function Profile() {
+// Thay đổi đường dẫn tùy vào vị trí của utils/file
+
+function BidderProfile({ accountId, token }) {
   const [userData, setUserData] = useState({
     id: "",
     firstname: "",
@@ -24,18 +24,12 @@ function Profile() {
     birthday: null,
     avatar: "",
   });
-
   const [initialData, setInitialData] = useState({});
   const [isEdit, setIsEdit] = useState(false);
   const [isUpdate, setIsUpdate] = useState(false);
-  const [previewOpen, setPreviewOpen] = useState(false);
   const [previewImage, setPreviewImage] = useState("");
   const [fileList, setFileList] = useState([]);
-  const [tempFileList, setTempFileList] = useState([]); //tạo file tạm thời
-  const [activeTab, setActiveTab] = useState("account");
-  const [userId, setuserId] = useState("");
-
-  // const apiView = "http://localhost:8080/BidKoi/account/view";
+  const apiView = "http://localhost:8080/BidKoi/account/view";
   const apiUpdate = "http://localhost:8080/BidKoi/account/update-profile";
 
   // =========================== Gọi API để lấy thông tin người dùng
@@ -43,123 +37,78 @@ function Profile() {
     const source = axios.CancelToken.source();
 
     try {
-      const storedUser = localStorage.getItem("user");
-      if (storedUser) {
-        const token = localStorage.getItem("token");
-        const userData = JSON.parse(storedUser);
-        const userId = userData.sub; // Lấy userId từ trường sub trong userData
+      if (token) {
+        const response = await axios.get(`${apiView}/${accountId}`, {
+          headers: {
+            Authorization: `Bearer ${token}`,
+          },
+          cancelToken: source.token,
+        });
 
-        if (userId) {
-          const response = await api.get(`/account/view/${userId}`, {
-            headers: {
-              Authorization: `Bearer ${token}`,
-            },
-            cancelToken: source.token,
-          });
-
-          if (response.data) {
-            setUserData(response.data);
-            setInitialData(response.data);
-            setPreviewImage(response.data.avatar || "");
-            console.log("Fetched User Data after update: ", response.data);
-          }
-        } else {
-          console.error("userId không tồn tại");
+        if (response.data) {
+          setUserData(response.data);
+          setInitialData(response.data);
+          setPreviewImage(response.data.avatar || "");
         }
+      } else {
+        console.error("Error: Empty token!");
       }
     } catch (error) {
       if (axios.isCancel(error)) {
         console.log("Request canceled", error.message);
       } else {
-        console.error("Error fetching user data", error);
+        console.error("Error fetching user data", error.message);
       }
     }
 
     return () => {
       source.cancel("Component unmounted, request canceled.");
     };
-  }, []);
+  }, [apiView, accountId, token]);
 
   useEffect(() => {
-    const storedUser = localStorage.getItem("user");
-    if (storedUser) {
-      const UserData = JSON.parse(storedUser); // Parse the JSON string
-      const userId = UserData.sub; // Lấy userId từ trường sub
-      if (userId) {
-        setuserId(userId); // Set userId từ parsed data
-      } else {
-        console.error("Không tìm thấy userId trong user");
-      }
-    } else {
-      console.error("User không tồn tại trong localStorage");
+    if (accountId) {
+      fetchUserData();
     }
-
-    fetchUserData();
-  }, [fetchUserData]);
+  }, [fetchUserData, accountId]);
 
   // =========================== Gắn API để cập nhật thông tin mới
   const handleUpdate = async () => {
-    console.log("Hàm handleUpdate được gọi");
     try {
-      const storedUser = localStorage.getItem("user");
       setIsUpdate(true);
-
-      let updatedData = {
-        firstname: userData.firstname,
-        lastname: userData.lastname,
-        gender: userData.gender,
-        phone: userData.account?.phone || null,
-        email: userData.account?.email || null,
-        address: userData.address,
-        birthday: userData.birthday,
-      };
+      let updatedData = { ...userData };
 
       if (fileList.length > 0) {
-        const avatarFile = fileList[0];
-        const avatarUrl = await uploadAvatarFile(avatarFile.originFileObj);
-        updatedData = { ...updatedData, avatar: avatarUrl };
-        setFileList(tempFileList);
+        const file = fileList[0];
+        const url = await uploadAvatarFile(file.originFileObj);
+        updatedData = { ...updatedData, avatar: url };
+        setPreviewImage(url);
       }
 
-      const token = localStorage.getItem("token");
-      const UserData = JSON.parse(storedUser);
+      const response = await axios.put(
+        `${apiUpdate}/${accountId}`,
+        updatedData,
+        {
+          headers: {
+            Authorization: `Bearer ${token}`,
+            "Content-Type": "application/json",
+          },
+        }
+      );
 
-      console.log("Dữ liệu trước khi gửi:", userId);
-
-      const response = await axios.put(`${apiUpdate}/${userId}`, updatedData, {
-        headers: {
-          Authorization: `Bearer ${token}`,
-          "Content-Type": "application/json",
-        },
-      });
-
-      console.log("Response from update API: ", response.data);
       toast.success("Update successfully!");
-
-      localStorage.setItem("userData", JSON.stringify(response.data));
-
-      // Update local state with the response data
       setUserData(response.data);
       setInitialData(response.data);
       setPreviewImage(response.data.avatar || "");
-
-      // Fetch updated data from API to ensure state consistency
-      await fetchUserData();
-
-      console.log("User Data after fetched: ", userData);
       setIsEdit(false);
     } catch (error) {
-      console.error(
-        "Error updating user data",
-        error.response ? error.response.data : error
-      );
+      console.error("Error updating user data", error);
       toast.error("Error updating user data");
     } finally {
       setIsUpdate(false);
     }
   };
 
-  //============================ Cập nhật birthday khi chọn ngày
   const onChange = (date, dateString) => {
     setUserData((prev) => ({ ...prev, birthday: dateString }));
   };
@@ -175,7 +124,6 @@ function Profile() {
 
   const handleCancel = () => {
     setIsEdit(false);
-    setTempFileList(fileList);
     setUserData(initialData);
   };
 
@@ -192,14 +140,9 @@ function Profile() {
       file.preview = await getBase64(file.originFileObj);
     }
     setPreviewImage(file.url || file.preview);
-    setPreviewOpen(true);
   };
 
-  const handleTempChange = ({ fileList: newFileList }) => {
-    setTempFileList(newFileList);
-  };
-
-  // const handleChange = ({ fileList: newFileList }) => setFileList(newFileList);
+  const handleChange = ({ fileList: newFileList }) => setFileList(newFileList);
 
   const uploadButton = (
     <button
@@ -238,7 +181,7 @@ function Profile() {
               </Link>
             </li>
             <li>
-              <Link to="/Activities" className={styles.active}>
+              <Link to="/bidder-activities" className={styles.active}>
                 <span className="las la-fish"></span>
                 <span> Activities</span>
               </Link>
@@ -251,54 +194,32 @@ function Profile() {
         <div className={styles.profileBox}>
           <div className={styles.userId}>
             <strong>User ID: </strong>
-            {userId}
+            {accountId}
           </div>
           <Form className={styles.profileContainer}>
             <div className={styles.imageFields}>
               <Form.Item name="avatar">
                 <h3 className={styles.avatarTitle}>Avatar</h3>
                 {previewImage && !isEdit ? (
-                  // Nếu đã có ảnh và không ở chế độ chỉnh sửa, hiển thị ảnh
                   <Image
-                    src={fileList[0].url || userData.avatar}
+                    src={previewImage}
                     alt="Avatar"
                     style={{
                       width: "150px",
                       height: "150px",
                       borderRadius: "50%",
-                      objectFit: "cover",
                     }}
                   />
                 ) : (
                   <Upload
                     action="https://660d2bd96ddfa2943b33731c.mockapi.io/api/upload"
                     listType="picture-card"
-                    fileList={tempFileList}
+                    fileList={fileList}
                     onPreview={handlePreview}
-                    onChange={handleTempChange}
-                    disabled={!isEdit} // Ngăn chỉnh sửa khi không ở chế độ Edit
-                    style={{
-                      width: "150px",
-                      height: "150px",
-                      borderRadius: "50%", // Khung tròn
-                      border: "1px dashed #ccc",
-                      display: "flex",
-                      alignItems: "center",
-                      justifyContent: "center",
-                      cursor: isEdit ? "pointer" : "not-allowed", // Chuột không được phép khi chưa bật Edit
-                    }}
+                    onChange={handleChange}
+                    disabled={!isEdit}
                   >
-                    {tempFileList.length === 0 && !previewImage && (
-                      <div
-                        style={{
-                          textAlign: "center",
-                          color: "#ccc",
-                          borderRadius: "50%",
-                        }}
-                      >
-                        Upload
-                      </div>
-                    )}
+                    {fileList.length === 0 && isEdit ? uploadButton : null}
                   </Upload>
                 )}
                 {isEdit && (
@@ -341,18 +262,15 @@ function Profile() {
                     setUserData({ ...userData, gender: e.target.value })
                   }
                   disabled={!isEdit}
-                ></Input>
+                />
               </Form.Item>
               <Form.Item>
                 <label className={styles.formLabel}>Phone number</label>
                 <Input
                   placeholder="Phone number"
-                  value={userData.account?.phone}
+                  value={userData.phone}
                   onChange={(e) =>
-                    setUserData({
-                      ...userData,
-                      phone: e.target.value,
-                    })
+                    setUserData({ ...userData, phone: e.target.value })
                   }
                   disabled={!isEdit}
                 />
@@ -382,12 +300,9 @@ function Profile() {
                 <label className={styles.formLabel}>Email</label>
                 <Input
                   placeholder="Email"
-                  value={userData.account?.email}
+                  value={userData.email}
                   onChange={(e) =>
-                    setUserData({
-                      ...userData,
-                      email: e.target.value,
-                    })
+                    setUserData({ ...userData, email: e.target.value })
                   }
                   disabled={!isEdit}
                 />
@@ -410,7 +325,6 @@ function Profile() {
                       Edit
                     </div>
                   )}
-
                   <div className={styles.btn2} onClick={handleCancel}>
                     Cancel
                   </div>
@@ -424,4 +338,4 @@ function Profile() {
   );
 }
 
-export default Profile;
+export default BidderProfile;

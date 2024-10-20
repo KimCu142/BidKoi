@@ -1,6 +1,6 @@
 .body {
   padding-top: 80px;
-padding-bottom: 50px;
+  padding-bottom: 50px;
 }
 .KoiCards {
   display: flex;
@@ -74,4 +74,90 @@ padding-bottom: 50px;
   line-height: 24px;
   padding: 9px 20px;
   text-align: center;
+}
+
+@keyframes popIn {
+  0% {
+    transform: scale(0.5);
+    opacity: 0;
+  }
+  60% {
+    transform: scale(1.1);
+    opacity: 1;
+  }
+  100% {
+    transform: scale(1);
+  }
+}
+
+.overlay {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100vw;
+  height: 100vh;
+  background: rgba(0, 0, 0, 0.5);
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  z-index: 1000;
+}
+
+.paymentBox {
+  background: white;
+  padding: 20px;
+  border-radius: 8px;
+  width: 500px;
+  text-align: center;
+  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
+  animation: popIn 0.4s ease-out;
+}
+
+.paymentBox h3 {
+  margin-bottom: 15px;
+}
+
+.paymentBox p {
+  margin-bottom: 20px;
+}
+
+.paymentButton {
+  margin-top: 5px;
+  margin-left: auto;
+  display: block;
+  text-align: right;
+}
+
+.warningText {
+  display: flex;
+  align-items: center;
+  padding: 10px 15px;
+  background: linear-gradient(135deg, #ffeded, #e7eaef);
+  color: #4685af;
+  font-weight: bold;
+  border: 1px solid #6ba5cb;
+  border-radius: 5px;
+  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+  margin: 15px 0;
+}
+
+.bellIcon {
+  display: inline-block;
+  animation: shake 0.5s ease-in-out infinite;
+}
+
+@keyframes shake {
+  0%,
+  100% {
+    transform: rotate(0deg);
+  }
+  25% {
+    transform: rotate(-15deg);
+  }
+  50% {
+    transform: rotate(15deg);
+  }
+  75% {
+    transform: rotate(-15deg);
+  }
 }
