@@ -22,7 +22,6 @@
     "@fullcalendar/daygrid": "^6.1.15",
     "@fullcalendar/list": "^6.1.15",
     "@fullcalendar/timegrid": "^6.1.15",
-    "@google/generative-ai": "^0.21.0",
     "@iconify-icons/circle-flags": "^1.2.41",
     "@iconify/react": "^5.0.2",
     "@mui/icons-material": "^6.1.4",
