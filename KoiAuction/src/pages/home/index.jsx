@@ -11,7 +11,6 @@ function HomePage() {
 
   return (
     <>
-      <Header />
       <div className="app">
         <div className="container">
           <main className="main-content">
@@ -83,7 +82,6 @@ function HomePage() {
           </main>
         </div>
       </div>
-      <Footer />
     </>
   );
 }

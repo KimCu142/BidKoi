@@ -42,30 +42,6 @@ function BreederRequest() {
   const [uploadProgress, setUploadProgress] = useState(0); // Phần trăm upload
   const [methodInfoVisible, setMethodInfoVisible] = useState(false);
 
-  // const fetchKoi = async () => {
-  //   try {
-  //     const response = await api.get(`/koi`);
-  //     console.log(response.data);
-  //     setKois(response.data);
-  //   } catch (err) {
-  //     toast.error("Failed to fetch Koi data");
-  //   }
-  // };
-
-  // const fetchBreeder = async () => {
-  //   try {
-  //     const response = await api.get(`/breeder`);
-  //     console.log(response.data);
-  //     setBreeders(response.data);
-  //   } catch (error) {
-  //     toast.error("Failed to fetch Breeder data");
-  //   }
-  // };
-
-  // useEffect(() => {
-  //   fetchKoi();
-  // }, []);
-
   const fetchKoiAndBreeder = async () => {
     try {
       // Fetch thông tin koi

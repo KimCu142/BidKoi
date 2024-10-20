@@ -3,10 +3,37 @@ body {
       rgba(255, 255, 255, 0.5),
       rgba(255, 255, 255, 0.5)
     ),
-
     url("D:\Ky5\BidKoi-FE\BidKoi\KoiAuction\src\assets\maybay.png");
 
   background-size: cover;
   background-position: center;
   background-blend-mode: overlay;
+}
+
+.appLayout {
+  display: flex;
+  flex-direction: column;
+  min-height: 100vh;
+}
+
+.contentWrapper {
+  flex: 1;
+  padding: 20px;
+}
+
+.siteFooter {
+  background-color: #f5f5f5;
+  padding: 15px 20px;
+  text-align: center;
+}
+
+.app,
+.content {
+  height: 100%;
+  width: 100%;
+}
+
+.app {
+  display: flex;
+  position: relative;
 }
