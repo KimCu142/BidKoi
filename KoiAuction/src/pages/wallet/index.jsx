@@ -15,7 +15,12 @@ function Wallet() {
   const vnp_ResponseCode = params("vnp_ResponseCode");
   const vnp_Amount = params("vnp_Amount");
 
-  const accountId = localStorage.getItem("accountId");
+  const LocalUser = localStorage.getItem('user');
+  const UserData=  JSON.parse(LocalUser);
+  const accountId= UserData.bidder.account.id;
+    console.log(accountId);
+   
+
 
   const fetchBalance = async () => {
     try {
