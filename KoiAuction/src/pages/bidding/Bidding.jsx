@@ -60,10 +60,22 @@ export default function Bidding() {
         setIsShippingModalVisible(false); // Đóng modal ShippingInfo
     };
 
+    const checkShippingCreated = async (koiId) => {
+        try {
+            const response = await api.get(`/shipping/${koiId}`);
+            return response.data;  // API trả về true/false
+        } catch (error) {
+            console.error("Error checking shipping:", error);
+            return false; // Mặc định trả về false nếu có lỗi
+        }
+    };
+    
+    const [isAuctionEnded, setIsAuctionEnded] = useState(false); // Trạng thái để kiểm tra khi đấu giá kết thúc
+
     const { roomId } = useParams();
     const [auctionDetails, setAuctionDetails] = useState({});
     const [room, setRoom] = useState([null]);
-    const currentUserId = JSON.parse(localStorage.getItem("user"))?.bidder.id;
+    const currentBidderId = JSON.parse(localStorage.getItem("user"))?.bidder.id;
 
 
     const fireConfetti = () => {
@@ -117,18 +129,24 @@ export default function Bidding() {
             const interval = setInterval(async () => {
                 if (new Date().getTime() >= endTime) {
                     clearInterval(interval); // Xoá interval khi kết thúc thời gian đấu giá
+                    setIsAuctionEnded(true); // Cập nhật trạng thái đấu giá đã kết thúc
                     try {
-                        console.log("Room :" + roomId)
+                        console.log("Room :" + roomId);
                         const response = await api.get(`http://localhost:8080/BidKoi/placeBid/winner/${roomId}`);
                         const winnerName = response.data.data.username;
                         console.log("UserName " + winnerName);
+                        
                         if (username === winnerName) {
-                            setIsShippingModalVisible(true);
-                            // Kích hoạt pháo hoa
                             fireConfetti();
-                            toast.success("Congratulations, you've won this auction! ", {
+                            toast.success("Congratulations, you've won this auction!", {
                                 style: { backgroundColor: '#d4edda', color: '#155724' },
                             });
+                            
+                            const isShippingCreated = await checkShippingCreated(room.koi.koiId);
+                            
+                            if (!isShippingCreated) {
+                                setIsShippingModalVisible(true); // Hiển thị modal nếu chưa tạo shipping
+                            }
                         } else {
                             toast.info("Unfortunately, you didn't win this auction. Better luck next time!", {
                                 style: { backgroundColor: '#f8d7da', color: '#721c24' },
@@ -139,10 +157,12 @@ export default function Bidding() {
                     }
                 }
             }, 1000);
-
+        
             return () => clearInterval(interval); // Clear interval on component unmount
         }
     }, [auctionDetails.endTime, roomId, room, username, token]);
+    
+    
 
 
 
@@ -175,6 +195,7 @@ export default function Bidding() {
                 <div className="KoiTable">
                     <KoiTable
                         name={room.koi.varieties}
+                        initialPrice={room.koi.initialPrice}
                         id={room.koi.koiId}
                         rating={5}
                         sex={room.koi.sex}
@@ -187,7 +208,10 @@ export default function Bidding() {
                     />
                     <div className="Bidding2">
                         <div className="Bidding2mini" >
-                            <BidTable />
+                            <BidTable
+                                initialPrice={room.koi.initialPrice}
+                                isAuctionEnded={isAuctionEnded}
+                            />
                         </div>
                         <div className="Chat2">
                             <Chat />
@@ -195,15 +219,20 @@ export default function Bidding() {
 
                     </div>
                 </div>
+                <Modal
+                    title="Shipping Information"
+                    visible={isShippingModalVisible}
+                    onCancel={handleShippingModalCancel}
+                    footer={null}
+                >
+                    <ShippingInfo
+                        koiId={room.koi.koiId}
+                        bidderId={currentBidderId}
+                        breeder={room.koi.breeder}
+                    /> {/* Truyền thông tin breeder vào ShippingInfo */}
+                </Modal>
             </div>
-            <Modal
-                title="Shipping Information"
-                visible={isShippingModalVisible}
-                onCancel={handleShippingModalCancel}
-                footer={null}
-            >
-                <ShippingInfo /> {/* Truyền thông tin breeder vào ShippingInfo */}
-            </Modal>
+
             <>
                 <FloatButton
                     type="primary"

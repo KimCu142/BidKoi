@@ -131,8 +131,8 @@ video {
 .Bidding2mini {
     display: flex;
     flex-direction: column;
-    width: 40%;
+    width: 50%;
 }
 .Chat2{
-    width: 60%;
+    width: 50%;
 }
