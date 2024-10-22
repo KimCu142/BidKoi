@@ -10,13 +10,12 @@ import { PlusOutlined } from "@ant-design/icons";
 import uploadAvatarFile from "../../../utils/avatarFile";
 import { Link } from "react-router-dom";
 import api from "../../../config/axios";
-import { motion } from "framer-motion";
 
 // Thay đổi đường dẫn tùy vào vị trí của utils/file
 
-function BidderProfile({ accountId, token }) {
+function StaffProfile({ accountId, token }) {
   const [userData, setUserData] = useState({
-    id: "",
+    staffId: "",
     firstname: "",
     lastname: "",
     gender: "None",
@@ -24,7 +23,6 @@ function BidderProfile({ accountId, token }) {
     address: "",
     email: "",
     birthday: null,
-    avatar: "",
   });
 
   const [initialData, setInitialData] = useState({});
@@ -37,7 +35,7 @@ function BidderProfile({ accountId, token }) {
   const fetchUserData = useCallback(async () => {
     try {
       if (token) {
-        const response = await api.get(`/account/profile/${accountId}`);
+        const response = await api.get(`/staff/profile/${accountId}`);
 
         if (response.data) {
           const userInfo = response.data;
@@ -45,35 +43,29 @@ function BidderProfile({ accountId, token }) {
 
           // Cập nhật userData từ cả userInfo và accountInfo
           setUserData({
-            id: userInfo.id || "",
+            staffId: userInfo.id || "",
             firstname: userInfo.firstname || "",
             lastname: userInfo.lastname || "",
             gender: userInfo.gender || "None",
             phone: accountInfo.phone || "",
             address: userInfo.address || "",
             email: accountInfo.email || "",
-            birthday: userInfo.birthday
-              ? moment.utc(userInfo.birthday).format("YYYY-MM-DD")
-              : null,
-            avatar: userInfo.avatar || "",
+            birthday: userInfo.birthday || null,
           });
 
           // Lưu lại giá trị ban đầu để dùng sau này
           setInitialData({
-            id: userInfo.id || "",
+            staffId: userInfo.id || "",
             firstname: userInfo.firstname || "",
             lastname: userInfo.lastname || "",
             gender: userInfo.gender || "None",
             phone: accountInfo.phone || "",
             address: userInfo.address || "",
             email: accountInfo.email || "",
-            birthday: userInfo.birthday
-              ? moment.utc(userInfo.birthday).format("YYYY-MM-DD")
-              : null,
-            avatar: userInfo.avatar || "",
+            birthday: userInfo.birthday || null,
           });
 
-          setPreviewImage(userInfo.avatar || "");
+          //   setPreviewImage(userInfo.avatar || "");
         }
       } else {
         console.error("Error: Empty token!");
@@ -95,33 +87,23 @@ function BidderProfile({ accountId, token }) {
       setIsUpdate(true);
       let updatedData = { ...userData };
 
-      if (userData.birthday) {
-        updatedData.birthday = moment(userData.birthday).format("YYYY-MM-DD");
-      }
-
       // Kiểm tra nếu có file trong fileList để upload avatar
-      if (fileList.length > 0) {
-        const file = fileList[0];
-        if (file.originFileObj) {
-          // Nếu file là mới (từ input), upload logo mới
-          try {
-            const url = await uploadAvatarFile(file.originFileObj);
-            updatedData = { ...updatedData, avatar: url }; // Thêm URL mới vào data
-            setPreviewImage(url);
-          } catch (uploadError) {
-            console.error("Error uploading avatar", uploadError);
-            toast.error("Error uploading avatar. Please try again!");
-            return;
-          }
-        } else {
-          // Nếu file không có originFileObj (tức là ảnh cũ), giữ nguyên URL cũ
-          updatedData = { ...updatedData, avatar: file.url };
-        }
-      }
+      //   if (fileList.length > 0) {
+      //     const file = fileList[0];
+      //     try {
+      //       const url = await uploadAvatarFile(file.originFileObj); // Upload ảnh
+      //       updatedData = { ...updatedData, avatar: url }; // Cập nhật URL avatar mới
+      //       setPreviewImage(url);
+      //     } catch (uploadError) {
+      //       console.error("Error uploading avatar", uploadError);
+      //       toast.error("Error uploading avatar. Please try again!");
+      //       return; // Ngừng quá trình nếu lỗi xảy ra khi upload ảnh
+      //     }
+      //   }
 
       // Gửi yêu cầu cập nhật dữ liệu người dùng
       const response = await api.put(
-        `/account/update-profile/${accountId}`,
+        `/staff/update-profile/${accountId}`,
         updatedData
       );
 
@@ -130,10 +112,6 @@ function BidderProfile({ accountId, token }) {
       // Cập nhật dữ liệu người dùng sau khi lưu thành công
       await fetchUserData();
       setIsEdit(false);
-
-      setTimeout(() => {
-        setIsUpdate(false); // Kết thúc loading sau 1 giây
-      }, 1000);
     } catch (error) {
       console.error("Error updating user data", error);
       toast.error("Error updating user data");
@@ -143,35 +121,12 @@ function BidderProfile({ accountId, token }) {
     }
   };
 
-  // const onChange = (date, dateString) => {
-  //   setUserData((prev) => ({
-  //     ...prev,
-  //     birthday: dateString
-  //       ? moment(dateString, "YYYY-MM-DD").format("YYYY-MM-DD")
-  //       : null,
-  //   }));
-  // };
-
   const onChange = (date, dateString) => {
-    setUserData((prev) => ({
-      ...prev,
-      birthday: date ? dateString : null, // Sử dụng dateString trực tiếp mà không qua moment
-    }));
+    setUserData((prev) => ({ ...prev, birthday: dateString }));
   };
 
   const handleEdit = () => {
     setIsEdit(true);
-
-    if (previewImage && fileList.length === 0) {
-      setFileList([
-        {
-          uid: Date.now(), // Sử dụng thời gian hiện tại để tạo UID
-          name: previewImage.split("/").pop(), // Lấy tên file từ URL
-          status: "done",
-          url: previewImage, // Dùng previewImage thay vì hard-code URL
-        },
-      ]);
-    }
   };
 
   const handleReset = () => {
@@ -184,41 +139,41 @@ function BidderProfile({ accountId, token }) {
     setUserData(initialData);
   };
 
-  const getBase64 = (file) =>
-    new Promise((resolve, reject) => {
-      const reader = new FileReader();
-      reader.readAsDataURL(file);
-      reader.onload = () => resolve(reader.result);
-      reader.onerror = (error) => reject(error);
-    });
+  //   const getBase64 = (file) =>
+  //     new Promise((resolve, reject) => {
+  //       const reader = new FileReader();
+  //       reader.readAsDataURL(file);
+  //       reader.onload = () => resolve(reader.result);
+  //       reader.onerror = (error) => reject(error);
+  //     });
 
-  const handlePreview = async (file) => {
-    if (!file.url && !file.preview) {
-      file.preview = await getBase64(file.originFileObj);
-    }
-    setPreviewImage(file.url || file.preview);
-  };
+  //   const handlePreview = async (file) => {
+  //     if (!file.url && !file.preview) {
+  //       file.preview = await getBase64(file.originFileObj);
+  //     }
+  //     setPreviewImage(file.url || file.preview);
+  //   };
 
-  const handleChange = ({ fileList: newFileList }) => setFileList(newFileList);
+  //   const handleChange = ({ fileList: newFileList }) => setFileList(newFileList);
 
-  const uploadButton = (
-    <button
-      style={{
-        border: 0,
-        background: "none",
-      }}
-      type="button"
-    >
-      <PlusOutlined />
-      <div
-        style={{
-          marginTop: 8,
-        }}
-      >
-        Upload
-      </div>
-    </button>
-  );
+  //   const uploadButton = (
+  //     <button
+  //       style={{
+  //         border: 0,
+  //         background: "none",
+  //       }}
+  //       type="button"
+  //     >
+  //       <PlusOutlined />
+  //       <div
+  //         style={{
+  //           marginTop: 8,
+  //         }}
+  //       >
+  //         Upload
+  //       </div>
+  //     </button>
+  //   );
 
   return (
     <>
@@ -238,7 +193,7 @@ function BidderProfile({ accountId, token }) {
               </Link>
             </li>
             <li>
-              <Link to="/bidder-activities" className={styles.active}>
+              <Link to="/staff-activities" className={styles.active}>
                 <span className="las la-fish"></span>
                 <span> Activities</span>
               </Link>
@@ -247,28 +202,23 @@ function BidderProfile({ accountId, token }) {
         </div>
       </div>
 
-      <motion.div
-        className={styles.mainBox}
-        initial={{ opacity: 0 }}
-        animate={{ opacity: 1 }}
-        transition={{ duration: 0.5 }}
-      >
+      <div className={styles.mainBox}>
         <div className={styles.profileBox}>
           {/* <div className={styles.userId}>
             <strong>User ID: </strong>
             {accountId}
           </div> */}
           <Form className={styles.profileContainer}>
-            <div className={styles.imageFields}>
+            {/* <div className={styles.imageFields}>
               <Form.Item name="avatar">
-                <label className={styles.avatarTitle}>Your avatar</label>
+                <h3 className={styles.avatarTitle}>Avatar</h3>
                 {previewImage && !isEdit ? (
                   <Image
                     src={previewImage}
                     alt="Avatar"
                     style={{
-                      width: "200px",
-                      height: "220px",
+                      width: "150px",
+                      height: "150px",
                       borderRadius: "50%",
                     }}
                   />
@@ -291,7 +241,7 @@ function BidderProfile({ accountId, token }) {
                   </div>
                 )}
               </Form.Item>
-            </div>
+            </div> */}
 
             <div className={styles.formFields}>
               <Form.Item>
@@ -352,23 +302,9 @@ function BidderProfile({ accountId, token }) {
               </Form.Item>
               <Form.Item>
                 <label className={styles.formLabel}>Birthday</label>
-                {/* <DatePicker
-                  onChange={onChange}
-                  value={
-                    userData.birthday
-                      ? moment(userData.birthday, "YYYY-MM-DD")
-                      : null
-                  }
-                  disabled={!isEdit}
-                  className={styles.birthdayDatepicker}
-                /> */}
                 <DatePicker
                   onChange={onChange}
-                  value={
-                    userData.birthday
-                      ? moment(userData.birthday, "YYYY-MM-DD")
-                      : null
-                  }
+                  value={userData.birthday ? moment(userData.birthday) : null}
                   disabled={!isEdit}
                   className={styles.birthdayDatepicker}
                 />
@@ -389,14 +325,9 @@ function BidderProfile({ accountId, token }) {
                 <div className={styles.twoButton}>
                   {isEdit ? (
                     <>
-                      <motion.button
-                        className={styles.btn1}
-                        onClick={handleUpdate}
-                        whileHover={{ scale: 1.1 }}
-                        whileTap={{ scale: 0.9, y: -10 }}
-                      >
+                      <button className={styles.btn1} onClick={handleUpdate}>
                         Save changes
-                      </motion.button>
+                      </button>
 
                       <div onClick={handleReset} className={styles.btn2}>
                         Reset
@@ -415,9 +346,9 @@ function BidderProfile({ accountId, token }) {
             </div>
           </Form>
         </div>
-      </motion.div>
+      </div>
     </>
   );
 }
 
-export default BidderProfile;
+export default StaffProfile;

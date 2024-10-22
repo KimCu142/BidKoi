@@ -2,12 +2,19 @@ import { Link, Navigate, useLocation, useNavigate } from "react-router-dom";
 import "./index.scss";
 import { useState, useEffect, useContext } from "react";
 import { Button, Dropdown, message, Space } from "antd";
-import { DownOutlined, UserOutlined } from "@ant-design/icons";
+import {
+  DownOutlined,
+  LogoutOutlined,
+  MenuOutlined,
+  UserOutlined,
+  WalletOutlined,
+} from "@ant-design/icons";
 import { AuthContext } from "../AuthContext";
 
 function Header() {
   const location = useLocation();
   const navigate = useNavigate();
+  const [menuOpen, setMenuOpen] = useState(false);
   const { isLoggedIn, username, logout } = useContext(AuthContext);
   const handleMenuClick = (e) => {
     console.log("click", e);
@@ -17,6 +24,10 @@ function Header() {
     logout();
     message.info("Logout thành công");
     navigate("/");
+  };
+
+  const toggleMenu = () => {
+    setMenuOpen(!menuOpen);
   };
 
   const items = [
@@ -29,13 +40,13 @@ function Header() {
     {
       label: "Wallet",
       key: "2",
-      icon: <UserOutlined />,
+      icon: <WalletOutlined />,
       onClick: () => navigate("/wallet"),
     },
     {
       label: "Logout",
       key: "3",
-      icon: <UserOutlined />,
+      icon: <LogoutOutlined />,
       danger: true,
       onClick: handleLogout,
     },
@@ -54,7 +65,7 @@ function Header() {
       icon: "majesticons--megaphone-line",
     },
     {
-      name: "About us",
+      name: "About",
       path: "/about",
       icon: "majesticons--question-circle-line",
     },
@@ -72,7 +83,7 @@ function Header() {
         />
         <h1 className="header__name">BIDKOI</h1>
       </div>
-      <nav className="header__nav">
+      <nav className={`header__nav ${menuOpen ? "open" : ""}`}>
         <ul>
           <div className="nav__left">
             {pages.map((page) => (
@@ -134,6 +145,9 @@ function Header() {
           </div>
         </ul>
       </nav>
+      <div className="menu-icon" onClick={toggleMenu}>
+        <MenuOutlined />
+      </div>
     </header>
   );
 }

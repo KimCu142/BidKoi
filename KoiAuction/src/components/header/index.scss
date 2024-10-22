@@ -14,8 +14,15 @@
   box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
   font-family: "Montserrat", sans-serif;
 
+  .menu-icon {
+    display: none;
+    font-size: 24px;
+    cursor: pointer;
+    margin-left: auto;
+  }
+
   &__nav {
-    padding: 0 45px;
+    padding: 0 20x;
     ul {
       display: flex;
       justify-content: space-between;
@@ -27,20 +34,22 @@
       .nav__left,
       .nav__right {
         display: flex;
-     
+
         li {
           justify-content: center;
           margin-right: 10px;
-          .Loged-Box{
-          padding-top: 5px;
-       .ant-btn {
-            background-color: #d4163c ; /* Set the background color to red */
-            color: white; /* Set the text color to white for contrast */
-            border-color: red; /* Set the border color to red */
+          .Loged-Box {
+            padding-top: 5px;
+            .ant-btn {
+              background-color: #d4163c;
+              color: white;
+              border-color: red;
+            }
           }
-          }
-          
-          .nav-button,.reg-button,.log-button   {
+
+          .nav-button,
+          .reg-button,
+          .log-button {
             display: inline-flex; // Hiển thị như một nút
             align-items: center;
             padding: 10px 20px;
@@ -131,6 +140,51 @@
             filter: invert(1);
           }
         }
+      }
+    }
+    &.open ul {
+      display: block;
+    }
+  }
+
+  @media (max-width: 768px) {
+    grid-template-columns: auto 1fr auto;
+    padding: 8px 12px;
+
+    .menu-icon {
+      display: block;
+    }
+
+    &__nav {
+      display: none;
+      ul {
+        display: none;
+        flex-direction: column;
+        align-items: flex-end;
+        background-color: #d5d5d9;
+        padding: 20px;
+        position: absolute;
+        top: 70px;
+        right: 0;
+        width: 100%;
+        margin: 0;
+
+        .nav__left,
+        .nav__right {
+          display: flex;
+          flex-direction: column;
+          align-items: center;
+
+          li {
+            width: 100%;
+            margin: 10px 0;
+            justify-content: flex-end;
+          }
+        }
+      }
+
+      &.open {
+        display: block; // Hiển thị navigation khi có lớp `open`
       }
     }
   }

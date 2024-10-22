@@ -1,3 +1,4 @@
+
 import { useEffect, useState } from "react";
 import api from "../../config/axios";
 import styles from "./index.module.scss";
@@ -65,5 +66,4 @@ Payment.propTypes = {
   auctionAmount: PropTypes.number.isRequired,
   roomId: PropTypes.string.isRequired,
 };
-
 export default Payment;
