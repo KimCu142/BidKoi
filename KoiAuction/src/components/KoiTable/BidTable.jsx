@@ -8,7 +8,7 @@ import "./BidTable.css";
 import api from '../../config/axios';
 let stompClient = null;
 
-const BidTable = () => {
+const BidTable = ({ initialPrice ,isAuctionEnded}) => {
   const { roomId } = useParams();
   const [bidderId, setBidderId] = useState('');
   const [bidTable, setBidTable] = useState([]);
@@ -19,9 +19,9 @@ const BidTable = () => {
   });
 
   const [inputError, setInputError] = useState(''); // State to handle input error
-useEffect(()=>{
-  fetchPastBids();
-}, []);
+  useEffect(() => {
+    fetchPastBids();
+  }, []);
 
   useEffect(() => {
     const storedUser = localStorage.getItem("user");
@@ -48,7 +48,7 @@ useEffect(()=>{
       // Gửi yêu cầu tới API để lấy past bids
       const response = await api.get(`/placeBid/${roomId}`);
       const data = response.data;
-       console.log(data);
+      console.log(data);
       // Cập nhật danh sách past bids
       setPastBids(data);
     } catch (error) {
@@ -59,7 +59,7 @@ useEffect(()=>{
     const payloadData = JSON.parse(payload.body);
     switch (payloadData.status) {
       case "JOIN":
-        
+
         break;
       case "MESSAGE":
         setBidTable((prevBids) => [...prevBids, payloadData]);
@@ -104,15 +104,16 @@ useEffect(()=>{
   };
 
   const handleRefresh = () => {
-    setPastBids([]);
+    fetchPastBids();
   };
 
   // Tính giá cao nhất từ các bids
-  const highestBid = pastBids.length > 0 ? Math.max(...pastBids.map(bid => parseFloat(bid.price))) : 0;
-  
+  const highestBid = pastBids.length === 0
+    ? initialPrice
+    : Math.max(initialPrice, Math.max(...pastBids.map(bid => parseFloat(bid.price))));
   // Tính Increments và Minimum Bid
-  const increments = (highestBid * 0.05).toFixed(2);  // 5% của giá cao nhất
-  const minimumBid = (parseFloat(highestBid) + parseFloat(increments)).toFixed(2); // Giá cao nhất + Increments
+  const increments = (highestBid * 0.05).toFixed(0);
+  const minimumBid = (parseFloat(highestBid) + parseFloat(increments)).toFixed(0); // Giá cao nhất + Increments
 
   return (
     <>
@@ -130,18 +131,19 @@ useEffect(()=>{
               padding: '15px 15px',
               width: '60%',
             }}
+            disabled={isAuctionEnded}  // Vô hiệu hóa input khi đấu giá kết thúc
           />
-          <Button 
-            type="primary" 
-            shape="round" 
+          <Button
+            type="primary"
+            shape="round"
             style={{
               borderRadius: '24px',
               padding: '15px 15px',
-              margin:'5px',
+              margin: '5px',
               width: '30%',
             }}
             onClick={sendBid}
-            disabled={parseFloat(bidData.price) < parseFloat(minimumBid)} // Disable button if price is lower than minimum bid
+            disabled={isAuctionEnded || parseFloat(bidData.price) < parseFloat(minimumBid)} // Vô hiệu hóa khi đấu giá kết thúc hoặc giá bid không hợp lệ
           >
             Place Bid
           </Button>
@@ -160,6 +162,7 @@ useEffect(()=>{
             color: 'white',
             borderRadius: '20px',
           }}
+          disabled={isAuctionEnded} // Vô hiệu hóa nút khi đấu giá kết thúc
         >
           Current Bid: {highestBid > 0 ? highestBid : "No Bids Yet"}
         </Button>
@@ -175,24 +178,26 @@ useEffect(()=>{
         className="customCard"
       >
         <div className="Bids">
-          {pastBids.length === 0 ? (
+          {pastBids.filter(bid => bid.price > 0).length === 0 ? (
             <>
               <p style={{ fontWeight: 'bold', marginBottom: '5px' }}>No Bids Yet</p>
               <p style={{ color: '#777' }}>Be the first to bid!</p>
             </>
           ) : (
             pastBids
-              .sort((a, b) => b.price - a.price)
-              .slice(0, 5)
+              .filter(bid => bid.price > 0) // Lọc bỏ các bid có price bằng 0
+              .sort((a, b) => b.price - a.price) // Sắp xếp theo giá từ cao đến thấp
+              .slice(0, 5) // Lấy 5 bid đầu tiên
               .map((bid, index) => (
                 <div key={index} className="bidEntry">
                   <p style={{ fontWeight: 'bold' }}>{bid.username}</p>
                   <p>{bid.price}</p>
-                  <p>{new Date(bid.date).toLocaleString()}</p> {/* Display time in a readable format */}
+                  <p>{new Date(bid.date).toLocaleString()}</p> {/* Hiển thị thời gian ở định dạng dễ đọc */}
                 </div>
               ))
           )}
         </div>
+
       </Card>
     </>
   );
