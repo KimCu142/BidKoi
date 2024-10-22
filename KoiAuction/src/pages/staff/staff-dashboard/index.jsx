@@ -31,7 +31,7 @@ const StaffDashboard = () => {
 
   const fetchAuctions = async () => {
     try {
-      const response = await api.get("/auctions");
+      const response = await api.get("/auction");
       setAuctions(response.data);
     } catch (error) {
       console.error("Failed to fetch auctions:", error);

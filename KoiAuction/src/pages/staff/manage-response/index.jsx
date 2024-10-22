@@ -15,10 +15,10 @@ function StaffResponse() {
       setKois(koiResponse.data);
 
       // Fetch thông tin breeder
-      const breederResponse = await api.get(`/breeder`);
-      if (breederResponse.status === 200) {
-        setBreeders(breederResponse.data[0]);
-      }
+      // const breederResponse = await api.get(`/breeder`);
+      // if (breederResponse.status === 200) {
+      //   setBreeders(breederResponse.data[0]);
+      // }
     } catch (error) {
       console.error("Error fetching data:", error);
     }
@@ -28,13 +28,31 @@ function StaffResponse() {
     fetchKoiAndBreeder();
   }, []);
 
+  const getJapaneseAge = (age) => {
+    age = Number(age);
+
+    const baseLabel = [
+      "To",
+      "Ni",
+      "San",
+      "Yon",
+      "Go",
+      "Roku",
+      "Nana",
+      "Hachi",
+      "Kyu",
+      "Jyu",
+    ];
+    return age >= 1 && age <= 10 ? `${baseLabel[age - 1]}sai` : `${age}y`;
+  };
+
   const handleApprove = async (koiId) => {
     try {
       // Xác nhận yêu cầu cá
       await api.post(`/staff/${koiId}/approve`);
 
       // Tạo room cho Koi
-      await api.post(`/room/create/${koiId}`);
+      await api.post(`/room/creation/${koiId}`);
 
       toast.success("Koi request has been approved and room created");
       fetchKoiAndBreeder();
@@ -105,6 +123,14 @@ function StaffResponse() {
       title: "Age",
       dataIndex: "age",
       key: "age",
+      render: (age) => {
+        const ageLabel = getJapaneseAge(age);
+        return (
+          <span>
+            {ageLabel} ({age}y)
+          </span>
+        );
+      },
     },
     {
       title: "Breeder",
@@ -125,22 +151,24 @@ function StaffResponse() {
       title: "Intitial price",
       dataIndex: "initialPrice",
       key: "initialPrice",
-      // render: (price) => `$${price.toFixed(2)}`,
+      render: (price) => `${price}VNĐ`,
     },
     {
-      title: "Bidding method",
-      dataIndex: "method",
-      key: "method",
-      render: (method) => {
-        switch (method) {
+      title: "Rating",
+      dataIndex: "rating",
+      key: "rating",
+      render: (rating) => {
+        switch (rating) {
           case 1:
-            return "Fixed Price Selling";
+            return "1 star";
           case 2:
-            return "One-Time Bid";
+            return "2 stars";
           case 3:
-            return "Ascending Bid";
+            return "3 stars";
           case 4:
-            return "Descending Bid";
+            return "4 stars";
+          case 5:
+            return "5 stars";
         }
       },
     },
