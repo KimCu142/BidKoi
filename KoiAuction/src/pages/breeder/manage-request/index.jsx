@@ -156,22 +156,24 @@ function BreederRequest() {
       title: "Intitial price",
       dataIndex: "initialPrice",
       key: "initialPrice",
-      render: (price) => `$${price}`,
+      render: (price) => `${price}VNĐ`,
     },
     {
-      title: "Bidding method",
-      dataIndex: "method",
-      key: "method",
-      render: (method) => {
-        switch (method) {
+      title: "Rating",
+      dataIndex: "rating",
+      key: "rating",
+      render: (rating) => {
+        switch (rating) {
           case 1:
-            return "Fixed Price Selling";
+            return "1 star";
           case 2:
-            return "One-Time Bid";
+            return "2 stars";
           case 3:
-            return "Ascending Bid";
+            return "3 stars";
           case 4:
-            return "Descending Bid";
+            return "4 stars";
+          case 5:
+            return "5 stars";
         }
       },
     },
@@ -271,18 +273,21 @@ function BreederRequest() {
         kois.video = videoUrl;
       }
 
-      switch (kois.method) {
-        case "Fixed Price Selling":
-          kois.method = 1;
+      switch (kois.rating) {
+        case "1":
+          kois.rating = "1 star";
           break;
-        case "One-Time Bid":
-          kois.method = 2;
+        case "2":
+          kois.rating = "2 stars";
           break;
-        case "Ascending Bid":
-          kois.method = 3;
+        case "3":
+          kois.rating = "3 stars";
           break;
-        case "Descending Bid":
-          kois.method = 4;
+        case "4":
+          kois.rating = "4 stars";
+          break;
+        case "5":
+          kois.rating = "5 stars";
           break;
       }
 
@@ -417,6 +422,11 @@ function BreederRequest() {
                   required: true,
                   message: "Please enter Koi's varieties",
                 },
+                {
+                  pattern: /^[A-Za-z\s]+$/,
+                  message:
+                    "Koi's varieties cannot contain numbers or special characters",
+                },
               ]}
             >
               <Input />
@@ -438,6 +448,11 @@ function BreederRequest() {
                 {
                   required: true,
                   message: "Please enter Koi's Length",
+                },
+                {
+                  pattern: /^[0-9]+$/,
+                  message:
+                    "Length must be a number and cannot contain letters or special characters",
                 },
               ]}
             >
@@ -497,9 +512,14 @@ function BreederRequest() {
                   required: true,
                   message: "Please enter initialPrice",
                 },
+                {
+                  pattern: /^[0-9]+$/,
+                  message:
+                    "Price must be a number and cannot contain letters or special characters",
+                },
               ]}
             >
-              <Input addonBefore="$" />
+              <Input addonAfter="VNĐ" />
             </Form.Item>
           </div>
           <div className={styles.koiDetail}>
@@ -535,6 +555,13 @@ function BreederRequest() {
                     onPreview={handlePreview}
                     onChange={handleVideoChange}
                     accept="video/*"
+                    beforeUpload={(file) => {
+                      const isLt50M = file.size / 1024 / 1024 < 20; // Giới hạn dung lượng file là 50MB
+                      if (!isLt50M) {
+                        toast.error("File must be smaller than 50MB!");
+                      }
+                      return isLt50M; // Chặn upload nếu vượt quá giới hạn
+                    }}
                   >
                     {fileList.length >= 8 ? null : uploadButton}
                   </Upload>
@@ -562,10 +589,10 @@ function BreederRequest() {
                 marginRight: "8px",
               }}
             >
-              Bidding Method
+              Rating
             </h2>
 
-            <Tooltip>
+            {/* <Tooltip>
               <QuestionCircleOutlined
                 style={{
                   fontSize: "20px",
@@ -573,8 +600,8 @@ function BreederRequest() {
                 }}
                 onClick={() => setMethodInfoVisible(true)}
               />
-            </Tooltip>
-            <Modal
+            </Tooltip> */}
+            {/* <Modal
               title="Method information"
               visible={methodInfoVisible}
               onCancel={() => setMethodInfoVisible(false)}
@@ -610,7 +637,7 @@ function BreederRequest() {
                   information from the buyers is made public.
                 </p>
               </div>
-            </Modal>
+            </Modal> */}
             <Form.Item
               name="method"
               rules={[
@@ -622,10 +649,11 @@ function BreederRequest() {
                 style={{ width: "100%", marginTop: "24px" }}
                 onChange={(value) => form.setFieldsValue({ method: value })}
               >
-                <Option value={1}>Fixed Price Selling</Option>
-                <Option value={2}>One-Time Bid</Option>
-                <Option value={3}>Ascending Bid</Option>
-                <Option value={4}>Descending Bid</Option>
+                <Option value={1}>1 star</Option>
+                <Option value={2}>2 stars</Option>
+                <Option value={3}>3 stars</Option>
+                <Option value={4}>4 stars</Option>
+                <Option value={5}>5 stars</Option>
               </Select>
             </Form.Item>
           </div>
