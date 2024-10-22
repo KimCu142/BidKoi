@@ -102,9 +102,9 @@ const Rating = ({ rating }) => {
     );
 };
 const CountdownTimer = ({ endTime }) => {
-    console.log(endTime)
+    
     const calculateTimeLeft = () => {
-        const difference = new Date("2024-10-20T20:00:00") - new Date();
+        const difference = new Date( endTime) - new Date();
         let timeLeft = {};
 
         if (difference > 0) {

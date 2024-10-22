@@ -5,7 +5,7 @@ import { over } from 'stompjs';
 import SockJS from 'sockjs-client';
 import { useParams } from 'react-router-dom';
 import "./BidTable.css";
-
+import api from '../../config/axios';
 let stompClient = null;
 
 const BidTable = () => {
@@ -19,6 +19,9 @@ const BidTable = () => {
   });
 
   const [inputError, setInputError] = useState(''); // State to handle input error
+useEffect(()=>{
+  fetchPastBids();
+}, []);
 
   useEffect(() => {
     const storedUser = localStorage.getItem("user");
@@ -40,11 +43,23 @@ const BidTable = () => {
     setBidData({ ...bidData, connected: true });
     stompClient.subscribe(`/bid/${roomId}`, onMessageReceived);
   }
-
+  const fetchPastBids = async () => {
+    try {
+      // Gửi yêu cầu tới API để lấy past bids
+      const response = await api.get(`/placeBid/${roomId}`);
+      const data = response.data;
+       console.log(data);
+      // Cập nhật danh sách past bids
+      setPastBids(data);
+    } catch (error) {
+      console.error('Error fetching past bids:', error);
+    }
+  };
   const onMessageReceived = (payload) => {
     const payloadData = JSON.parse(payload.body);
     switch (payloadData.status) {
       case "JOIN":
+        
         break;
       case "MESSAGE":
         setBidTable((prevBids) => [...prevBids, payloadData]);
