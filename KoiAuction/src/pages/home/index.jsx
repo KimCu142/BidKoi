@@ -2,9 +2,8 @@ import { Link } from "react-router-dom";
 import "./home.scss";
 import KoiLogo from "../../components/logo/koi_logo";
 import { useContext } from "react";
-import Header from "../../components/header";
-import Footer from "../../components/footer";
 import { AuthContext } from "../../components/AuthContext";
+import BreederLogo from "../../components/breederLogo";
 
 function HomePage() {
   const { isLoggedIn, userRole } = useContext(AuthContext);
@@ -51,24 +50,36 @@ function HomePage() {
                           </>
                         ) : (
                           <>
-                            <Link to="/" className="btn-view-auction">
-                              View Auctions
-                            </Link>
                             <Link
-                              to="/"
+                              to={
+                                userRole === "BIDDER"
+                                  ? "/auctions"
+                                  : userRole === "BREEDER"
+                                  ? "/breeder-dashboard"
+                                  : userRole === "STAFF"
+                                  ? "/staff-dashboard"
+                                  : "/admin-dashboard"
+                              }
                               className={
-                                userRole === "bidder"
-                                  ? "btn-learn-more"
-                                  : userRole === "breeder"
+                                userRole === "BIDDER"
+                                  ? "btn-view-auction"
+                                  : userRole === "BREEDER"
                                   ? "btn-send-request"
-                                  : "btn-learn-more"
+                                  : userRole === "STAFF"
+                                  ? "btn-view-request"
+                                  : "btn-admin-dashboard"
                               }
                             >
-                              {userRole === "bidder"
-                                ? "Learn More"
-                                : userRole === "staff"
+                              {userRole === "BIDDER"
+                                ? "View Auctions"
+                                : userRole === "BREEDER"
                                 ? "Send Request"
-                                : "Learn More"}
+                                : userRole === "STAFF"
+                                ? "View Request"
+                                : "Dashboard"}
+                            </Link>
+                            <Link to="/learn-more" className="btn-learn-more">
+                              Learn More
                             </Link>
                           </>
                         )}
@@ -77,7 +88,7 @@ function HomePage() {
                   </div>
                 </div>
               </div>
-              {/* ---------------------------------- */}
+              <BreederLogo />
             </section>
           </main>
         </div>

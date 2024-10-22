@@ -13,11 +13,7 @@ import api from "../../config/axios";
 import { AuthContext } from "../../components/AuthContext";
 window.Buffer = Buffer; // Polyfill Buffer in the browser
 
-
-
 const Login = () => {
-
-
   const navigate = useNavigate(); // Hook useNavigate to handle navigation
   const { setIsLoggedIn, setUsername, setUserRole } = useContext(AuthContext);
   const [username, setUsernameInput] = useState("");
@@ -31,7 +27,7 @@ const Login = () => {
       const data = response.data;
 
       localStorage.setItem("token", data.token);
-      localStorage.setItem("user", JSON.stringify(data)); 
+      localStorage.setItem("user", JSON.stringify(data));
       localStorage.setItem("role", data.role);
       console.log(data);
       message.success("Login successful!");
@@ -41,13 +37,15 @@ const Login = () => {
       setUsername(data.username); // Update the username in context
       setUserRole(data.role);
 
-      if (data.role === "STAFF") {
-        navigate("/staff-dashboard");
-      } else if (data.role === "BREEDER") {
-        navigate("/breeder-dashboard");
-      } else {
-        navigate("/");
-      }
+      navigate("/");
+
+      // if (data.role === "STAFF") {
+      //   navigate("/staff-dashboard");
+      // } else if (data.role === "BREEDER") {
+      //   navigate("/breeder-dashboard");
+      // } else {
+      //   navigate("/");
+      // }
     } catch (error) {
       if (error.response) {
         const errorMessage = error.response.data.message;

@@ -173,15 +173,15 @@ function BreederRequest() {
       render: (rating) => {
         switch (rating) {
           case 1:
-            return 1;
+            return "1 star";
           case 2:
-            return 2;
+            return "2 stars";
           case 3:
-            return 3;
+            return "3 stars";
           case 4:
-            return 4;
+            return "4 stars";
           case 5:
-            return 5;
+            return "5 stars";
         }
       },
     },
@@ -570,7 +570,7 @@ function BreederRequest() {
                       }
                       return isLt50M; // Chặn upload nếu vượt quá giới hạn
                     }}
-                    
+
                   >
                     {fileList.length >= 8 ? null : uploadButton}
                   </Upload>

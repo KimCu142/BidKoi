@@ -177,9 +177,9 @@ const Auctions = () => {
               before participating the room
             </p>
             <Payment
-              roomId={selectedRoom.roomId} // Thay accountId phù hợp cho người dùng hiện tại
-              auctionAmount={Math.round(selectedRoom.koi.initialPrice * 0.2)} // Sử dụng giá ban đầu của Koi cho số tiền thanh toán
-              onPaymentSuccess={handlePayment} // Hàm gọi khi thanh toán thành công
+              roomId={selectedRoom.roomId}
+              auctionAmount={Math.round(selectedRoom.koi.initialPrice * 0.2)}
+              onPaymentSuccess={handlePayment}
             />
             <Button className={styles.paymentButton} onClick={handleCancel}>
               Cancel

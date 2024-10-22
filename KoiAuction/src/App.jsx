@@ -100,6 +100,7 @@ function App() {
         </>
       ),
     },
+
     {
       path: "/wallet",
 

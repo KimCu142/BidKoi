@@ -1,0 +1,44 @@
+.container {
+  width: 100%;
+  margin: 0 auto;
+  padding: 0 20px;
+
+  .logoGrid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(195px, 1fr));
+    gap: 6px;
+    justify-items: center;
+    align-items: center;
+    margin: 0 0 80px;
+    padding: 0 90px;
+    // z-index: 20;
+  }
+}
+
+.logoCard {
+  aspect-ratio: 1 / 1;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: space-around;
+  padding: 16px;
+  background-color: #f6f6f68c;
+  border-radius: 24px;
+  box-shadow: #fff 0px 0px 0px 0px;
+  height: auto;
+  width: 100%;
+  max-width: 180px;
+
+  .logoImg {
+    max-height: 60%;
+    max-width: 80%;
+    height: auto;
+    object-fit: contain;
+    transition: filter 0.3s ease;
+  }
+  .logoName {
+    font-weight: 600;
+    color: #666;
+    margin-top: 10px;
+  }
+}
