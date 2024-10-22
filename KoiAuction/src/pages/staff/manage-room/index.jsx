@@ -14,62 +14,60 @@ const RoomDetail = () => {
   const [allAuctions, setAllAuctions] = useState([]); // Tất cả các auction
 
   const formatDate = (dateString) => dateString.replace("T", " ");
+  const fetchAuctions = async () => {
+    try {
+      const response = await api.get("/auction");
+      const auctionsData = response.data;
+      setAllAuctions(auctionsData);
 
+      // Tìm auction hiện tại
+      const auctionData = auctionsData.find(
+        (a) => a.auctionId === Number(auctionId)
+      );
+      if (auctionData) {
+        setAuction(auctionData);
+        setSelectedRooms(auctionData.rooms || []);
+      } else {
+        message.error("Auction not found");
+      }
+    } catch (error) {
+      console.error("Failed to fetch auctions:", error);
+    }
+  };
+
+  const fetchRooms = async () => {
+    try {
+      const response = await api.get("/room");
+      const roomList = response.data.data.filter(
+        (room) => room.roomId !== null
+      );
+
+      // Lấy tất cả các room đã được thêm vào bất kỳ auction nào
+      const roomsInOtherAuctions = allAuctions.flatMap(
+        (auction) => auction.rooms || []
+      );
+      const availableRooms = roomList.filter(
+        (room) =>
+          !roomsInOtherAuctions.some(
+            (addedRoom) => addedRoom.roomId === room.roomId
+          )
+      );
+
+      setRooms(availableRooms);
+    } catch (error) {
+      console.error("Failed to fetch rooms:", error);
+    }
+  };
   // GET danh sách auction
   useEffect(() => {
-    const fetchAuctions = async () => {
-      try {
-        const response = await api.get("/auctions");
-        const auctionsData = response.data;
-        setAllAuctions(auctionsData);
-
-        // Tìm auction hiện tại
-        const auctionData = auctionsData.find(
-          (a) => a.auctionId === Number(auctionId)
-        );
-        if (auctionData) {
-          setAuction(auctionData);
-          setSelectedRooms(auctionData.rooms || []);
-        } else {
-          message.error("Auction not found");
-        }
-      } catch (error) {
-        console.error("Failed to fetch auctions:", error);
-      }
-    };
-
-    const fetchRooms = async () => {
-      try {
-        const response = await api.get("/room");
-        const roomList = response.data.data.filter(
-          (room) => room.roomId !== null
-        );
-
-        // Lấy tất cả các room đã được thêm vào bất kỳ auction nào
-        const roomsInOtherAuctions = allAuctions.flatMap(
-          (auction) => auction.rooms || []
-        );
-        const availableRooms = roomList.filter(
-          (room) =>
-            !roomsInOtherAuctions.some(
-              (addedRoom) => addedRoom.roomId === room.roomId
-            )
-        );
-
-        setRooms(availableRooms);
-      } catch (error) {
-        console.error("Failed to fetch rooms:", error);
-      }
-    };
-
     fetchAuctions();
     fetchRooms();
-  }, [auctionId, allAuctions]);
+  }, []);
 
   // CREATE
   const handleAddRoom = async (room) => {
     try {
-      await api.post(`/auctions/${auctionId}/rooms/${room.roomId}`);
+      await api.post(`/auction/${auctionId}/room/${room.roomId}`);
       setSelectedRooms((prevSelected) => [...prevSelected, room]);
       setRooms((prevRooms) =>
         prevRooms.filter((r) => r.roomId !== room.roomId)

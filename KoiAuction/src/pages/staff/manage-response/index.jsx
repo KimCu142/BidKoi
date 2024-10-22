@@ -15,10 +15,10 @@ function StaffResponse() {
       setKois(koiResponse.data);
 
       // Fetch thông tin breeder
-      const breederResponse = await api.get(`/breeder`);
-      if (breederResponse.status === 200) {
-        setBreeders(breederResponse.data[0]);
-      }
+      // const breederResponse = await api.get(`/breeder`);
+      // if (breederResponse.status === 200) {
+      //   setBreeders(breederResponse.data[0]);
+      // }
     } catch (error) {
       console.error("Error fetching data:", error);
     }
@@ -52,7 +52,7 @@ function StaffResponse() {
       await api.post(`/staff/${koiId}/approve`);
 
       // Tạo room cho Koi
-      await api.post(`/room/create/${koiId}`);
+      await api.post(`/room/creation/${koiId}`);
 
       toast.success("Koi request has been approved and room created");
       fetchKoiAndBreeder();

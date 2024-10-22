@@ -40,7 +40,7 @@ function CreateAuction() {
 
   const fetchAuction = async () => {
     try {
-      const response = await api.get(`/auctions`);
+      const response = await api.get(`/auction`);
       const auctionData = response.data.map((auction) => ({
         ...auction,
         startTime: auction.startTime ? moment(auction.startTime) : null,
@@ -144,7 +144,7 @@ function CreateAuction() {
   //DELETE
   const handleDelete = async (auctionId) => {
     try {
-      await api.delete(`/auctions/delete/${auctionId}`);
+      await api.delete(`/auction/delete/${auctionId}`);
       toast.success("Successfully delete!");
       fetchAuction();
     } catch (err) {
@@ -170,11 +170,11 @@ function CreateAuction() {
 
       if (auctions.auctionId) {
         // => update
-        await api.put(`/auctions/update/${auctions.auctionId}`, formattedData);
+        await api.put(`/auction/update/${auctions.auctionId}`, formattedData);
         toast.success("Update auction successfully!");
       } else {
         // => create
-        await api.post(`/auctions/create`, formattedData);
+        await api.post(`/auction/creation`, formattedData);
         toast.success("Create auction successfully!");
       }
 

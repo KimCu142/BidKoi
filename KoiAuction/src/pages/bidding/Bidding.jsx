@@ -7,13 +7,13 @@ import { Popover, Button, Space, Modal, FloatButton } from "antd";
 import KoiTable from "../../components/KoiTable/KoiTable";
 import { useParams } from "react-router-dom";
 import BidTable from "../../components/KoiTable/BidTable";
-import PastBids from "../../components/KoiTable/PastBid";
 import ChatBot from "../../components/KoiTable/ChatBot";
 import Chat from "../Chat/Chat";
-import { ToastContainer, toast } from 'react-toastify';
+import { toast } from 'react-toastify';
 import 'react-toastify/dist/ReactToastify.css';
 import confetti from "canvas-confetti";
-
+import ShippingInfo from "../ComfirmShipping/ShippingInfo";
+import api from "../../config/axios";
 
 const auctionInfoContent = (
     <div>
@@ -35,13 +35,11 @@ const auctionInfoContent = (
 export default function Bidding() {
     const token = localStorage.getItem("token");
     const [username, setUsername] = useState("");
-
+    const [isShippingModalVisible, setIsShippingModalVisible] = useState(false); // Thêm state để quản lý Modal ShippingInfo
     useEffect(() => {
         const storedUser = localStorage.getItem("user");
-
         if (storedUser) {
             const userData = JSON.parse(storedUser);  // Parse dữ liệu JSON từ localStorage
-
             // Kiểm tra và lấy dữ liệu từ userData
             if (userData) {
                 setUsername(userData.username);  // Đặt username
@@ -58,12 +56,13 @@ export default function Bidding() {
     const handleCancel = () => {
         setIsModalVisible2(false);
     };
+    const handleShippingModalCancel = () => {
+        setIsShippingModalVisible(false); // Đóng modal ShippingInfo
+    };
 
     const { roomId } = useParams();
     const [auctionDetails, setAuctionDetails] = useState({});
     const [room, setRoom] = useState([null]);
-    const [winnerInfo, setWinnerInfo] = useState(null);
-    const [isModalVisible, setIsModalVisible] = useState(false);
     const currentUserId = JSON.parse(localStorage.getItem("user"))?.bidder.id;
 
 
@@ -95,14 +94,10 @@ export default function Bidding() {
 
     useEffect(() => {
         // Fetch data using Axios
-        const token = localStorage.getItem("token");
 
-        axios
-            .get(`http://localhost:8080/BidKoi/auction/active`, {
-                headers: {
-                    Authorization: `Bearer ${token}`,
-                }
-            })
+        api
+            .get(`http://localhost:8080/BidKoi/auction/active`
+            )
             .then((response) => {
                 const auctionData = response.data.data;
                 setAuctionDetails(auctionData);
@@ -123,23 +118,15 @@ export default function Bidding() {
                 if (new Date().getTime() >= endTime) {
                     clearInterval(interval); // Xoá interval khi kết thúc thời gian đấu giá
                     try {
-                        console.log("Room :"+ roomId)
-                        const response = await axios.get(`http://localhost:8080/BidKoi/placeBid/winner/${roomId}`, {
-                            headers: {
-                                Authorization: `Bearer ${token}`,
-                                "Content-Type": "application/json",
-                            },
-                        });
+                        console.log("Room :" + roomId)
+                        const response = await api.get(`http://localhost:8080/BidKoi/placeBid/winner/${roomId}`);
                         const winnerName = response.data.data.username;
                         console.log("UserName " + winnerName);
                         if (username === winnerName) {
-                            setIsModalVisible(true);
-
+                            setIsShippingModalVisible(true);
                             // Kích hoạt pháo hoa
                             fireConfetti();
-
-                            toast.success("Congratulations, you've won this auction! Click here", {
-                                onClick: () => window.location.href = `/auction/${roomId}/details`,
+                            toast.success("Congratulations, you've won this auction! ", {
                                 style: { backgroundColor: '#d4edda', color: '#155724' },
                             });
                         } else {
@@ -166,7 +153,11 @@ export default function Bidding() {
 
     return (
         <div className="BiddingPage ">
-            <AuctionInfo />
+            <AuctionInfo
+                roomId={roomId}
+                startTime={auctionDetails.startTime}
+                endTime={auctionDetails.endTime}
+            />
             <div className="Bidding" >
                 <div className="Visual">
                     <div className="img">
@@ -192,7 +183,7 @@ export default function Bidding() {
                         age={room.koi.age}
                         status={room.koi.status}
                         endTime={auctionDetails.endTime}
-                        className={auctionDetails.endTime}
+
                     />
                     <div className="Bidding2">
                         <div className="Bidding2mini" >
@@ -205,6 +196,14 @@ export default function Bidding() {
                     </div>
                 </div>
             </div>
+            <Modal
+                title="Shipping Information"
+                visible={isShippingModalVisible}
+                onCancel={handleShippingModalCancel}
+                footer={null}
+            >
+                <ShippingInfo /> {/* Truyền thông tin breeder vào ShippingInfo */}
+            </Modal>
             <>
                 <FloatButton
                     type="primary"
@@ -226,15 +225,20 @@ export default function Bidding() {
     );
 }
 
-const AuctionInfo = () => {
+const AuctionInfo = ({ roomId, startTime, endTime }) => {
+    // Format thời gian để hiển thị
+    const formattedStartTime = new Date(startTime).toLocaleDateString("en-GB");
+    const formattedEndTime = new Date(endTime).toLocaleDateString("en-GB");
+
     return (
         <div >
             <div className="auctionsInfo">
                 <div className="auctionTitle">
-                    <span>Auction #1</span>
+                    {/* Hiển thị RoomId từ param */}
+                    <span>Auction #{roomId}</span>
                     <div className="time">
-                        <p className="dateRange">28/9/2024 -</p>{" "}
-                        <p className="dateRange">30/9/2024</p>
+                        <p className="dateRange">{formattedStartTime} -</p>
+                        <p className="dateRange">{formattedEndTime}</p>
                         <p className="ended">Ended 7 days Ago</p>
                     </div>
                 </div>
@@ -255,4 +259,4 @@ const AuctionInfo = () => {
             </div>
         </div>
     );
-};
+}

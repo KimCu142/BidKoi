@@ -1,15 +1,29 @@
-import { useState } from "react";
+
+import { useEffect, useState } from "react";
 import api from "../../config/axios";
 import styles from "./index.module.scss";
 import { toast } from "react-toastify";
 import PropTypes from "prop-types";
+import { useNavigate } from "react-router-dom";
 
 function Payment({ auctionAmount, roomId }) {
-  const paymentAmount = Math.round(auctionAmount * 0.2);
+  const paymentAmount = Math.round(auctionAmount );
   const [loading, setLoading] = useState(false);
+  const [bidderId, setbidderId] = useState({});
+  const navigate = useNavigate();
+  const handleNavigate = (roomId) => {
+    if (roomId) {
+      navigate(`/auctions/active/${roomId}`);
+    }
+  };
 
-  const bidderId = localStorage.getItem("bidderId");
-
+useEffect(() => {
+  const storedUser = localStorage.getItem("user");
+  if (storedUser) {
+    const userData = JSON.parse(storedUser);
+   setbidderId(userData.bidder.id);
+  }
+}, []);
   const handleDeposit = async () => {
     try {
       const response = await api.post(
@@ -19,6 +33,7 @@ function Payment({ auctionAmount, roomId }) {
 
       if (response.status === 200) {
         console.log("Đã lưu thông tin đấu giá và tiền cọc thành công.");
+        handleNavigate(roomId);
       } else {
         console.log("Có lỗi xảy ra khi lưu thông tin đấu giá.");
       }
@@ -51,5 +66,4 @@ Payment.propTypes = {
   auctionAmount: PropTypes.number.isRequired,
   roomId: PropTypes.string.isRequired,
 };
-
 export default Payment;

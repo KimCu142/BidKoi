@@ -41,6 +41,19 @@ function BreederRequest() {
   const [videoFileList, setVideoFileList] = useState([]); // upload file video
   const [uploadProgress, setUploadProgress] = useState(0); // Phần trăm upload
   const [methodInfoVisible, setMethodInfoVisible] = useState(false);
+  const [breederid, setBreederid] = useState({});
+
+  
+  useEffect(() => {
+    const storedUser = localStorage.getItem("user");
+    if (storedUser) {
+      const userData = JSON.parse(storedUser);
+      setBreeders(userData.breeder.name);
+      setBreederid(userData.breeder.breederID);
+      console.log(userData.breeder.name);
+    }
+  }, []);
+  
 
   const fetchKoiAndBreeder = async () => {
     try {
@@ -48,11 +61,6 @@ function BreederRequest() {
       const koiResponse = await api.get(`/koi`);
       setKois(koiResponse.data);
 
-      // Fetch thông tin breeder
-      const breederResponse = await api.get(`/breeder`);
-      if (breederResponse.status === 200) {
-        setBreeders(breederResponse.data[0]);
-      }
     } catch (error) {
       console.error("Error fetching data:", error);
     }
@@ -297,7 +305,7 @@ function BreederRequest() {
         toast.success("Update Koi request sucessfully!");
       } else {
         // => create
-        const response = await api.post(`/koi/create/100`, kois);
+        const response = await api.post(`/koi/creation/${breederid}`, kois);
         toast.success("Create Koi request sucessfully!");
       }
 
@@ -434,10 +442,10 @@ function BreederRequest() {
             <Form.Item
               label="Breeder"
               name="breeder"
-              initialValue={breeders.name}
+              initialValue={breeders}
             >
               <Input
-                value={breeders.name} // Nếu breeder chưa được tải, mặc định là chuỗi rỗng
+                value={breeders} // Nếu breeder chưa được tải, mặc định là chuỗi rỗng
                 disabled
               />
             </Form.Item>
@@ -562,6 +570,7 @@ function BreederRequest() {
                       }
                       return isLt50M; // Chặn upload nếu vượt quá giới hạn
                     }}
+
                   >
                     {fileList.length >= 8 ? null : uploadButton}
                   </Upload>

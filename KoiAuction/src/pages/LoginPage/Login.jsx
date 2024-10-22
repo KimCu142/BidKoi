@@ -63,7 +63,7 @@ const Login = () => {
       <div className={styles.formContainer}>
         <div className={styles.col1}>
           <img
-            src="src/assets/z5860878036591_6cfc2dede6582c487e0388ff75d9a13d.jpg"
+            src="src\assets\LoginPic.jpg"
             alt="Koi Fish"
             className={styles.image}
           />

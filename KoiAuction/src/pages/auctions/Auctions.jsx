@@ -7,6 +7,7 @@ import KoiCard from "../../components/KoiCard/KoiCard";
 import { useNavigate } from "react-router-dom";
 import Payment from "../payment/Payment";
 import { motion } from "framer-motion";
+import api from "../../config/axios";
 
 const auctionInfoContent = (
   <div>
@@ -34,20 +35,25 @@ const Auctions = () => {
   const [rooms, setRooms] = useState([]);
   const [selectedRoom, setSelectedRoom] = useState(null);
   const [isPaymentModal, setIsPaymentModal] = useState(false);
+  const [userData, setuserData] = useState([]);
   const navigate = useNavigate();
   const bellAudioRef = useRef(null); // Sử dụng ref để giữ lại đối tượng Audio
 
+
+ 
   useEffect(() => {
+    const storedUser = localStorage.getItem("user");
+ setuserData(JSON.parse(storedUser));
     bellAudioRef.current = new Audio(bellSoundUrl); // Khởi tạo chỉ một lần
   }, []);
 
   useEffect(() => {
-    axios
-      .get(`http://localhost:8080/BidKoi/auctions/active`)
+    api
+      .get("/auction/active")
       .then((response) => {
         const auctionData = response.data.data;
         setAuctionDetails(auctionData);
-
+    console.log(auctionData)
         setRooms(auctionData.rooms);
         // setKoiData(koiInfo);
       })
@@ -86,11 +92,31 @@ const Auctions = () => {
     );
   };
 
-  const handleRoomClick = (room) => {
-    setSelectedRoom(room);
-    setIsPaymentModal(true);
-    bellAudioRef.current.play();
+  const handleRoomClick = async (room) => {
+    try {
+      const response = await api.get(`/placeBid/${userData.bidder.id}/${room.roomId}`);
+      const isAllowed = response.data;
+  
+      if (isAllowed) {
+        handleNavigate(room.roomId); // Điều hướng tới trang đấu giá
+      } else {
+        setSelectedRoom(room); // Cập nhật room đã chọn
+        setIsPaymentModal(true); // Mở modal thanh toán
+        bellAudioRef.current.play(); // Phát âm thanh
+      }
+    } catch (error) {
+      console.error("Error calling placeBid API:", error);
+    }
   };
+  
+  
+  // Hàm điều hướng nếu được phép
+  const handleNavigate = (roomId) => {
+    if (roomId) {
+      navigate(`/auctions/active/${roomId}`);
+    }
+  };
+  
 
   const handlePayment = () => {
     setIsPaymentModal(false);
@@ -127,6 +153,7 @@ const Auctions = () => {
               sex={room.koi.sex}
               status={room.koi.status}
               breeder={room.koi.breeder.name}
+              rating={room.koi.rating}
             />
           </div>
         ))}
