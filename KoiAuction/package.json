@@ -42,7 +42,6 @@
     "buffer": "^6.0.3",
     "canvas-confetti": "^1.9.3",
     "firebase": "^10.13.2",
-
     "formik": "^2.4.6",
     "framer-motion": "6.0.0-beta.5",
     "framer-motion-3d": "6.0.0-beta.5",
