@@ -7,6 +7,6 @@ export default defineConfig({
     global: 'globalThis'
   },
   build: {
-    outDir: 'dist', // Thư mục đầu ra sau khi build
+    outDir: 'build', // Đổi từ 'dist' thành 'build' để phù hợp với Vercel
   }
 })
