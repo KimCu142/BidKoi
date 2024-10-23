@@ -19,10 +19,16 @@ const Chat = () => {
   }, [userData]);
 
   const connect = () => {
-    let Sock = new SockJS("http://localhost:8080/BidKoi/ws");
+    // Kiểm tra giao thức của trang web hiện tại để chọn URL WebSocket đúng
+    const wsUrl = window.location.protocol === 'https:' 
+      ? 'https://bid-koi-n1yy.vercel.app/BidKoi/ws'  // Sử dụng HTTPS khi ở production
+      : 'http://localhost:8080/BidKoi/ws';           // Sử dụng HTTP khi ở local development
+    
+    let Sock = new SockJS(wsUrl);
     stompClient = over(Sock);
     stompClient.connect({}, onConnected, onError);
   };
+  
 
   const onConnected = () => {
     setUserData({ ...userData, connected: true });
