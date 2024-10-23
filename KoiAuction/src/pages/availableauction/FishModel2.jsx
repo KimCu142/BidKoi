@@ -1,10 +1,11 @@
-import { useGLTF, useAnimations, Preload } from '@react-three/drei';
+import { useGLTF, useAnimations } from '@react-three/drei';
 import { useEffect } from 'react';
 
 export function FishModel2() {
   // Load mô hình cá và các animations từ file GLTF
   const { scene, animations } = useGLTF('/models/koi2/scene.gltf'); // Đường dẫn GLTF cho mô hình koi 2
   const { actions } = useAnimations(animations, scene);
+
   // Giải phóng tài nguyên WebGL khi component unmount
   useEffect(() => {
     return () => {
@@ -22,29 +23,20 @@ export function FishModel2() {
       }
     };
   }, [scene]);
+
   // Kích hoạt animation khi component được mount
   useEffect(() => {
-    let timeout;
     if (actions && actions['MorphBake']) {
       const action = actions['MorphBake'];
       action.play(); // Phát animation
-      action.setEffectiveTimeScale(3); 
-       timeout = setTimeout(() => {
-        action.paused = true; // Tạm dừng animation
-        action.time = 5.8; // Thiết lập thời gian dừng tại giây 5.8
-      }, 5800);
-
+      action.setEffectiveTimeScale(3); // Điều chỉnh tốc độ animation
       return () => {
-        if (timeout) clearTimeout(timeout);
         if (actions && actions['MorphBake']) {
-          actions['MorphBake'].stop(); // Dừng hoàn toàn action khi component unmount
+          actions['MorphBake'].stop(); // Dừng animation khi component unmount
         }
-    
       };
     }
   }, [actions]);
-
-
 
   // Trả về mô hình 3D với scale và rotation tùy chỉnh
   return (
