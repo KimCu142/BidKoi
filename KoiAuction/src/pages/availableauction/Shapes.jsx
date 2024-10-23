@@ -31,7 +31,7 @@ export function Shapes({ isHover, isPress, mouseX, mouseY }) {
             hover: { z: isPress ? -0.9 : 0 },
           }}
         >
-          <Cone />
+          {/* <Cone /> */}
           <Torus/>
         </motion.group>
         <Sphere />

@@ -60,6 +60,7 @@ export default function Bidding() {
     setIsShippingModalVisible(false); // Đóng modal ShippingInfo
   };
 
+
   const checkShippingCreated = async (koiId) => {
     try {
       const response = await api.get(`/shipping/koi/${koiId}`);
@@ -69,6 +70,7 @@ export default function Bidding() {
       return false; // Mặc định trả về false nếu có lỗi
     }
   };
+
 
   const [isAuctionEnded, setIsAuctionEnded] = useState(false); // Trạng thái để kiểm tra khi đấu giá kết thúc
 
@@ -119,47 +121,50 @@ export default function Bidding() {
       .catch((error) => console.error("Error fetching data:", error));
   }, [roomId]);
 
-  useEffect(() => {
-    if (auctionDetails.endTime && room) {
-      const endTime = new Date(auctionDetails.endTime).getTime();
-      const interval = setInterval(async () => {
-        if (new Date().getTime() >= endTime) {
-          clearInterval(interval); // Xoá interval khi kết thúc thời gian đấu giá
-          setIsAuctionEnded(true); // Cập nhật trạng thái đấu giá đã kết thúc
-          try {
-            console.log("Room :" + roomId);
-            const response = await api.get(
-              `http://localhost:8080/BidKoi/placeBid/winner/${roomId}`
-            );
-            const winnerName = response.data.data.username;
-            console.log("UserName " + winnerName);
+ 
 
-            if (username === winnerName) {
-              fireConfetti();
-              toast.success("Congratulations, you've won this auction!", {
-                style: { backgroundColor: "#d4edda", color: "#155724" },
-              });
+    useEffect(() => {
+        if (auctionDetails.endTime && room) {
+            const endTime = new Date(auctionDetails.endTime).getTime();
+            const interval = setInterval(async () => {
+                if (new Date().getTime() >= endTime) {
+                    clearInterval(interval); // Xoá interval khi kết thúc thời gian đấu giá
+                    setIsAuctionEnded(true); // Cập nhật trạng thái đấu giá đã kết thúc
+                    try {
+                        console.log("Room :" + roomId);
+                        const response = await api.get(`http://localhost:8080/BidKoi/placeBid/winner/${roomId}`);
+                        const winnerName = response.data.data.username;
+                        console.log("UserName " + winnerName);
 
-              const isShippingCreated = await checkShippingCreated(
-                room.koi.koiId
-              );
+                        if (username === winnerName) {
+                            fireConfetti();
+                            toast.success("Congratulations, you've won this auction!", {
+                                style: { backgroundColor: '#d4edda', color: '#155724' },
+                            });
 
-              if (!isShippingCreated) {
-                setIsShippingModalVisible(true); // Hiển thị modal nếu chưa tạo shipping
-              }
-            } else {
-              toast.info(
-                "Unfortunately, you didn't win this auction. Better luck next time!",
-                {
-                  style: { backgroundColor: "#f8d7da", color: "#721c24" },
+                            const isShippingCreated = await checkShippingCreated(room.koi.koiId);
+
+                            if (!isShippingCreated) {
+                                setIsShippingModalVisible(true); // Hiển thị modal nếu chưa tạo shipping
+                            }
+                        } else {
+                            toast.info("Unfortunately, you didn't win this auction. Better luck next time!", {
+                                style: { backgroundColor: '#f8d7da', color: '#721c24' },
+                            });
+                        }
+                    } catch (error) {
+                        console.error("Error fetching winner:", error);
+                    }
                 }
-              );
-            }
-          } catch (error) {
-            console.error("Error fetching winner:", error);
-          }
+            }, 1000);
+
+            return () => clearInterval(interval); // Clear interval on component unmount
         }
-      }, 1000);
+    }, [auctionDetails.endTime, roomId, room, username, token]);
+
+
+
+
 
       return () => clearInterval(interval); // Clear interval on component unmount
     }
@@ -197,41 +202,42 @@ export default function Bidding() {
             age={room.koi.age}
             status={room.koi.status}
             endTime={auctionDetails.endTime}
-          />
-          <div className="Bidding2">
-            <div className="Bidding2mini">
-              <BidTable
-                initialPrice={room.koi.initialPrice}
-                isAuctionEnded={isAuctionEnded}
-              />
-            </div>
-            <div className="Chat2">
-              <Chat />
-            </div>
-          </div>
-        </div>
-        <Modal
-          title="Shipping Information"
-          visible={isShippingModalVisible}
-          onCancel={handleShippingModalCancel}
-          footer={null}
-        >
-          <ShippingInfo
-            koiId={room.koi.koiId}
-            bidderId={currentBidderId}
-            breeder={room.koi.breeder}
-          />{" "}
-          {/* Truyền thông tin breeder vào ShippingInfo */}
-        </Modal>
-      </div>
+                    />
+                    <div className="Bidding2">
+                        <div className="Bidding2mini" >
+                            <BidTable
+                                initialPrice={room.koi.initialPrice}
+                                isAuctionEnded={isAuctionEnded}
+                            />
+                        </div>
+                        <div className="Chat2">
+                            <Chat />
+                        </div>
 
-      <>
-        <FloatButton
-          type="primary"
-          style={{ insetInlineEnd: 24 }}
-          icon={<CustomerServiceOutlined />}
-          onClick={showModal}
-        />
+                    </div>
+                </div>
+
+            </div>
+
+            <>
+                <Modal
+                    title="Shipping Information"
+                    visible={isShippingModalVisible}
+                    onCancel={handleShippingModalCancel}
+                    footer={null}
+                >
+                    <ShippingInfo
+                        koiId={room.koi.koiId}
+                        bidderId={currentBidderId}
+                        breeder={room.koi.breeder}
+                    /> {/* Truyền thông tin breeder vào ShippingInfo */}
+                </Modal>
+                <FloatButton
+                    type="primary"
+                    style={{ insetInlineEnd: 24 }}
+                    icon={<CustomerServiceOutlined />}
+                    onClick={showModal}
+                />
 
         <Modal
           title="Chat"
@@ -251,17 +257,32 @@ const AuctionInfo = ({ roomId, startTime, endTime }) => {
   const formattedStartTime = new Date(startTime).toLocaleDateString("en-GB");
   const formattedEndTime = new Date(endTime).toLocaleDateString("en-GB");
 
-  return (
-    <div>
-      <div className="auctionsInfo">
-        <div className="auctionTitle">
-          {/* Hiển thị RoomId từ param */}
-          <span>Auction #{roomId}</span>
-          <div className="time">
-            <p className="dateRange">{formattedStartTime} -</p>
-            <p className="dateRange">{formattedEndTime}</p>
-            <p className="ended">Ended 7 days Ago</p>
-          </div>
+
+    return (
+        <div >
+            <div className="auctionsInfo">
+                <div className="auctionTitle">
+                    {/* Hiển thị RoomId từ param */}
+                    <span>Auction #{roomId}</span>
+                    <div className="time">
+                        <p className="">{formattedStartTime} - {formattedEndTime}</p>
+                    </div>
+                </div>
+                <div>
+                    <Space wrap>
+                        <Popover
+                            content={auctionInfoContent}
+                            title="Koi Info"
+                            trigger="click"
+                        >
+                            <Button className="Button">
+                                <InfoCircleOutlined style={{ color: "rgba(0,0,0,.45)" }} />{" "}
+                                Koi Info
+                            </Button>
+                        </Popover>
+                    </Space>
+                </div>
+            </div>
         </div>
         <div>
           <Space wrap>

@@ -1,35 +1,39 @@
 .table-container {
     background-color: #e9eaed;
     display: flex;
-  flex-direction: column;   
+    flex-direction: column;
     padding: 16px 16px 0px;
     border-radius: 24px;
     gap: 16px;
+
 }
-.table-header{
+
+.table-header {
     display: flex;
     flex-wrap: wrap;
     justify-content: space-between;
 }
-.detail-item{
+
+.detail-item {
     display: flex;
     justify-content: space-between;
     padding: 5px 15px;
     width: 48%;
     border-radius: 24px;
-    background-color:   #cccdd3;
+    background-color: #cccdd3;
     align-items: center;
 }
-.table-details{
-display: flex;
-flex-wrap: wrap;
-gap: 16px;
-justify-content: center; 
-padding-bottom: 24px;
+
+.table-details {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 16px;
+    justify-content: center;
+    padding-bottom: 24px;
 }
 
-.card-number{
-    
+.card-number {
+
     height: 60px;
     background-color: #7eaac733;
     border-radius: 24px;
@@ -42,7 +46,7 @@ padding-bottom: 24px;
     color: #356483;
 }
 
-.Status{
+.Status {
     gap: 16px;
     height: 60px;
     background-color: #7eaac733;
@@ -55,9 +59,10 @@ padding-bottom: 24px;
     flex-wrap: wrap;
     font-size: 24px;
 }
-.table-info{
+
+.table-info {
     display: flex;
-    gap:16px
+    gap: 16px
 }
 
 .countdown-timer {
@@ -69,7 +74,7 @@ padding-bottom: 24px;
     flex-direction: column;
     align-items: center;
     width: 100%;
- 
+
 }
 
 .countdown-timer h2 {
@@ -100,3 +105,23 @@ padding-bottom: 24px;
     color: #777;
 }
 
+@media (max-width: 768px) {
+    .Status {
+        font-size: 18px; /* Màn hình nhỏ hơn 768px */
+    }
+}
+
+@media (max-width: 476px) {
+    .Status {
+        font-size: 16px; /* Màn hình nhỏ hơn 576px */
+    }
+    .detail-item {
+        display: flex;
+        justify-content: space-between;
+        padding: 5px 15px;
+        width: 100%;
+        border-radius: 24px;
+        background-color: #cccdd3;
+        align-items: center;
+    }
+}

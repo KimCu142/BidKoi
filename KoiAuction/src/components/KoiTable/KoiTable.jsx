@@ -36,7 +36,7 @@ export default function KoiTable({ name, initialPrice, id, rating, sex, length, 
                                 <path fill="none" stroke="black" strokeLinecap="round" strokeLinejoin="round" strokeWidth={1.5} d="M8 14V4.5a2.5 2.5 0 0 0-5 0V14m5-6l6-5l8 6m-2-5v10m-8-4h4v4h-4zM2 14h20M2 22l5-8m0 8l5-8m10 8H12l5-8m-2 4h7"></path>
                             </svg>
                         </span>
-                        Breeder: {breeder}
+                        {breeder}
                     </div>
                     <div className="detail-item">
                         <span className="icon">

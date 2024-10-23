@@ -1,0 +1,57 @@
+.auction-list {
+    padding-top: 80px;
+    padding-bottom: 50px;
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(300px, 1fr)); /* Tạo lưới tự động */
+    gap: 20px; /* Khoảng cách giữa các card */
+    justify-content: center;
+  }
+  
+  .auction-card {
+    width: 100%;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 15px;
+    border-radius: 10px;
+    background-color: #d4163c; /* Dark background */
+    color: white;
+    min-width: 280px;
+    max-width: 100%;
+    margin: 0 auto;
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
+    cursor: pointer;
+    transition: background-color 0.3s ease;
+  }
+  .pending-background {
+    background-color:#4f98ca; /* Màu nền cho auction PENDING */
+  }
+
+  .auction-card:hover {
+    background-color: #f41844;
+  }
+    .pending-background:hover {
+    background-color:  #6ba5cb;
+  }
+  
+  .auction-info {
+    display: flex;
+    flex-direction: column;
+  }
+  
+  .auction-title {
+    font-size: 18px;
+    font-weight: bold;
+  }
+  
+  .auction-dates {
+    font-size: 14px;
+    font-weight: 600;
+    color: #ffffff;
+  }
+  
+  
+  .auction-arrow:hover {
+    color: #774e9e;
+  }
+  

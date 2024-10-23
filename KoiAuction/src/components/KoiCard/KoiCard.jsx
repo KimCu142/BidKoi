@@ -88,7 +88,7 @@ const KoiCard = ({
             </svg>
             {status}
           </p>
-          <p className={styles.price}>▶ ${price}</p>
+          <p className={styles.price}>▶${price}</p>
         </div>
       </div>
 
