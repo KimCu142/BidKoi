@@ -6,24 +6,32 @@ import { motion } from "framer-motion";
 
 function BidderActivities() {
   const [koiList, setKoiList] = useState([]);
+  const [bidderId, setBidderId] = useState([]);
   const navigate = useNavigate();
+
+  useEffect(() => {
+    const storedUser = localStorage.getItem("user");
+    if (storedUser) {
+      const userData = JSON.parse(storedUser);
+      console.log("Stored User:", userData);
+      setBidderId(userData.bidder.id);
+    }
+  }, []);
 
   useEffect(() => {
     const fetchKoiList = async () => {
       try {
-        const response = await api.get(
-          "https://66f83af72a683ce9730f0194.mockapi.io/koiWinning"
-        );
+        const response = await api.get(`/shipping/bidder/${bidderId}`);
         setKoiList(response.data);
       } catch (error) {
         console.error("Error fetching data: ", error);
       }
     };
     fetchKoiList();
-  }, []);
+  }, [bidderId]);
 
-  const handleKoiClick = (koiId) => {
-    navigate(`/koi-details/${koiId}`);
+  const handleKoiClick = (shippingId) => {
+    navigate(`/bidder/koi-details/${shippingId}`);
   };
 
   return (
@@ -69,20 +77,21 @@ function BidderActivities() {
               }}
             >
               <div className={styles.koiInfo}>
-                <img
-                  src={koi.imageUrl}
-                  //   alt={koi.name}
-                  className={styles.koiImage}
-                />
+                <img src={koi.koi.image} className={styles.koiImage} />
                 <div>
-                  <h3>{koi.name}</h3>
+                  <h3>
+                    Bidder name: {koi.bidder.firstname} {koi.bidder.lastname}
+                  </h3>
                   <p>{koi.date}</p>
-                  <p>Bidding price: ${koi.price}</p>
+                  <p>
+                    Breeder: {koi.koi.breeder.name} {"-"} {koi.koi.varieties}
+                  </p>
+                  <p>Final bidding price: ${koi.koi.finalPrice}</p>
                 </div>
               </div>
               <button
                 className={styles.confirmBtn}
-                onClick={() => handleKoiClick(koi.id)} // Tắt nút nếu đã xác nhận
+                onClick={() => handleKoiClick(koi.shippingId)}
               >
                 Confirm
               </button>

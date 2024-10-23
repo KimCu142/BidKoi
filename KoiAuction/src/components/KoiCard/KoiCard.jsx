@@ -13,7 +13,7 @@ const Rating = ({ rating }) => {
           width="2em"
           height="2em"
           viewBox="0 0 24 24"
-          style={{ cursor: 'pointer', fill: index < rating ? 'gold' : 'white' }}
+          style={{ cursor: "pointer", fill: index < rating ? "gold" : "white" }}
         >
           <path
             fill="currentColor"
@@ -25,7 +25,18 @@ const Rating = ({ rating }) => {
   );
 };
 
-const KoiCard = ({ id, price, img, length, varieties, age, sex, status, breeder, rating }) => {
+const KoiCard = ({
+  id,
+  price,
+  img,
+  length,
+  varieties,
+  age,
+  sex,
+  status,
+  breeder,
+  rating,
+}) => {
   return (
     <div className={styles.card}>
       {/* Use styles from the module */}
@@ -35,24 +46,42 @@ const KoiCard = ({ id, price, img, length, varieties, age, sex, status, breeder,
 
         <div className={styles["section"]}>
           <div className={styles["card-number"]}>
-            <svg xmlns="http://www.w3.org/2000/svg" width="1em" height="1em" viewBox="0 0 24 24">
-              <path fill="white" d="M5.5 7A1.5 1.5 0 0 1 4 5.5A1.5 1.5 0 0 1 5.5 4A1.5 1.5 0 0 1 7 5.5A1.5 1.5 0 0 1 5.5 7m15.91 4.58l-9-9C12.05 2.22 11.55 2 11 2H4c-1.11 0-2 .89-2 2v7c0 .55.22 1.05.59 1.41l8.99 9c.37.36.87.59 1.42.59s1.05-.23 1.41-.59l7-7c.37-.36.59-.86.59-1.41c0-.56-.23-1.06-.59-1.42"></path>
+            <svg
+              xmlns="http://www.w3.org/2000/svg"
+              width="1em"
+              height="1em"
+              viewBox="0 0 24 24"
+            >
+              <path
+                fill="white"
+                d="M5.5 7A1.5 1.5 0 0 1 4 5.5A1.5 1.5 0 0 1 5.5 4A1.5 1.5 0 0 1 7 5.5A1.5 1.5 0 0 1 5.5 7m15.91 4.58l-9-9C12.05 2.22 11.55 2 11 2H4c-1.11 0-2 .89-2 2v7c0 .55.22 1.05.59 1.41l8.99 9c.37.36.87.59 1.42.59s1.05-.23 1.41-.59l7-7c.37-.36.59-.86.59-1.41c0-.56-.23-1.06-.59-1.42"
+              ></path>
             </svg>
             {id}
           </div>
           <div className={styles.rating}>
-            <Rating rating={ rating} />
+            <Rating rating={rating} />
           </div>
         </div>
       </div>
 
       <div className={styles["card-content"]}>
-
         <h2>{varieties}</h2>
         <div className={styles.content2}>
           <p className={styles.ended}>
-            <svg xmlns="http://www.w3.org/2000/svg" width="1em" height="1em" viewBox="0 0 24 24">
-              <g fill="none" stroke="black" strokeLinecap="round" strokeLinejoin="round" strokeWidth={1.2}>
+            <svg
+              xmlns="http://www.w3.org/2000/svg"
+              width="1em"
+              height="1em"
+              viewBox="0 0 24 24"
+            >
+              <g
+                fill="none"
+                stroke="black"
+                strokeLinecap="round"
+                strokeLinejoin="round"
+                strokeWidth={1.2}
+              >
                 <circle cx={12} cy={12} r={9}></circle>
                 <path d="M11 8v5h5"></path>
               </g>
@@ -67,16 +96,36 @@ const KoiCard = ({ id, price, img, length, varieties, age, sex, status, breeder,
         <div className={styles.details}>
           <div className={styles["detail-item"]}>
             <span className={styles.icon}>
-              <svg xmlns="http://www.w3.org/2000/svg" width="2em" height="2em" viewBox="0 0 24 24">
-                <path fill="none" stroke="black" strokeLinecap="round" strokeLinejoin="round" strokeWidth={1.5} d="M8 14V4.5a2.5 2.5 0 0 0-5 0V14m5-6l6-5l8 6m-2-5v10m-8-4h4v4h-4zM2 14h20M2 22l5-8m0 8l5-8m10 8H12l5-8m-2 4h7"></path>
+              <svg
+                xmlns="http://www.w3.org/2000/svg"
+                width="2em"
+                height="2em"
+                viewBox="0 0 24 24"
+              >
+                <path
+                  fill="none"
+                  stroke="black"
+                  strokeLinecap="round"
+                  strokeLinejoin="round"
+                  strokeWidth={1.5}
+                  d="M8 14V4.5a2.5 2.5 0 0 0-5 0V14m5-6l6-5l8 6m-2-5v10m-8-4h4v4h-4zM2 14h20M2 22l5-8m0 8l5-8m10 8H12l5-8m-2 4h7"
+                ></path>
               </svg>
             </span>
             Breeder: {breeder}
           </div>
           <div className={styles["detail-item"]}>
             <span className={styles.icon}>
-              <svg xmlns="http://www.w3.org/2000/svg" width="2em" height="2em" viewBox="0 0 256 256">
-                <path fill="black" d="m235.32 73.37l-52.69-52.68a16 16 0 0 0-22.63 0L20.68 160a16 16 0 0 0 0 22.63l52.69 52.68a16 16 0 0 0 22.63 0L235.32 96a16 16 0 0 0 0-22.63M84.68 224L32 171.31l32-32l26.34 26.35a8 8 0 0 0 11.32-11.32L75.31 128L96 107.31l26.34 26.35a8 8 0 0 0 11.32-11.32L107.31 96L128 75.31l26.34 26.35a8 8 0 0 0 11.32-11.32L139.31 64l32-32L224 84.69Z"></path>
+              <svg
+                xmlns="http://www.w3.org/2000/svg"
+                width="2em"
+                height="2em"
+                viewBox="0 0 256 256"
+              >
+                <path
+                  fill="black"
+                  d="m235.32 73.37l-52.69-52.68a16 16 0 0 0-22.63 0L20.68 160a16 16 0 0 0 0 22.63l52.69 52.68a16 16 0 0 0 22.63 0L235.32 96a16 16 0 0 0 0-22.63M84.68 224L32 171.31l32-32l26.34 26.35a8 8 0 0 0 11.32-11.32L75.31 128L96 107.31l26.34 26.35a8 8 0 0 0 11.32-11.32L107.31 96L128 75.31l26.34 26.35a8 8 0 0 0 11.32-11.32L139.31 64l32-32L224 84.69Z"
+                ></path>
               </svg>
             </span>
             Length: {length}

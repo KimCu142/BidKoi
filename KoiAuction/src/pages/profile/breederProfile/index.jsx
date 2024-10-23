@@ -12,8 +12,6 @@ import { motion } from "framer-motion";
 import uploadLogoFile from "../../../utils/logoFile";
 import SpinImage from "../../../components/spin/spin";
 
-// Thay đổi đường dẫn tùy vào vị trí của utils/file
-
 function BreederProfile({ accountId, token }) {
   const [userData, setUserData] = useState({
     breederID: "",
@@ -29,6 +27,7 @@ function BreederProfile({ accountId, token }) {
   const [isUpdate, setIsUpdate] = useState(false);
   const [previewImage, setPreviewImage] = useState("");
   const [fileList, setFileList] = useState([]);
+  const [errors, setErrors] = useState({});
 
   // =========================== Gọi API để lấy thông tin người dùng
   const fetchUserData = useCallback(async () => {
@@ -42,7 +41,7 @@ function BreederProfile({ accountId, token }) {
 
           // Cập nhật userData từ cả userInfo và accountInfo
           setUserData({
-            breederID: userInfo.id || "",
+            breederID: userInfo.breederId || "",
             name: userInfo.name || "",
             phone: accountInfo.phone || "",
             address: userInfo.address || "",
@@ -52,7 +51,7 @@ function BreederProfile({ accountId, token }) {
 
           // Lưu lại giá trị ban đầu để dùng sau này
           setInitialData({
-            breederID: userInfo.id || "",
+            breederID: userInfo.breederId || "",
             name: userInfo.name || "",
             phone: accountInfo.phone || "",
             address: userInfo.address || "",
@@ -76,8 +75,36 @@ function BreederProfile({ accountId, token }) {
     }
   }, [fetchUserData, accountId]);
 
+  const validate = () => {
+    let formErrors = {};
+
+    if (!/^[A-Za-z\s]+$/.test(userData.name)) {
+      formErrors.name = "Name must not contain numbers or special characters";
+    }
+
+    if (!userData.phone) {
+      formErrors.phone = "Phone number is required";
+    } else if (!/^[0-9]+$/.test(userData.phone)) {
+      formErrors.phone = "Phone number must contain only digits";
+    } else if (!userData.phone.match(/^0[0-9]{9}$/)) {
+      formErrors.phone =
+        "Phone number must be a valid 10-digit number starting with 0";
+    }
+
+    if (!/\S+@\S+\.\S+/.test(userData.email)) {
+      formErrors.email = "Email is invalid";
+    }
+
+    setErrors(formErrors);
+    return Object.keys(formErrors).length === 0;
+  };
+
   // =========================== Gắn API để cập nhật thông tin mới
   const handleUpdate = async () => {
+    if (!validate()) {
+      toast.error("Please enter correctly before submitting");
+      return;
+    }
     try {
       setIsUpdate(true);
       let updatedData = { ...userData };
@@ -117,7 +144,6 @@ function BreederProfile({ accountId, token }) {
       }, 1000);
     } catch (error) {
       console.error("Error updating user data", error);
-      toast.error("Error updating user data");
     } finally {
       setIsUpdate(false);
       setFileList([]);
@@ -142,11 +168,13 @@ function BreederProfile({ accountId, token }) {
   const handleReset = () => {
     setUserData(initialData);
     setPreviewImage(initialData.avatar);
+    setErrors({});
   };
 
   const handleCancel = () => {
     setIsEdit(false);
     setUserData(initialData);
+    setErrors({});
   };
 
   const getBase64 = (file) =>
@@ -281,6 +309,11 @@ function BreederProfile({ accountId, token }) {
                     }
                     disabled={!isEdit}
                   />
+                  {errors.name && (
+                    <span className="error" style={{ color: "red" }}>
+                      {errors.name}
+                    </span>
+                  )}
                 </Form.Item>
               </Form.Item>
               <Form.Item>
@@ -293,6 +326,11 @@ function BreederProfile({ accountId, token }) {
                   }
                   disabled={!isEdit}
                 />
+                {errors.phone && (
+                  <span className="error" style={{ color: "red" }}>
+                    {errors.phone}
+                  </span>
+                )}
               </Form.Item>
               <Form.Item>
                 <label className={styles.formLabel}>Email</label>
@@ -304,6 +342,11 @@ function BreederProfile({ accountId, token }) {
                   }
                   disabled={!isEdit}
                 />
+                {errors.email && (
+                  <span className="error" style={{ color: "red" }}>
+                    {errors.email}
+                  </span>
+                )}
               </Form.Item>
 
               <div className={styles.profileButton}>

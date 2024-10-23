@@ -34,6 +34,9 @@ import FailPage from "./pages/fail/index.jsx";
 import Wallet from "./pages/wallet/index.jsx";
 import AuctionCard from "./pages/ListAuction/AuctionCard.jsx";
 
+import BreederActivities from "./pages/breeder/breeder-activities/index.jsx";
+import BreederConfirmImg from "./pages/breeder/confirm-breeder-image/index.jsx";
+
 function AppLayout({ children }) {
   return (
     <div className="appLayout ">
@@ -124,7 +127,29 @@ function App() {
       ),
     },
     {
-      path: "/koi-details/:koiId",
+      path: "/breeder-activities",
+
+      element: (
+        <>
+          <AppLayout>
+            <BreederActivities />
+          </AppLayout>
+        </>
+      ),
+    },
+    {
+      path: "/breeder/koi-details/:shippingId",
+
+      element: (
+        <>
+          <AppLayout>
+            <BreederConfirmImg />
+          </AppLayout>
+        </>
+      ),
+    },
+    {
+      path: "/bidder/koi-details/:shippingId",
 
       element: (
         <>
@@ -134,6 +159,7 @@ function App() {
         </>
       ),
     },
+
     {
       path: "/auctions/:auctionId",
 

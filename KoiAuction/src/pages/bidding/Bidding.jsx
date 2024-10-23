@@ -1,5 +1,5 @@
 import "./Bidding.css";
-import { Image } from 'antd';
+import { Image } from "antd";
 import axios from "axios";
 import { useState, useEffect } from "react";
 import { InfoCircleOutlined, CustomerServiceOutlined } from "@ant-design/icons";
@@ -9,119 +9,119 @@ import { useParams } from "react-router-dom";
 import BidTable from "../../components/KoiTable/BidTable";
 import ChatBot from "../../components/KoiTable/ChatBot";
 import Chat from "../Chat/Chat";
-import { toast } from 'react-toastify';
-import 'react-toastify/dist/ReactToastify.css';
+import { toast } from "react-toastify";
+import "react-toastify/dist/ReactToastify.css";
 import confetti from "canvas-confetti";
 import ShippingInfo from "../ComfirmShipping/ShippingInfo";
 import api from "../../config/axios";
 
 const auctionInfoContent = (
-    <div>
-        <p>
-            In-House Auctions have a shorter shipping lead time (1-2 weeks) on average
-            and lower overall cost.
-        </p>
-        <p>
-            Koi in this auction are currently being held at Select Koi in Sevierville,
-            TN and thus are ready to ship after fasting to ensure safe delivery.
-        </p>
-        <p>
-            A shipping deposit of $110/koi won will be charged at the end of the
-            auction, then adjusted when bulk shipping is calculated.
-        </p>
-    </div>
+  <div>
+    <p>
+      In-House Auctions have a shorter shipping lead time (1-2 weeks) on average
+      and lower overall cost.
+    </p>
+    <p>
+      Koi in this auction are currently being held at Select Koi in Sevierville,
+      TN and thus are ready to ship after fasting to ensure safe delivery.
+    </p>
+    <p>
+      A shipping deposit of $110/koi won will be charged at the end of the
+      auction, then adjusted when bulk shipping is calculated.
+    </p>
+  </div>
 );
 
 export default function Bidding() {
-    const token = localStorage.getItem("token");
-    const [username, setUsername] = useState("");
-    const [isShippingModalVisible, setIsShippingModalVisible] = useState(false); // Thêm state để quản lý Modal ShippingInfo
-    useEffect(() => {
-        const storedUser = localStorage.getItem("user");
-        if (storedUser) {
-            const userData = JSON.parse(storedUser);  // Parse dữ liệu JSON từ localStorage
-            // Kiểm tra và lấy dữ liệu từ userData
-            if (userData) {
-                setUsername(userData.username);  // Đặt username
-            } else {
-                console.error("Token or username is undefined");
-            }
-        }
-    }, []);
+  const token = localStorage.getItem("token");
+  const [username, setUsername] = useState("");
+  const [isShippingModalVisible, setIsShippingModalVisible] = useState(false); // Thêm state để quản lý Modal ShippingInfo
+  useEffect(() => {
+    const storedUser = localStorage.getItem("user");
+    if (storedUser) {
+      const userData = JSON.parse(storedUser); // Parse dữ liệu JSON từ localStorage
+      // Kiểm tra và lấy dữ liệu từ userData
+      if (userData) {
+        setUsername(userData.username); // Đặt username
+      } else {
+        console.error("Token or username is undefined");
+      }
+    }
+  }, []);
 
-    const [isModalVisible2, setIsModalVisible2] = useState(false);
-    const showModal = () => {
-        setIsModalVisible2(true);
-    };
-    const handleCancel = () => {
-        setIsModalVisible2(false);
-    };
-    const handleShippingModalCancel = () => {
-        setIsShippingModalVisible(false); // Đóng modal ShippingInfo
-    };
-
-    const checkShippingCreated = async (koiId) => {
-        try {
-            const response = await api.get(`/shipping/${koiId}`);
-            return response.data;  // API trả về true/false
-        } catch (error) {
-            console.error("Error checking shipping:", error);
-            return false; // Mặc định trả về false nếu có lỗi
-        }
-    };
-
-    const [isAuctionEnded, setIsAuctionEnded] = useState(false); // Trạng thái để kiểm tra khi đấu giá kết thúc
-
-    const { roomId } = useParams();
-    const [auctionDetails, setAuctionDetails] = useState({});
-    const [room, setRoom] = useState([null]);
-    const currentBidderId = JSON.parse(localStorage.getItem("user"))?.bidder.id;
+  const [isModalVisible2, setIsModalVisible2] = useState(false);
+  const showModal = () => {
+    setIsModalVisible2(true);
+  };
+  const handleCancel = () => {
+    setIsModalVisible2(false);
+  };
+  const handleShippingModalCancel = () => {
+    setIsShippingModalVisible(false); // Đóng modal ShippingInfo
+  };
 
 
-    const fireConfetti = () => {
-        const duration = 5 * 1000; // Thời gian kéo dài của pháo hoa
-        const animationEnd = Date.now() + duration;
-        const interval = setInterval(() => {
-            const timeLeft = animationEnd - Date.now();
-
-            if (timeLeft <= 0) {
-                clearInterval(interval);
-                return;
-            }
-
-            const particleCount = 100; // Số hạt mỗi lần bắn
-            confetti({
-                particleCount,
-                startVelocity: 30,
-                spread: 360,
-                ticks: 60,
-                origin: {
-                    x: Math.random(),
-                    y: Math.random() - 0.2
-                },
-                colors: ['#bb0000', '#ffffff'], // Tùy chỉnh màu sắc
-            });
-        }, 200); // Tần suất mỗi lần bắn pháo
-    };
-
-    useEffect(() => {
-        // Fetch data using Axios
-
-        api
-            .get(`http://localhost:8080/BidKoi/auction/active`
-            )
-            .then((response) => {
-                const auctionData = response.data.data;
-                setAuctionDetails(auctionData);
-                const selectedRoom = auctionData.rooms.find(
-                    (room) => room.roomId === parseInt(roomId)
-                );
-                setRoom(selectedRoom);
-            })
-            .catch((error) => console.error("Error fetching data:", error));
-    }, [roomId]);
+  const checkShippingCreated = async (koiId) => {
+    try {
+      const response = await api.get(`/shipping/koi/${koiId}`);
+      return response.data; // API trả về true/false
+    } catch (error) {
+      console.error("Error checking shipping:", error);
+      return false; // Mặc định trả về false nếu có lỗi
+    }
+  };
 
 
+  const [isAuctionEnded, setIsAuctionEnded] = useState(false); // Trạng thái để kiểm tra khi đấu giá kết thúc
+
+  const { roomId } = useParams();
+  const [auctionDetails, setAuctionDetails] = useState({});
+  const [room, setRoom] = useState([null]);
+  const currentBidderId = JSON.parse(localStorage.getItem("user"))?.bidder.id;
+
+  const fireConfetti = () => {
+    const duration = 5 * 1000; // Thời gian kéo dài của pháo hoa
+    const animationEnd = Date.now() + duration;
+    const interval = setInterval(() => {
+      const timeLeft = animationEnd - Date.now();
+
+      if (timeLeft <= 0) {
+        clearInterval(interval);
+        return;
+      }
+
+      const particleCount = 100; // Số hạt mỗi lần bắn
+      confetti({
+        particleCount,
+        startVelocity: 30,
+        spread: 360,
+        ticks: 60,
+        origin: {
+          x: Math.random(),
+          y: Math.random() - 0.2,
+        },
+        colors: ["#bb0000", "#ffffff"], // Tùy chỉnh màu sắc
+      });
+    }, 200); // Tần suất mỗi lần bắn pháo
+  };
+
+  useEffect(() => {
+    // Fetch data using Axios
+
+    api
+      .get(`http://localhost:8080/BidKoi/auction/active`)
+      .then((response) => {
+        const auctionData = response.data.data;
+        setAuctionDetails(auctionData);
+        const selectedRoom = auctionData.rooms.find(
+          (room) => room.roomId === parseInt(roomId)
+        );
+        setRoom(selectedRoom);
+      })
+      .catch((error) => console.error("Error fetching data:", error));
+  }, [roomId]);
+
+ 
 
     useEffect(() => {
         if (auctionDetails.endTime && room) {
@@ -166,45 +166,42 @@ export default function Bidding() {
 
 
 
-
-    if (!room || !room.koi) {
-        return <div>Loading...</div>;
+      return () => clearInterval(interval); // Clear interval on component unmount
     }
+  }, [auctionDetails.endTime, roomId, room, username, token]);
 
-    return (
-        <div className="BiddingPage ">
-            <AuctionInfo
-                roomId={roomId}
-                startTime={auctionDetails.startTime}
-                endTime={auctionDetails.endTime}
-            />
-            <div className="Bidding" >
-                <div className="Visual">
-                    <div className="img">
-                        <Image className="custom-image" src={room.koi.image} />
-                    </div>
-                    <video
-                        src={room.koi.video}
-                        controls
-                        width="100%"
-                        alt="Koi Video"
-                    >
-                        Your browser does not support the video tag.
-                    </video>
-                </div>
-                <div className="KoiTable">
-                    <KoiTable
-                        name={room.koi.varieties}
-                        initialPrice={room.koi.initialPrice}
-                        id={room.koi.koiId}
-                        rating={5}
-                        sex={room.koi.sex}
-                        length={room.koi.length}
-                        breeder={room.koi.breeder.name}
-                        age={room.koi.age}
-                        status={room.koi.status}
-                        endTime={auctionDetails.endTime}
+  if (!room || !room.koi) {
+    return <div>Loading...</div>;
+  }
 
+  return (
+    <div className="BiddingPage ">
+      <AuctionInfo
+        roomId={roomId}
+        startTime={auctionDetails.startTime}
+        endTime={auctionDetails.endTime}
+      />
+      <div className="Bidding">
+        <div className="Visual">
+          <div className="img">
+            <Image className="custom-image" src={room.koi.image} />
+          </div>
+          <video src={room.koi.video} controls width="100%" alt="Koi Video">
+            Your browser does not support the video tag.
+          </video>
+        </div>
+        <div className="KoiTable">
+          <KoiTable
+            name={room.koi.varieties}
+            initialPrice={room.koi.initialPrice}
+            id={room.koi.koiId}
+            rating={5}
+            sex={room.koi.sex}
+            length={room.koi.length}
+            breeder={room.koi.breeder.name}
+            age={room.koi.age}
+            status={room.koi.status}
+            endTime={auctionDetails.endTime}
                     />
                     <div className="Bidding2">
                         <div className="Bidding2mini" >
@@ -242,23 +239,24 @@ export default function Bidding() {
                     onClick={showModal}
                 />
 
-                <Modal
-                    title="Chat"
-                    visible={isModalVisible2}
-                    onCancel={handleCancel}
-                    footer={null}
-                >
-                    <ChatBot />
-                </Modal>
-            </>
-        </div>
-    );
+        <Modal
+          title="Chat"
+          visible={isModalVisible2}
+          onCancel={handleCancel}
+          footer={null}
+        >
+          <ChatBot />
+        </Modal>
+      </>
+    </div>
+  );
 }
 
 const AuctionInfo = ({ roomId, startTime, endTime }) => {
-    // Format thời gian để hiển thị
-    const formattedStartTime = new Date(startTime).toLocaleDateString("en-GB");
-    const formattedEndTime = new Date(endTime).toLocaleDateString("en-GB");
+  // Format thời gian để hiển thị
+  const formattedStartTime = new Date(startTime).toLocaleDateString("en-GB");
+  const formattedEndTime = new Date(endTime).toLocaleDateString("en-GB");
+
 
     return (
         <div >
@@ -286,5 +284,21 @@ const AuctionInfo = ({ roomId, startTime, endTime }) => {
                 </div>
             </div>
         </div>
-    );
-}
+        <div>
+          <Space wrap>
+            <Popover
+              content={auctionInfoContent}
+              title="In-House Auction Info"
+              trigger="click"
+            >
+              <Button className="Button">
+                <InfoCircleOutlined style={{ color: "rgba(0,0,0,.45)" }} />{" "}
+                In-House Auction Info
+              </Button>
+            </Popover>
+          </Space>
+        </div>
+      </div>
+    </div>
+  );
+};

@@ -4,26 +4,34 @@ import { Link, useNavigate } from "react-router-dom";
 import api from "../../../config/axios";
 import { motion } from "framer-motion";
 
-function StaffActivities() {
+function BreederActivities() {
+  const [breederId, setBreederId] = useState([]);
   const [koiList, setKoiList] = useState([]);
   const navigate = useNavigate();
 
   useEffect(() => {
+    const storedUser = localStorage.getItem("user");
+    if (storedUser) {
+      const userData = JSON.parse(storedUser);
+      console.log("Stored User:", userData);
+      setBreederId(userData.breeder.breederID);
+    }
+  }, []);
+
+  useEffect(() => {
     const fetchKoiList = async () => {
       try {
-        const response = await api.get(
-          "https://66f83af72a683ce9730f0194.mockapi.io/koiWinning"
-        );
+        const response = await api.get(`/shipping/breeder/${breederId}`);
         setKoiList(response.data);
       } catch (error) {
         console.error("Error fetching data: ", error);
       }
     };
     fetchKoiList();
-  }, []);
+  }, [breederId]);
 
-  const handleKoiClick = (koiId) => {
-    navigate(`/koi-details/${koiId}`);
+  const handleKoiClick = (shippingId) => {
+    navigate(`/breeder/koi-details/${shippingId}`);
   };
 
   return (
@@ -32,7 +40,7 @@ function StaffActivities() {
         <div className={styles.sidebarMenu}>
           <ul>
             <li>
-              <Link to="/Profile" className={styles.active}>
+              <Link to="/profile" className={styles.active}>
                 <span className="las la-user"></span>
                 <span> Account</span>
               </Link>
@@ -44,7 +52,7 @@ function StaffActivities() {
               </Link>
             </li>
             <li>
-              <Link to="/bidder-activities" className={styles.active}>
+              <Link to="/breeder-activities" className={styles.active}>
                 <span className="las la-fish"></span>
                 <span> Activities</span>
               </Link>
@@ -69,20 +77,21 @@ function StaffActivities() {
               }}
             >
               <div className={styles.koiInfo}>
-                <img
-                  src={koi.imageUrl}
-                  //   alt={koi.name}
-                  className={styles.koiImage}
-                />
+                <img src={koi.koi.image} className={styles.koiImage} />
                 <div>
-                  <h3>{koi.name}</h3>
+                  <h3>
+                    Bidder name: {koi.bidder.firstname} {koi.bidder.lastname}
+                  </h3>
                   <p>{koi.date}</p>
-                  <p>Bidding price: ${koi.price}</p>
+                  <p>
+                    Breeder: {koi.koi.breeder.name} {"-"} {koi.koi.varieties}
+                  </p>
+                  <p>Final bidding price: ${koi.koi.finalPrice}</p>
                 </div>
               </div>
               <button
                 className={styles.confirmBtn}
-                onClick={() => handleKoiClick(koi.id)} // Tắt nút nếu đã xác nhận
+                onClick={() => handleKoiClick(koi.shippingId)}
               >
                 Confirm
               </button>
@@ -94,4 +103,4 @@ function StaffActivities() {
   );
 }
 
-export default StaffActivities;
+export default BreederActivities;

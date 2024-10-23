@@ -32,6 +32,7 @@ function BidderProfile({ accountId, token }) {
   const [isUpdate, setIsUpdate] = useState(false);
   const [previewImage, setPreviewImage] = useState("");
   const [fileList, setFileList] = useState([]);
+  const [errors, setErrors] = useState({});
 
   // =========================== Gọi API để lấy thông tin người dùng
   const fetchUserData = useCallback(async () => {
@@ -89,8 +90,43 @@ function BidderProfile({ accountId, token }) {
     }
   }, [fetchUserData, accountId]);
 
+  const validate = () => {
+    let formErrors = {};
+
+    if (!/^[A-Za-z\s]+$/.test(userData.firstname)) {
+      formErrors.firstname =
+        "First name must not contain numbers or special characters";
+    }
+
+    if (!/^[A-Za-z\s]+$/.test(userData.lastname)) {
+      formErrors.lastname =
+        "Last name must not contain numbers or special characters";
+    }
+
+    if (!userData.phone) {
+      formErrors.phone = "Phone number is required";
+    } else if (!/^[0-9]+$/.test(userData.phone)) {
+      formErrors.phone = "Phone number must contain only digits";
+    } else if (!userData.phone.match(/^0[0-9]{9}$/)) {
+      formErrors.phone =
+        "Phone number must be a valid 10-digit number starting with 0";
+    }
+
+    if (!/\S+@\S+\.\S+/.test(userData.email)) {
+      formErrors.email = "Email is invalid";
+    }
+
+    setErrors(formErrors);
+    return Object.keys(formErrors).length === 0;
+  };
+
   // =========================== Gắn API để cập nhật thông tin mới
   const handleUpdate = async () => {
+    if (!validate()) {
+      toast.error("Please enter correctly before submitting");
+      return;
+    }
+
     try {
       setIsUpdate(true);
       let updatedData = { ...userData };
@@ -136,7 +172,6 @@ function BidderProfile({ accountId, token }) {
       }, 1000);
     } catch (error) {
       console.error("Error updating user data", error);
-      toast.error("Error updating user data");
     } finally {
       setIsUpdate(false);
       setFileList([]); // Reset danh sách file sau khi cập nhật
@@ -177,11 +212,13 @@ function BidderProfile({ accountId, token }) {
   const handleReset = () => {
     setUserData(initialData);
     setPreviewImage(initialData.avatar);
+    setErrors({});
   };
 
   const handleCancel = () => {
     setIsEdit(false);
     setUserData(initialData);
+    setErrors({});
   };
 
   const getBase64 = (file) =>
@@ -304,6 +341,11 @@ function BidderProfile({ accountId, token }) {
                   }
                   disabled={!isEdit}
                 />
+                {errors.firstname && (
+                  <span className="error" style={{ color: "red" }}>
+                    {errors.firstname}
+                  </span>
+                )}
               </Form.Item>
               <Form.Item>
                 <label className={styles.formLabel}>Last name</label>
@@ -315,6 +357,11 @@ function BidderProfile({ accountId, token }) {
                   }
                   disabled={!isEdit}
                 />
+                {errors.lastname && (
+                  <span className="error" style={{ color: "red" }}>
+                    {errors.lastname}
+                  </span>
+                )}
               </Form.Item>
               <Form.Item>
                 <label className={styles.formLabel}>Gender</label>
@@ -337,6 +384,11 @@ function BidderProfile({ accountId, token }) {
                   }
                   disabled={!isEdit}
                 />
+                {errors.phone && (
+                  <span className="error" style={{ color: "red" }}>
+                    {errors.phone}
+                  </span>
+                )}
               </Form.Item>
               <Form.Item className={styles.addressFields}>
                 <label className={styles.formLabel}>Address</label>
@@ -383,6 +435,11 @@ function BidderProfile({ accountId, token }) {
                   }
                   disabled={!isEdit}
                 />
+                {errors.email && (
+                  <span className="error" style={{ color: "red" }}>
+                    {errors.email}
+                  </span>
+                )}
               </Form.Item>
 
               <div className={styles.profileButton}>

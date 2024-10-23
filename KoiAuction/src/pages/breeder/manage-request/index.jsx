@@ -41,26 +41,24 @@ function BreederRequest() {
   const [videoFileList, setVideoFileList] = useState([]); // upload file video
   const [uploadProgress, setUploadProgress] = useState(0); // Phần trăm upload
   const [methodInfoVisible, setMethodInfoVisible] = useState(false);
-  const [breederid, setBreederid] = useState({});
+  const [breederId, setBreederId] = useState({});
 
-  
   useEffect(() => {
     const storedUser = localStorage.getItem("user");
     if (storedUser) {
       const userData = JSON.parse(storedUser);
+      console.log("Stored User:", userData);
       setBreeders(userData.breeder.name);
-      setBreederid(userData.breeder.breederID);
-      console.log(userData.breeder.name);
+      setBreederId(userData.breeder.breederID);
+      console.log("Breeder Name:", userData.breeder.name);
     }
   }, []);
-  
 
   const fetchKoiAndBreeder = async () => {
     try {
       // Fetch thông tin koi
       const koiResponse = await api.get(`/koi`);
       setKois(koiResponse.data);
-
     } catch (error) {
       console.error("Error fetching data:", error);
     }
@@ -282,20 +280,20 @@ function BreederRequest() {
       }
 
       switch (kois.rating) {
-        case "1":
-          kois.rating = "1 star";
+        case "1 star":
+          kois.rating = "1";
           break;
-        case "2":
-          kois.rating = "2 stars";
+        case "2 stars":
+          kois.rating = "2";
           break;
-        case "3":
-          kois.rating = "3 stars";
+        case "3 stars":
+          kois.rating = "3";
           break;
-        case "4":
-          kois.rating = "4 stars";
+        case "4 stars":
+          kois.rating = "4";
           break;
-        case "5":
-          kois.rating = "5 stars";
+        case "5 stars":
+          kois.rating = "5";
           break;
       }
 
@@ -305,7 +303,7 @@ function BreederRequest() {
         toast.success("Update Koi request sucessfully!");
       } else {
         // => create
-        const response = await api.post(`/koi/creation/${breederid}`, kois);
+        const response = await api.post(`/koi/creation/${breederId}`, kois);
         toast.success("Create Koi request sucessfully!");
       }
 
@@ -439,11 +437,7 @@ function BreederRequest() {
             >
               <Input />
             </Form.Item>
-            <Form.Item
-              label="Breeder"
-              name="breeder"
-              initialValue={breeders}
-            >
+            <Form.Item label="Breeder" name="breeder" initialValue={breeders}>
               <Input
                 value={breeders} // Nếu breeder chưa được tải, mặc định là chuỗi rỗng
                 disabled
@@ -570,7 +564,6 @@ function BreederRequest() {
                       }
                       return isLt50M; // Chặn upload nếu vượt quá giới hạn
                     }}
-
                   >
                     {fileList.length >= 8 ? null : uploadButton}
                   </Upload>
@@ -590,7 +583,7 @@ function BreederRequest() {
               </Col>
             </Row>
           </div>
-          <div className={styles.koiMethod}>
+          <div className={styles.koiStar}>
             <h2
               className={styles.koiTitle}
               style={{
@@ -601,60 +594,12 @@ function BreederRequest() {
               Rating
             </h2>
 
-            {/* <Tooltip>
-              <QuestionCircleOutlined
-                style={{
-                  fontSize: "20px",
-                  cursor: "pointer",
-                }}
-                onClick={() => setMethodInfoVisible(true)}
-              />
-            </Tooltip> */}
-            {/* <Modal
-              title="Method information"
-              visible={methodInfoVisible}
-              onCancel={() => setMethodInfoVisible(false)}
-              footer={null}
-            >
-              <div>
-                <h3>Method 1: Fixed Price Selling</h3>
-                <p>
-                  In this format, the price of the Koi fish is set at a specific
-                  amount. If one person wants to buy, the price remains fixed.
-                  However, if two or more people wish to purchase the same fish,
-                  when the session closes, the system will randomly select a
-                  buyer to determine who gets to purchase the fish.
-                </p>
-                <h3>Method 2: One-Time Bid</h3>
-                <p>
-                  When each Koi fish is put up for auction, potential buyers
-                  will determine their own bid price for the Koi (this price
-                  remains completely confidential). When the auction ends, the
-                  highest bidder will win the fish.
-                </p>
-                <h3>Method 3: Ascending Bid</h3>
-                <p>
-                  A buyer can place multiple bids, and the highest bidder will
-                  be the winner. The bidding information from the buyers is made
-                  public.
-                </p>
-                <h3>Method 4: Descending Bid</h3>
-                <p>
-                  The auction winner is the first person to accept the starting
-                  price or a reduced price (the system will periodically
-                  decrease the price if no one places a bid). The bidding
-                  information from the buyers is made public.
-                </p>
-              </div>
-            </Modal> */}
             <Form.Item
-              name="method"
-              rules={[
-                { required: true, message: "Please select a bidding method" },
-              ]}
+              name="rating"
+              rules={[{ required: true, message: "Please select rating" }]}
             >
               <Select
-                placeholder="Select bidding method"
+                placeholder="Select rating"
                 style={{ width: "100%", marginTop: "24px" }}
                 onChange={(value) => form.setFieldsValue({ method: value })}
               >
