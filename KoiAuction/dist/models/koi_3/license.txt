@@ -1,0 +1,11 @@
+Model Information:
+* title:	Koi Fish
+* source:	https://sketchfab.com/3d-models/koi-fish-56a26daef7474604bd8f83cb022af701
+* author:	MAXDESIGN-3D (https://sketchfab.com/MAXDESIGN)
+
+Model License:
+* license type:	CC-BY-4.0 (http://creativecommons.org/licenses/by/4.0/)
+* requirements:	Author must be credited. Commercial use is allowed.
+
+If you use this 3D model in your project be sure to copy paste this credit wherever you share it:
+This work is based on "Koi Fish" (https://sketchfab.com/3d-models/koi-fish-56a26daef7474604bd8f83cb022af701) by MAXDESIGN-3D (https://sketchfab.com/MAXDESIGN) licensed under CC-BY-4.0 (http://creativecommons.org/licenses/by/4.0/)
