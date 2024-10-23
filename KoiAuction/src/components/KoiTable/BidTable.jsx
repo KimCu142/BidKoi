@@ -34,10 +34,16 @@ const BidTable = ({ initialPrice ,isAuctionEnded}) => {
   }, []);
 
   const connect = () => {
-    let Sock = new SockJS('http://localhost:8080/BidKoi/ws');
+    // Kiểm tra nếu ứng dụng đang chạy trên HTTPS hay HTTP để chọn đúng URL WebSocket
+    const wsUrl = window.location.protocol === 'https:' 
+      ? 'https://bid-koi-n1yy.vercel.app/BidKoi/ws'  // Sử dụng HTTPS khi ở production
+      : 'http://localhost:8080/BidKoi/ws';           // Sử dụng HTTP khi ở local development
+    
+    let Sock = new SockJS(wsUrl);
     stompClient = over(Sock);
     stompClient.connect({}, onConnected, onError);
   };
+  
 
   const onConnected = () => {
     setBidData({ ...bidData, connected: true });
