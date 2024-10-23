@@ -2,7 +2,6 @@ import React, { useState } from 'react';
 import { List, Avatar, Input, Button } from 'antd';
 import { SendOutlined } from '@ant-design/icons';
 import { GoogleGenerativeAI } from '@google/generative-ai';
-import './ChatBot.css';
 const apiKey = 'AIzaSyDiiyu9YFpObl9e8-zPW-JK8AyQHBk_Bw0';
 const genAI = new GoogleGenerativeAI(apiKey);
 const { TextArea } = Input;
