@@ -59,7 +59,7 @@ const KoiCard = ({ id, price, img, length, varieties, age, sex, status, breeder,
             </svg>
             {status}
           </p>
-          <p className={styles.price}>▶ ${price}</p>
+          <p className={styles.price}>▶${price}</p>
         </div>
       </div>
 

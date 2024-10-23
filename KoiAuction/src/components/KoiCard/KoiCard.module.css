@@ -73,14 +73,17 @@ height: 100%;
 font-size: 20px;
 }
 .content2{
+  width: 100%;
   display: flex;
+  justify-content: space-around;
 }
 
-.price {
+.price {display: flex;
   width: 60%;
   font-size: 1.5em;
   font-weight: bold;
   color: green;
+ justify-content:end ;
 }
 
 /* Chi tiết cá */
