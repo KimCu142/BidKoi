@@ -3,13 +3,13 @@
   "private": true,
   "version": "0.0.0",
   "type": "module",
-  "proxy": "http://localhost:8080/BidKoi",
+  "proxy": "https://bidkois.azurewebsites.net/BidKoi",
   "scripts": {
     "dev": "vite",
     "build": "vite build",
     "lint": "eslint .",
     "preview": "vite preview",
-    "start": "react-scripts start",
+    "start": "vite preview",
     "test": "react-scripts test --env=jsdom",
     "eject": "react-scripts eject"
   },
@@ -42,7 +42,6 @@
     "buffer": "^6.0.3",
     "canvas-confetti": "^1.9.3",
     "firebase": "^10.13.2",
-
     "formik": "^2.4.6",
     "framer-motion": "6.0.0-beta.5",
     "framer-motion-3d": "6.0.0-beta.5",
