@@ -60,31 +60,13 @@
 }
 
 .imageFields {
-  display: flex;
-  justify-content: space-between; /* Căn đều hai cột */
-  align-items: flex-start; /* Đặt các phần tử ở đầu hàng */
-  gap: 20px; /* Khoảng cách giữa hai cột */
   margin-top: 20px;
-}
-
-.column {
-  display: flex;
-  flex-direction: column; /* Đặt tiêu đề và ảnh theo cột */
-  align-items: center; /* Căn giữa các phần tử trong cột */
-  width: 48%; /* Mỗi cột chiếm 48% chiều rộng */
 }
 
 .avatarTitle {
   font-size: 18px;
   font-weight: bold;
   margin-bottom: 10px;
-  text-align: center; /* Căn giữa tiêu đề */
-}
-
-.column img {
-  max-width: 100%; /* Ảnh chiếm toàn bộ chiều rộng của cột */
-  border-radius: 10px;
-  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.2); /* Bóng cho ảnh */
 }
 
 .sendButton {

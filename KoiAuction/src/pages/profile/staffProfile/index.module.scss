@@ -196,20 +196,29 @@
 
       input::placeholder,
       textarea::placeholder {
-        color: #333;
+        font-family: "Montserrat", sans-serif;
+        color: #979595;
         opacity: 1;
       }
 
-      .birthdayDatepicker {
-        margin-left: 0px;
+      .ant-select-selector {
+        font-size: 24px;
+        font-family: "Montserrat", sans-serif;
+      }
+
+      .ant-select-dropdown .ant-select-item {
+        font-size: 24px;
+        font-family: "Montserrat", sans-serif;
       }
     }
   }
 }
 
 .profileButton {
+  display: flex;
+  justify-content: flex-end;
+  grid-column: span 2;
   .twoButton {
-    text-align: right;
     margin-top: 45px;
     .btn1,
     .btn2 {

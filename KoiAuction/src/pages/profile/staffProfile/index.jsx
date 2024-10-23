@@ -1,5 +1,5 @@
 /* eslint-disable no-unused-vars */
-import { DatePicker, Form, Image, Input, Upload } from "antd";
+import { DatePicker, Form, Image, Input, Select, Upload } from "antd";
 import styles from "./index.module.scss";
 import TextArea from "antd/es/input/TextArea";
 import { useCallback, useEffect, useState } from "react";
@@ -10,26 +10,26 @@ import { PlusOutlined } from "@ant-design/icons";
 import uploadAvatarFile from "../../../utils/avatarFile";
 import { Link } from "react-router-dom";
 import api from "../../../config/axios";
+import { motion } from "framer-motion";
+const { Option } = Select;
 
 // Thay đổi đường dẫn tùy vào vị trí của utils/file
 
 function StaffProfile({ accountId, token }) {
   const [userData, setUserData] = useState({
     staffId: "",
-    firstname: "",
-    lastname: "",
+    firstName: "",
+    lastName: "",
     gender: "None",
     phone: "",
     address: "",
     email: "",
-    birthday: null,
   });
 
   const [initialData, setInitialData] = useState({});
   const [isEdit, setIsEdit] = useState(false);
   const [isUpdate, setIsUpdate] = useState(false);
-  const [previewImage, setPreviewImage] = useState("");
-  const [fileList, setFileList] = useState([]);
+  const [errors, setErrors] = useState({});
 
   // =========================== Gọi API để lấy thông tin người dùng
   const fetchUserData = useCallback(async () => {
@@ -43,26 +43,24 @@ function StaffProfile({ accountId, token }) {
 
           // Cập nhật userData từ cả userInfo và accountInfo
           setUserData({
-            staffId: userInfo.id || "",
-            firstname: userInfo.firstname || "",
-            lastname: userInfo.lastname || "",
+            staffId: userInfo.staffId || "",
+            firstName: userInfo.firstName || "",
+            lastName: userInfo.lastName || "",
             gender: userInfo.gender || "None",
             phone: accountInfo.phone || "",
             address: userInfo.address || "",
             email: accountInfo.email || "",
-            birthday: userInfo.birthday || null,
           });
 
           // Lưu lại giá trị ban đầu để dùng sau này
           setInitialData({
-            staffId: userInfo.id || "",
-            firstname: userInfo.firstname || "",
-            lastname: userInfo.lastname || "",
+            staffId: userInfo.staffId || "",
+            firstName: userInfo.firstName || "",
+            lastName: userInfo.lastName || "",
             gender: userInfo.gender || "None",
             phone: accountInfo.phone || "",
             address: userInfo.address || "",
             email: accountInfo.email || "",
-            birthday: userInfo.birthday || null,
           });
 
           //   setPreviewImage(userInfo.avatar || "");
@@ -81,27 +79,48 @@ function StaffProfile({ accountId, token }) {
     }
   }, [fetchUserData, accountId]);
 
+  // Custom validation function
+  const validate = () => {
+    let formErrors = {};
+
+    if (!/^[A-Za-z\s]+$/.test(userData.firstName)) {
+      formErrors.firstName =
+        "First name must not contain numbers or special characters";
+    }
+
+    if (!/^[A-Za-z\s]+$/.test(userData.lastName)) {
+      formErrors.lastName =
+        "Last name must not contain numbers or special characters";
+    }
+
+    if (!userData.phone) {
+      formErrors.phone = "Phone number is required";
+    } else if (!/^[0-9]+$/.test(userData.phone)) {
+      formErrors.phone = "Phone number must contain only digits";
+    } else if (!userData.phone.match(/^0[0-9]{9}$/)) {
+      formErrors.phone =
+        "Phone number must be a valid 10-digit number starting with 0";
+    }
+
+    if (!/\S+@\S+\.\S+/.test(userData.email)) {
+      formErrors.email = "Email is invalid";
+    }
+
+    setErrors(formErrors);
+    return Object.keys(formErrors).length === 0;
+  };
+
   // =========================== Gắn API để cập nhật thông tin mới
   const handleUpdate = async () => {
+    if (!validate()) {
+      toast.error("Please enter correctly before submitting");
+      return;
+    }
+
     try {
       setIsUpdate(true);
       let updatedData = { ...userData };
 
-      // Kiểm tra nếu có file trong fileList để upload avatar
-      //   if (fileList.length > 0) {
-      //     const file = fileList[0];
-      //     try {
-      //       const url = await uploadAvatarFile(file.originFileObj); // Upload ảnh
-      //       updatedData = { ...updatedData, avatar: url }; // Cập nhật URL avatar mới
-      //       setPreviewImage(url);
-      //     } catch (uploadError) {
-      //       console.error("Error uploading avatar", uploadError);
-      //       toast.error("Error uploading avatar. Please try again!");
-      //       return; // Ngừng quá trình nếu lỗi xảy ra khi upload ảnh
-      //     }
-      //   }
-
-      // Gửi yêu cầu cập nhật dữ liệu người dùng
       const response = await api.put(
         `/staff/update-profile/${accountId}`,
         updatedData
@@ -114,15 +133,9 @@ function StaffProfile({ accountId, token }) {
       setIsEdit(false);
     } catch (error) {
       console.error("Error updating user data", error);
-      toast.error("Error updating user data");
     } finally {
       setIsUpdate(false);
-      setFileList([]); // Reset danh sách file sau khi cập nhật
     }
-  };
-
-  const onChange = (date, dateString) => {
-    setUserData((prev) => ({ ...prev, birthday: dateString }));
   };
 
   const handleEdit = () => {
@@ -131,49 +144,14 @@ function StaffProfile({ accountId, token }) {
 
   const handleReset = () => {
     setUserData(initialData);
-    setPreviewImage(initialData.avatar);
+    setErrors({});
   };
 
   const handleCancel = () => {
     setIsEdit(false);
     setUserData(initialData);
+    setErrors({});
   };
-
-  //   const getBase64 = (file) =>
-  //     new Promise((resolve, reject) => {
-  //       const reader = new FileReader();
-  //       reader.readAsDataURL(file);
-  //       reader.onload = () => resolve(reader.result);
-  //       reader.onerror = (error) => reject(error);
-  //     });
-
-  //   const handlePreview = async (file) => {
-  //     if (!file.url && !file.preview) {
-  //       file.preview = await getBase64(file.originFileObj);
-  //     }
-  //     setPreviewImage(file.url || file.preview);
-  //   };
-
-  //   const handleChange = ({ fileList: newFileList }) => setFileList(newFileList);
-
-  //   const uploadButton = (
-  //     <button
-  //       style={{
-  //         border: 0,
-  //         background: "none",
-  //       }}
-  //       type="button"
-  //     >
-  //       <PlusOutlined />
-  //       <div
-  //         style={{
-  //           marginTop: 8,
-  //         }}
-  //       >
-  //         Upload
-  //       </div>
-  //     </button>
-  //   );
 
   return (
     <>
@@ -202,69 +180,46 @@ function StaffProfile({ accountId, token }) {
         </div>
       </div>
 
-      <div className={styles.mainBox}>
+      <motion.div
+        className={styles.mainBox}
+        initial={{ opacity: 0 }}
+        animate={{ opacity: 1 }}
+        transition={{ duration: 0.5 }}
+      >
         <div className={styles.profileBox}>
-          {/* <div className={styles.userId}>
-            <strong>User ID: </strong>
-            {accountId}
-          </div> */}
-          <Form className={styles.profileContainer}>
-            {/* <div className={styles.imageFields}>
-              <Form.Item name="avatar">
-                <h3 className={styles.avatarTitle}>Avatar</h3>
-                {previewImage && !isEdit ? (
-                  <Image
-                    src={previewImage}
-                    alt="Avatar"
-                    style={{
-                      width: "150px",
-                      height: "150px",
-                      borderRadius: "50%",
-                    }}
-                  />
-                ) : (
-                  <Upload
-                    action="https://660d2bd96ddfa2943b33731c.mockapi.io/api/upload"
-                    listType="picture-circle"
-                    fileList={fileList}
-                    onPreview={handlePreview}
-                    onChange={handleChange}
-                    disabled={!isEdit}
-                    beforeUpload={() => false}
-                  >
-                    {fileList.length === 0 && isEdit ? uploadButton : null}
-                  </Upload>
-                )}
-                {isEdit && (
-                  <div className={styles.textlight}>
-                    Allowed JPG, GIF or PNG.
-                  </div>
-                )}
-              </Form.Item>
-            </div> */}
-
+          <Form className={styles.profileContainer} labelCol={{ span: 24 }}>
             <div className={styles.formFields}>
               <Form.Item>
                 <label className={styles.formLabel}>First name</label>
                 <Input
                   placeholder="First name"
-                  value={userData.firstname}
+                  value={userData.firstName}
                   onChange={(e) =>
-                    setUserData({ ...userData, firstname: e.target.value })
+                    setUserData({ ...userData, firstName: e.target.value })
                   }
                   disabled={!isEdit}
                 />
+                {errors.firstName && (
+                  <span className="error" style={{ color: "red" }}>
+                    {errors.firstName}
+                  </span>
+                )}
               </Form.Item>
               <Form.Item>
                 <label className={styles.formLabel}>Last name</label>
                 <Input
                   placeholder="Last name"
-                  value={userData.lastname}
+                  value={userData.lastName}
                   onChange={(e) =>
-                    setUserData({ ...userData, lastname: e.target.value })
+                    setUserData({ ...userData, lastName: e.target.value })
                   }
                   disabled={!isEdit}
                 />
+                {errors.lastName && (
+                  <span className="error" style={{ color: "red" }}>
+                    {errors.lastName}
+                  </span>
+                )}
               </Form.Item>
               <Form.Item>
                 <label className={styles.formLabel}>Gender</label>
@@ -287,6 +242,11 @@ function StaffProfile({ accountId, token }) {
                   }
                   disabled={!isEdit}
                 />
+                {errors.phone && (
+                  <span className="error" style={{ color: "red" }}>
+                    {errors.phone}
+                  </span>
+                )}
               </Form.Item>
               <Form.Item className={styles.addressFields}>
                 <label className={styles.formLabel}>Address</label>
@@ -300,15 +260,7 @@ function StaffProfile({ accountId, token }) {
                   disabled={!isEdit}
                 />
               </Form.Item>
-              <Form.Item>
-                <label className={styles.formLabel}>Birthday</label>
-                <DatePicker
-                  onChange={onChange}
-                  value={userData.birthday ? moment(userData.birthday) : null}
-                  disabled={!isEdit}
-                  className={styles.birthdayDatepicker}
-                />
-              </Form.Item>
+
               <Form.Item>
                 <label className={styles.formLabel}>Email</label>
                 <Input
@@ -319,15 +271,25 @@ function StaffProfile({ accountId, token }) {
                   }
                   disabled={!isEdit}
                 />
+                {errors.email && (
+                  <span className="error" style={{ color: "red" }}>
+                    {errors.email}
+                  </span>
+                )}
               </Form.Item>
 
               <div className={styles.profileButton}>
                 <div className={styles.twoButton}>
                   {isEdit ? (
                     <>
-                      <button className={styles.btn1} onClick={handleUpdate}>
+                      <motion.button
+                        className={styles.btn1}
+                        onClick={handleUpdate}
+                        whileHover={{ scale: 1.1 }}
+                        whileTap={{ scale: 0.9, y: -10 }}
+                      >
                         Save changes
-                      </button>
+                      </motion.button>
 
                       <div onClick={handleReset} className={styles.btn2}>
                         Reset
@@ -346,7 +308,7 @@ function StaffProfile({ accountId, token }) {
             </div>
           </Form>
         </div>
-      </div>
+      </motion.div>
     </>
   );
 }
