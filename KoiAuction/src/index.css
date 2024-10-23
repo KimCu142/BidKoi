@@ -1,9 +1,7 @@
-body {
-  background: linear-gradient(
-      rgba(255, 255, 255, 0.5),
-      rgba(255, 255, 255, 0.5)
-    ),
-    url("D:\Ky5\New BidKoi-FE\BidKoi\KoiAuction\src\assets\maybay.png");
+/. body {
+  background: linear-gradient(rgba(255, 255, 255, 0.5),
+      rgba(255, 255, 255, 0.5)),
+    url("D:\Ky5\BidKoi-FE-New\BidKoi\KoiAuction\src\assets\maybay.png");
 
   background-size: cover;
   background-position: center;

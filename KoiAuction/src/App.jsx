@@ -32,6 +32,7 @@ import Invoices from "./components/scenes/invoices/index.jsx";
 import Form from "./components/scenes/form/index.jsx";
 import FailPage from "./pages/fail/index.jsx";
 import Wallet from "./pages/wallet/index.jsx";
+import AuctionCard from "./pages/ListAuction/AuctionCard.jsx";
 
 function AppLayout({ children }) {
   return (
@@ -58,7 +59,7 @@ function DashboardLayout() {
 function App() {
   const router = createBrowserRouter([
     {
-      path: "/auctions/active/:roomId", // Correct path format for dynamic parameters
+      path: "/auctions/:auctionId/:roomId", // Correct path format for dynamic parameters
       element: (
         <>
           <AppLayout>
@@ -134,7 +135,7 @@ function App() {
       ),
     },
     {
-      path: "/auctions/active",
+      path: "/auctions/:auctionId",
 
       element: (
         <>
@@ -151,6 +152,16 @@ function App() {
         <>
           <AppLayout>
             <Availableaution />
+          </AppLayout>
+        </>
+      ),
+    },
+    {
+      path: "/AuctionSchedule",
+      element: (
+        <>
+          <AppLayout>
+            <AuctionCard />
           </AppLayout>
         </>
       ),
@@ -220,7 +231,7 @@ function App() {
         },
       ],
     },
-  
+
     {
       path: "/admin-dashboard",
       element: <DashboardLayout />,
