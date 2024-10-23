@@ -6,30 +6,7 @@
   display: flex;
   align-items: center;
   justify-content: center;
-  button {
-    --purple: #db07d1;
-    --pink: #f2056f;
-    --blue: #61dafb;
-  
-    appearance: none;
-    border: none;
-    cursor: pointer;
-    background-color: #acc7ed;
-    color: #fff;
-    border-radius: 60px;
-    outline: none;
-    margin: 0;
-    padding: 12px 25px;
-    font-family: "Poppins";
-    font-size: 48px;
-    font-weight: 600;
-    line-height: 48px;
-    letter-spacing: -1px;
-    position: relative;
-    text-align: center;
-    display: flex;
-    align-items: center;
-  }
+
 }
 .AuctionBox{
 width: 50%;
@@ -38,18 +15,55 @@ flex-direction: column;
 align-items: center;
 justify-content: center;
 gap: 16px;
+.button {
+  --purple: #db07d1;
+  --pink: #f2056f;
+  --blue: #61dafb;
+
+  appearance: none;
+  border: none;
+  cursor: pointer;
+  background-color: #acc7ed;
+  color: #fff;
+  border-radius: 60px;
+  outline: none;
+  margin: 0;
+  padding: 12px 25px;
+  font-family: "Poppins";
+  font-size: 48px;
+  font-weight: 600;
+  line-height: 48px;
+  letter-spacing: -1px;
+  position: relative;
+  text-align: center;
+  display: flex;
+  align-items: center;
+}
 }
 
-.AuctionInfo{
-  background-color:#61dafb11;
+.AuctionInfo {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  background: linear-gradient(45deg, var(--blue), var(--pink)); /* Bắt đầu với màu xanh */
   backdrop-filter: blur(10px) !important;
   font-family: "Poppins";
-color: #f2056f;
-font-weight: 500;
-border-radius: 60px;
-padding: 30px;
-font-weight: 700;
+  color: var(--purple);
+  font-weight: 500;
+  border-radius: 60px;
+  padding: 30px;
+  font-weight: 700;
 }
+
+
+
+/* Định nghĩa biến màu */
+:root {
+  --purple: #c917c079;
+  --pink: #f2057065;
+  --blue: #32c5ee35;
+}
+
 
 .shapes {
   position: absolute;
@@ -154,7 +168,20 @@ font-weight: 700;
   display: block;
 }
 
+.schedule-button {
+  background-color: var(--purple);
+  color: white;
+  border: none;
+  padding: 10px 20px;
+  border-radius: 24px;
+  font-size: 16px;
+  cursor: pointer;
+  transition: background-color 0.3s ease;
+}
 
+.schedule-button:hover {
+  background-color: #ff59a4;
+}
 
 
 /* devanagari */

@@ -1,10 +1,9 @@
 import { useState, useEffect, useRef } from "react";
-import axios from "axios";
 import { InfoCircleOutlined, SmileOutlined } from "@ant-design/icons";
-import { Popover, Button, Space, Modal } from "antd";
+import { Popover, Button, Space, Modal, message  } from "antd";
 import styles from "./Auctions.module.css";
 import KoiCard from "../../components/KoiCard/KoiCard";
-import { useNavigate } from "react-router-dom";
+import { useNavigate, useParams } from "react-router-dom";
 import Payment from "../payment/Payment";
 import { motion } from "framer-motion";
 import api from "../../config/axios";
@@ -30,35 +29,35 @@ const Auctions = () => {
   const bellSoundUrl =
     "https://firebasestorage.googleapis.com/v0/b/bidkoi-16827.appspot.com/o/pay_notification%2FMariah%20Carey%20-%20IT'S%20TIME!!%20(mp3cut.net).mp3?alt=media";
 
-  // const [koiData, setKoiData] = useState([]);
   const [auctionDetails, setAuctionDetails] = useState({});
   const [rooms, setRooms] = useState([]);
   const [selectedRoom, setSelectedRoom] = useState(null);
   const [isPaymentModal, setIsPaymentModal] = useState(false);
-  const [userData, setuserData] = useState([]);
+  const [userData, setUserData] = useState(null); // Thay đổi [] thành null vì user data thường là object
   const navigate = useNavigate();
-  const bellAudioRef = useRef(null); // Sử dụng ref để giữ lại đối tượng Audio
+  const bellAudioRef = useRef(null);
+  const { auctionId } = useParams(); // Lấy auctionId từ URL params đúng cách
 
-
- 
   useEffect(() => {
     const storedUser = localStorage.getItem("user");
- setuserData(JSON.parse(storedUser));
-    bellAudioRef.current = new Audio(bellSoundUrl); // Khởi tạo chỉ một lần
+    if (storedUser) {
+      setUserData(JSON.parse(storedUser)); // Tách setUserData ra đúng cách
+    }
+    bellAudioRef.current = new Audio(bellSoundUrl); // Khởi tạo âm thanh chỉ một lần
   }, []);
 
   useEffect(() => {
-    api
-      .get("/auction/active")
-      .then((response) => {
-        const auctionData = response.data.data;
-        setAuctionDetails(auctionData);
-    console.log(auctionData)
-        setRooms(auctionData.rooms);
-        // setKoiData(koiInfo);
-      })
-      .catch((error) => console.error("Error fetching data:", error));
-  }, []);
+    if (auctionId) {
+      api
+        .get(`/auction/${auctionId}`) // Truy vấn auctionId đúng cách
+        .then((response) => {
+          const auctionData = response.data;
+          setAuctionDetails(auctionData);
+          setRooms(auctionData.rooms);
+        })
+        .catch((error) => console.error("Error fetching data:", error));
+    }
+  }, [auctionId]);
 
   const AuctionInfo = () => {
     const startDate = new Date(auctionDetails.startTime).toLocaleDateString();
@@ -82,8 +81,7 @@ const Auctions = () => {
               trigger="click"
             >
               <Button className={styles.Button}>
-                <InfoCircleOutlined style={{ color: "rgba(0,0,0,.45)" }} />{" "}
-                In-House Auction Info
+                <InfoCircleOutlined style={{ color: "rgba(0,0,0,.45)" }} /> In-House Auction Info
               </Button>
             </Popover>
           </Space>
@@ -95,8 +93,8 @@ const Auctions = () => {
   const handleRoomClick = async (room) => {
     try {
       const response = await api.get(`/placeBid/${userData.bidder.id}/${room.roomId}`);
+      
       const isAllowed = response.data;
-  
       if (isAllowed) {
         handleNavigate(room.roomId); // Điều hướng tới trang đấu giá
       } else {
@@ -108,15 +106,12 @@ const Auctions = () => {
       console.error("Error calling placeBid API:", error);
     }
   };
-  
-  
-  // Hàm điều hướng nếu được phép
+
   const handleNavigate = (roomId) => {
     if (roomId) {
-      navigate(`/auctions/active/${roomId}`);
+      navigate(`/auctions/${auctionId}/${roomId}`);
     }
   };
-  
 
   const handlePayment = () => {
     setIsPaymentModal(false);
@@ -130,12 +125,6 @@ const Auctions = () => {
     bellAudioRef.current.pause(); // Dừng âm thanh từ ref
     bellAudioRef.current.currentTime = 0; // Đặt lại vị trí phát về 0
   };
-
-  // const handleNavigate = (roomId) => {
-  //   if (roomId) {
-  //     navigate(`/auctions/active/${roomId}`);
-  //   }
-  // };
 
   return (
     <div className={styles.body}>

@@ -14,9 +14,6 @@ function AvailableAuction() {
   const [isPress, setIsPress] = useState(false);
   const mouseX = useMotionValue(0);
   const mouseY = useMotionValue(0);
-
-  
-
   // State for holding auction data
   const [auctionData, setAuctionData] = useState(null);
   const token = localStorage.getItem("token");
@@ -25,11 +22,7 @@ function AvailableAuction() {
   useEffect(() => {
     const fetchAuctionData = async () => {
       try {
-        const response = await api.get("/auction/active", {
-          headers: {
-            Authorization: `Bearer ${token}`,
-          }
-        });
+        const response = await api.get("/auction/active");
         if (response.data && response.data.data) {
           setAuctionData(response.data.data); 
         }
@@ -51,17 +44,28 @@ function AvailableAuction() {
 
   const handleNavigate = () => {
     if (auctionData) {
-      navigate(`/auctions/active`);
+      const currentTime = new Date().getTime();
+      const startTime = new Date(auctionData.startTime).getTime();
+  const auctionId = auctionData.auctionId;
+      // Chỉ navigate khi thời gian hiện tại lớn hơn hoặc bằng startTime
+      if (currentTime >= startTime) {
+        navigate(`/auctions/${auctionId}`);
+      } else {
+        alert("Auction has not started yet!");
+      }
     }
   };
   
-  
+  const handleNavigateToSchedule = () => {
+    navigate("/auctionschedule");
+  };
 
   return (
     <div className="IntoAuction">
       <div className="AuctionBox">
         <MotionConfig transition={transition}>
           <motion.button
+          className="button"
             ref={ref}
             initial={false}
             animate={isHover ? "hover" : "rest"}
@@ -120,9 +124,14 @@ function AvailableAuction() {
         </MotionConfig>
 
         <div className="AuctionInfo">
+          <>
           <p>Start Date: {new Date(auctionData?.startTime).toLocaleString()}</p>
           <p>End Date: {new Date(auctionData?.endTime).toLocaleString()}</p>
           <p>Status: {auctionData?.status}</p>
+          </>
+          <button onClick={handleNavigateToSchedule} className="schedule-button">
+            View Auction Schedule
+          </button>
         </div>
       </div>
     </div>

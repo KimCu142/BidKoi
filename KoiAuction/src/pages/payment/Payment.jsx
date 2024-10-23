@@ -39,7 +39,7 @@ useEffect(() => {
       }
     } catch (error) {
       console.error("Lỗi khi gọi API:", error);
-      toast.error("Lỗi khi lưu thông tin đấu giá. Vui lòng thử lại.");
+      toast.error("Số dư của bạn không đủ. Vui lòng nạp thêm để tiếp tục.");
     } finally {
       setLoading(false);
     }
