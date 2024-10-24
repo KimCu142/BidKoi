@@ -1,6 +1,6 @@
 import axios from "axios";
 
-const baseUrl = "http://localhost:8080/BidKoi";
+const baseUrl = "https://bidkois.azurewebsites.net/BidKoi";
 
 const config = {
   baseUrl: baseUrl,
