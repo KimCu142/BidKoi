@@ -109,7 +109,7 @@ export default function Bidding() {
     // Fetch data using Axios
 
     api
-      .get(`http://localhost:8080/BidKoi/auction/active`)
+      .get(`/auction/active`)
       .then((response) => {
         const auctionData = response.data.data;
         setAuctionDetails(auctionData);
@@ -132,7 +132,7 @@ export default function Bidding() {
           setIsAuctionEnded(true); // Cập nhật trạng thái đấu giá đã kết thúc
           try {
             console.log("Room :" + roomId);
-            const response = await api.get(`http://localhost:8080/BidKoi/placeBid/winner/${roomId}`);
+            const response = await api.get(`/placeBid/winner/${roomId}`);
             const winnerName = response.data.data.username;
             console.log("UserName " + winnerName);
 
