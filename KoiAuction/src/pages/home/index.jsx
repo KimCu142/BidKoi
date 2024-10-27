@@ -19,7 +19,7 @@ function HomePage() {
                   <div className="hero-header">
                     <div className="logo-container">
                       <img
-                        src="src\assets\breeders-transparent.png"
+                        src="https://firebasestorage.googleapis.com/v0/b/bidkoi-16827.appspot.com/o/breeder_transparent%2Fbreeders-transparent.png?alt=media&token=0b816f8f-d917-4630-b216-085ccb45817c"
                         alt="Koi Breeders"
                         className="logo"
                       />

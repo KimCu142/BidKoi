@@ -94,7 +94,7 @@ function Besidebar() {
                   alt="profile-user"
                   width="100px"
                   height="100px"
-                  src="src/assets/Screenshot 2024-08-15 014546.png"
+                  src="https://firebasestorage.googleapis.com/v0/b/bidkoi-16827.appspot.com/o/Screenshot%202024-10-22%20101044.png?alt=media&token=72e02af8-db75-42e9-aa00-e49c7d755134"
                   style={{ cursor: "pointer", borderRadius: "50%" }}
                 />
               </Box>
@@ -161,7 +161,7 @@ function Besidebar() {
             />
             <Item
               title="Calendar"
-              to="/calendar"
+              to="calendar"
               icon={<DateRangeIcon />}
               selected={selected}
               setSelected={setSelected}
@@ -177,15 +177,15 @@ function Besidebar() {
               Charts
             </Typography>
             <Item
-              title="Bar Chart"
-              to="/bar"
+              title="Overview"
+              to="overview"
               icon={<LeaderboardIcon />}
               selected={selected}
               setSelected={setSelected}
             />
             <Item
               title="Pie Chart"
-              to="/pie"
+              to="pie"
               icon={<PieChartIcon />}
               selected={selected}
               setSelected={setSelected}

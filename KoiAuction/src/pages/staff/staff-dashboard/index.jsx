@@ -44,15 +44,7 @@ const StaffDashboard = () => {
 
   const items = [
     getItem("Koi Request", "staff-request", <TeamOutlined />),
-    getItem("Manage Auction", "create-auction", <ToTopOutlined />, [
-      getItem("Create New Auction", "create-auction/main"),
-      ...auctions.map((auction) =>
-        getItem(
-          `Auction #${auction.auctionId}`,
-          `create-auction/${auction.auctionId}`
-        )
-      ),
-    ]),
+    getItem("Manage Auction", "create-auction", <ToTopOutlined />),
   ];
 
   // Handle Menu item click

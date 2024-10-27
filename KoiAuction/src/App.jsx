@@ -15,7 +15,6 @@ import Bidding from "./pages/bidding/Bidding.jsx";
 import Login from "./pages/LoginPage/Login.jsx";
 import Register from "./pages/LoginPage/Register.jsx";
 import CreateAuction from "./pages/staff/manage-auction/index.jsx";
-import RoomDetail from "./pages/staff/manage-room/index.jsx";
 import Password from "./pages/profile/password/index.jsx";
 import ProtectedRoute from "./components/ProtectedRoute.jsx";
 import AboutUs from "./pages/about/index.jsx";
@@ -33,9 +32,11 @@ import Form from "./components/scenes/form/index.jsx";
 import FailPage from "./pages/fail/index.jsx";
 import Wallet from "./pages/wallet/index.jsx";
 import AuctionCard from "./pages/ListAuction/AuctionCard.jsx";
-
 import BreederActivities from "./pages/breeder/breeder-activities/index.jsx";
 import BreederConfirmImg from "./pages/breeder/confirm-breeder-image/index.jsx";
+import Overview from "./components/scenes/overview/index .jsx";
+import Pie from "./components/scenes/pie/index.jsx";
+// import Calendar from "./components/scenes/calendar/index.jsx";
 
 function AppLayout({ children }) {
   return (
@@ -62,7 +63,7 @@ function DashboardLayout() {
 function App() {
   const router = createBrowserRouter([
     {
-      path: "/auctions/:auctionId/:roomId", // Correct path format for dynamic parameters
+      path: "/auctions/:auctionId/:roomId",
       element: (
         <>
           <AppLayout>
@@ -249,12 +250,6 @@ function App() {
             />
           ),
         },
-        {
-          path: "create-auction/:auctionId",
-          element: (
-            <ProtectedRoute element={<RoomDetail />} allowedRoles={["STAFF"]} />
-          ),
-        },
       ],
     },
 
@@ -267,12 +262,12 @@ function App() {
         // { path: "/contacts", element: <Contacts /> },
         { path: "invoices", element: <Invoices /> },
         { path: "form", element: <Form /> },
-        // { path: "/bar", element: <Bar /> },
-        // { path: "/pie", element: <Pie /> },
+        { path: "overview", element: <Overview /> },
+        { path: "pie", element: <Pie /> },
         // { path: "/line", element: <Line /> },
         // { path: "/faq", element: <FAQ /> },
         // { path: "/geography", element: <Geography /> },
-        // { path: "/calendar", element: <Calendar /> },
+        // { path: "calendar", element: <Calendar /> },
       ],
     },
     {

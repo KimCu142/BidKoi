@@ -2,14 +2,17 @@
 import {
   Button,
   Col,
+  Dropdown,
   Flex,
   Form,
   Image,
   Input,
+  Menu,
   message,
   Modal,
   Popconfirm,
   Progress,
+  Rate,
   Row,
   Select,
   Table,
@@ -22,7 +25,7 @@ import { useEffect, useState } from "react";
 import { toast } from "react-toastify";
 import styles from "./index.module.scss";
 import uploadFile from "../../../utils/file";
-import { PlusOutlined, QuestionCircleOutlined } from "@ant-design/icons";
+import { PlusOutlined, EllipsisOutlined } from "@ant-design/icons";
 import { getDownloadURL, ref, uploadBytesResumable } from "firebase/storage";
 import { storage } from "../../../config/firebase";
 import api from "../../../config/axios";
@@ -115,73 +118,9 @@ function BreederRequest() {
       key: "koiId",
     },
     {
-      title: "Varieties",
+      title: "Koi Name",
       dataIndex: "varieties",
       key: "varieties",
-    },
-    {
-      title: "Length",
-      dataIndex: "length",
-      key: "length",
-      render: (length) => `${length} cm`,
-    },
-    {
-      title: "Sex",
-      dataIndex: "sex",
-      key: "sex",
-    },
-    {
-      title: "Age",
-      dataIndex: "age",
-      key: "age",
-      render: (age) => {
-        const ageLabel = getJapaneseAge(age);
-        return (
-          <span>
-            {ageLabel} ({age}y)
-          </span>
-        );
-      },
-    },
-    {
-      title: "Breeder",
-      dataIndex: ["breeder", "name"],
-      key: "breeder",
-      render: (_, record) => record.breeder?.name || breeders.name,
-      // record: đối tượng đại diện cho 1 hàng trong bảng
-      // truy cập thuộc tính "breeder" của từng koi
-      // Nếu `breeder` tồn tại và có `name`, nó sẽ hiển thị `name`
-      // Nếu không, nó sẽ hiển thị tên mặc định từ `breeders` trong state
-    },
-    {
-      title: "Description",
-      dataIndex: "description",
-      key: "description",
-    },
-    {
-      title: "Intitial price",
-      dataIndex: "initialPrice",
-      key: "initialPrice",
-      render: (price) => `${price}VNĐ`,
-    },
-    {
-      title: "Rating",
-      dataIndex: "rating",
-      key: "rating",
-      render: (rating) => {
-        switch (rating) {
-          case 1:
-            return "1 star";
-          case 2:
-            return "2 stars";
-          case 3:
-            return "3 stars";
-          case 4:
-            return "4 stars";
-          case 5:
-            return "5 stars";
-        }
-      },
     },
     {
       title: "Image",
@@ -192,42 +131,110 @@ function BreederRequest() {
       },
     },
     {
-      title: "Video",
-      dataIndex: "video",
-      key: "video",
-      render: (video) => {
-        return (
-          <video src={video} type="video/mp4" alt="" width={230} controls />
-        );
-      },
+      title: "Initial price",
+      dataIndex: "initialPrice",
+      key: "initialPrice",
+      render: (price) => `${price.toLocaleString()} VNĐ`, // Định dạng số với dấu chấm
+    },
+
+    {
+      title: "Detail",
+      key: "detail",
+      render: (text, record) => (
+        <Button
+          style={{
+            backgroundColor: "#4685af",
+            color: "white",
+            fontWeight: "500",
+          }}
+          type="link"
+          onClick={() => {
+            Modal.info({
+              title: "Koi Details",
+              content: (
+                <div>
+                  <p>
+                    <strong>ID:</strong> {record.koiId}
+                  </p>
+                  <p>
+                    <strong>Varieties:</strong> {record.varieties}
+                  </p>
+                  <p>
+                    <strong>Length:</strong> {record.length} cm
+                  </p>
+                  <p>
+                    <strong>Sex:</strong> {record.sex}
+                  </p>
+                  <p>
+                    <strong>Age:</strong> {getJapaneseAge(record.age)} (
+                    {record.age}y)
+                  </p>
+                  <p>
+                    <strong>Breeder:</strong>{" "}
+                    {record.breeder?.name || breeders.name}
+                  </p>
+                  <p>
+                    <strong>Description:</strong> {record.description}
+                  </p>
+                  <p>
+                    <strong>Initial Price:</strong>{" "}
+                    {record.initialPrice.toLocaleString()} VNĐ
+                  </p>
+                  <p>
+                    <strong>Rating:</strong>{" "}
+                    <Rate disabled value={record.rating} />
+                  </p>
+                  <Image src={record.image} alt="Koi Image" width={115} />
+                  <video src={record.video} controls width={230}></video>
+                </div>
+              ),
+              onOk() {},
+            });
+          }}
+        >
+          Detail
+        </Button>
+      ),
     },
     {
-      title: "Action",
+      title: "Actions",
       dataIndex: "status",
-      key: "action",
+      key: "actions",
       render: (status, koiRequest) => {
         if (status === "PENDING") {
           return (
-            <>
-              <Button
-                type="primary"
-                onClick={() => {
-                  setOpenModal(true);
-                  form.setFieldsValue(koiRequest);
-                }}
-              >
-                Edit
-              </Button>
-              <Popconfirm
-                title="Delete"
-                description="Do you want to delete this request?"
-                onConfirm={() => handleDelete(koiRequest.koiId)}
-              >
-                <Button type="primary" danger>
-                  Delete
-                </Button>
-              </Popconfirm>
-            </>
+            <Dropdown
+              overlay={
+                <Menu>
+                  <Menu.Item key="1">
+                    <Button
+                      type="link"
+                      style={{ fontWeight: "600" }}
+                      onClick={() => {
+                        setOpenModal(true);
+                        form.setFieldsValue(koiRequest);
+                      }}
+                    >
+                      Edit
+                    </Button>
+                  </Menu.Item>
+                  <Menu.Item key="2">
+                    <Popconfirm
+                      title="Delete"
+                      description="Do you want to delete this request?"
+                      onConfirm={() => handleDelete(koiRequest.koiId)}
+                    >
+                      <Button type="link" danger style={{ fontWeight: "600" }}>
+                        Delete
+                      </Button>
+                    </Popconfirm>
+                  </Menu.Item>
+                </Menu>
+              }
+              trigger={["click"]}
+            >
+              <EllipsisOutlined style={{ fontSize: "24px" }} />
+            </Dropdown>
           );
         } else {
           return (

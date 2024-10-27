@@ -76,7 +76,7 @@ function Header() {
       {/* {`header ${isScroll ? "scroll" : ""}`} */}
       <div className="header-logo">
         <img
-          src="https://auctionkoi.com/images/auction_koi_logo.png"
+          src="https://firebasestorage.googleapis.com/v0/b/bidkoi-16827.appspot.com/o/spin-image%2Fauction_koi_logo.png?alt=media&token=61002108-7cad-4523-9ff3-b97a7e992c90"
           alt=""
           width={40}
           height={40}

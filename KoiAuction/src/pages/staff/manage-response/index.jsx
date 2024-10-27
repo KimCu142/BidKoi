@@ -1,4 +1,4 @@
-import { Button, Table, Image, Popconfirm } from "antd";
+import { Button, Table, Image, Popconfirm, Rate, Modal } from "antd";
 import { useEffect, useState } from "react";
 import { toast } from "react-toastify";
 import api from "../../../config/axios";
@@ -65,7 +65,7 @@ function StaffResponse() {
   const handleReject = async (koiId) => {
     try {
       await api.post(`/staff/${koiId}/reject`);
-      toast.success("Koi reuqest has been rejected");
+      toast.success("Koi request has been rejected");
       fetchKoiAndBreeder();
     } catch (error) {
       console.error("Error rejecting request:", error);
@@ -74,11 +74,8 @@ function StaffResponse() {
   };
 
   const statusColors = {
-    // 0: "#d9d9d9",
-    // 1: "#52c41a",
-    // 2: "#ff4d4f",
-    PENDING: "#d9d9d9", // Trạng thái Pending
-    ACCEPTED: "#52c41a", // Trạng thái Approve
+    PENDING: "#d9d9d9",
+    ACCEPTED: "#52c41a",
     REJECTED: "#ff4d4f",
   };
 
@@ -105,72 +102,9 @@ function StaffResponse() {
       key: "koiId",
     },
     {
-      title: "Varieties",
+      title: "Koi Name",
       dataIndex: "varieties",
       key: "varieties",
-    },
-    {
-      title: "Length",
-      dataIndex: "length",
-      key: "length",
-    },
-    {
-      title: "Sex",
-      dataIndex: "sex",
-      key: "sex",
-    },
-    {
-      title: "Age",
-      dataIndex: "age",
-      key: "age",
-      render: (age) => {
-        const ageLabel = getJapaneseAge(age);
-        return (
-          <span>
-            {ageLabel} ({age}y)
-          </span>
-        );
-      },
-    },
-    {
-      title: "Breeder",
-      dataIndex: ["breeder", "name"],
-      key: "breeder",
-      render: (_, record) => record.breeder?.name || breeders.name,
-      // record: đối tượng đại diện cho 1 hàng trong bảng
-      // truy cập thuộc tính "breeder" của từng koi
-      // Nếu `breeder` tồn tại và có `name`, nó sẽ hiển thị `name`
-      // Nếu không, nó sẽ hiển thị tên mặc định từ `breeders` trong state
-    },
-    {
-      title: "Description",
-      dataIndex: "description",
-      key: "description",
-    },
-    {
-      title: "Intitial price",
-      dataIndex: "initialPrice",
-      key: "initialPrice",
-      render: (price) => `${price}VNĐ`,
-    },
-    {
-      title: "Rating",
-      dataIndex: "rating",
-      key: "rating",
-      render: (rating) => {
-        switch (rating) {
-          case 1:
-            return "1 star";
-          case 2:
-            return "2 stars";
-          case 3:
-            return "3 stars";
-          case 4:
-            return "4 stars";
-          case 5:
-            return "5 stars";
-        }
-      },
     },
     {
       title: "Image",
@@ -181,14 +115,69 @@ function StaffResponse() {
       },
     },
     {
-      title: "Video",
-      dataIndex: "video",
-      key: "video",
-      render: (video) => {
-        return (
-          <video src={video} type="video/mp4" alt="" width={230} controls />
-        );
-      },
+      title: "Initial price",
+      dataIndex: "initialPrice",
+      key: "initialPrice",
+      render: (price) => `${price.toLocaleString()} VNĐ`, // Định dạng số với dấu chấm
+    },
+    {
+      title: "Detail",
+      key: "detail",
+      render: (text, record) => (
+        <Button
+          style={{
+            backgroundColor: "#4685af",
+            color: "white",
+            fontWeight: "500",
+          }}
+          type="link"
+          onClick={() => {
+            Modal.info({
+              title: "Koi Details",
+              content: (
+                <div>
+                  <p>
+                    <strong>ID:</strong> {record.koiId}
+                  </p>
+                  <p>
+                    <strong>Varieties:</strong> {record.varieties}
+                  </p>
+                  <p>
+                    <strong>Length:</strong> {record.length} cm
+                  </p>
+                  <p>
+                    <strong>Sex:</strong> {record.sex}
+                  </p>
+                  <p>
+                    <strong>Age:</strong> {getJapaneseAge(record.age)} (
+                    {record.age}y)
+                  </p>
+                  <p>
+                    <strong>Breeder:</strong>{" "}
+                    {record.breeder?.name || breeders.name}
+                  </p>
+                  <p>
+                    <strong>Description:</strong> {record.description}
+                  </p>
+                  <p>
+                    <strong>Initial Price:</strong>{" "}
+                    {record.initialPrice.toLocaleString()} VNĐ
+                  </p>
+                  <p>
+                    <strong>Rating:</strong>{" "}
+                    <Rate disabled value={record.rating} />
+                  </p>
+                  <Image src={record.image} alt="Koi Image" width={115} />
+                  <video src={record.video} controls width={230}></video>
+                </div>
+              ),
+              onOk() {},
+            });
+          }}
+        >
+          Detail
+        </Button>
+      ),
     },
     {
       title: "Action",
@@ -203,7 +192,9 @@ function StaffResponse() {
                 description="Do you want to accept this request?"
                 onConfirm={() => handleApprove(koiId)}
               >
-                <Button type="primary">Accept</Button>
+                <Button type="primary" style={{ marginRight: "8px" }}>
+                  Accept
+                </Button>
               </Popconfirm>
 
               <Popconfirm
