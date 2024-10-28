@@ -20,7 +20,6 @@ import {
   Upload,
 } from "antd";
 import { useForm } from "antd/es/form/Form";
-import axios from "axios";
 import { useEffect, useState } from "react";
 import { toast } from "react-toastify";
 import styles from "./index.module.scss";
@@ -31,6 +30,9 @@ import { storage } from "../../../config/firebase";
 import api from "../../../config/axios";
 import TextArea from "antd/es/input/TextArea";
 import { Option } from "antd/es/mentions";
+import Payment from "../../payment/Payment";
+import { motion } from "framer-motion";
+import BreederPayment from "../../payment/BreederPayment";
 
 function BreederRequest() {
   const [kois, setKois] = useState([]);
@@ -45,6 +47,8 @@ function BreederRequest() {
   const [uploadProgress, setUploadProgress] = useState(0); // Phần trăm upload
   const [methodInfoVisible, setMethodInfoVisible] = useState(false);
   const [breederId, setBreederId] = useState({});
+  const [paymentAmount, setPaymentAmount] = useState(0);
+  const [isPaymentModal, setIsPaymentModal] = useState(false);
 
   useEffect(() => {
     const storedUser = localStorage.getItem("user");
@@ -56,6 +60,33 @@ function BreederRequest() {
       console.log("Breeder Name:", userData.breeder.name);
     }
   }, []);
+
+  const handlePayment = () => {
+    // Thanh toán thành công, tiếp tục submit form
+    setIsPaymentModal(false);
+    form.submit();
+  };
+
+  const handleOk = () => {
+    // Lấy giá trị initialPrice từ form và mở Payment Modal
+    form
+      .validateFields() // Không truyền tham số để validate toàn bộ form
+      .then((values) => {
+        if (values.initialPrice) {
+          setPaymentAmount(Math.round(values.initialPrice)); // Lưu giá trị cần thanh toán
+          setIsPaymentModal(true); // Mở Payment Modal
+        }
+      })
+      .catch((errorInfo) => {
+        console.error('Validation Failed:', errorInfo);
+        // Nếu có lỗi thì dừng và không mở Payment Modal
+      });
+  };
+
+
+  const handleCancelPayment = () => {
+    setIsPaymentModal(false); // Đóng Payment Modal
+  };
 
   const fetchKoiAndBreeder = async () => {
     try {
@@ -188,7 +219,7 @@ function BreederRequest() {
                   <video src={record.video} controls width={230}></video>
                 </div>
               ),
-              onOk() {},
+              onOk() { },
             });
           }}
         >
@@ -402,7 +433,7 @@ function BreederRequest() {
       <Table columns={columns} dataSource={kois} />
       <Modal
         confirmLoading={loading}
-        onOk={() => form.submit()}
+        onOk={handleOk}
         centered
         open={openModal}
         onCancel={handleCloseModal}
@@ -418,12 +449,12 @@ function BreederRequest() {
               label="KoiID"
               name="koiId"
               hidden
-              // rules={[
-              //   {
-              //     required: true,
-              //     message: "Please enter KoiID",
-              //   },
-              // ]}
+            // rules={[
+            //   {
+            //     required: true,
+            //     message: "Please enter KoiID",
+            //   },
+            // ]}
             >
               <Input />
             </Form.Item>
@@ -619,7 +650,35 @@ function BreederRequest() {
             </Form.Item>
           </div>
         </Form>
+        {isPaymentModal && (
+          <div className={styles.overlay}>
+            <motion.div className={styles.paymentBox}>
+              <p className={styles.warningText}>
+                <div className={styles.bellIcon}>
+                  <svg
+                    xmlns="http://www.w3.org/2000/svg"
+                    viewBox="0 0 24 24"
+                    width="30px"
+                    height="30px"
+                    fill="#108ee9"
+                  >
+                    <path d="M12 2C10.346 2 9 3.346 9 5v.086C6.717 6.598 5 9.134 5 12v4.586L3.293 19.293c-.391.391-.391 1.023 0 1.414.391.391 1.023.391 1.414 0L7 17.414V12c0-2.348 1.37-4.25 3.25-5.067.056.356.131.7.232 1.026C9.707 8.41 8 10.408 8 13v5h8v-5c0-2.592-1.707-4.59-3.482-5.041.101-.326.176-.67.232-1.026C15.63 7.75 17 9.652 17 12v5.414l2.293 2.293c.391.391 1.023.391 1.414 0s.391-1.023 0-1.414L19 16.586V12c0-2.866-1.717-5.402-4-6.914V5c0-1.654-1.346-3-3-3zM12 24c1.104 0 2-.896 2-2h-4c0 1.104.896 2 2 2z" />
+                  </svg>
+                </div>
+                Please pay {paymentAmount} VNĐ for Koi request
+              </p>
+              <BreederPayment
+               koiRequestAmount={Math.round(paymentAmount)}/>
+              <Button className={styles.paymentButton} onClick={handleCancelPayment}>
+                Cancel
+              </Button>
+            </motion.div>
+          </div>
+        )}
       </Modal>
+
+
+
       {previewImage && (
         <Image
           wrapperStyle={{
