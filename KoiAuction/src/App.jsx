@@ -36,6 +36,7 @@ import BreederActivities from "./pages/breeder/breeder-activities/index.jsx";
 import BreederConfirmImg from "./pages/breeder/confirm-breeder-image/index.jsx";
 import Overview from "./components/scenes/overview/index .jsx";
 import Pie from "./components/scenes/pie/index.jsx";
+import Invoice from "./components/Invoice/Invoice.jsx";
 // import Calendar from "./components/scenes/calendar/index.jsx";
 
 function AppLayout({ children }) {
@@ -203,6 +204,16 @@ function App() {
         <>
           <AppLayout>
             <Bidding />
+          </AppLayout>
+        </>
+      ),
+    },
+    {
+      path: "/invoice",
+      element: (
+        <>
+          <AppLayout>
+            <Invoice/>
           </AppLayout>
         </>
       ),

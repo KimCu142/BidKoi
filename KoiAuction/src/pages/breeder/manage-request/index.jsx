@@ -73,7 +73,7 @@ function BreederRequest() {
       .validateFields() // Không truyền tham số để validate toàn bộ form
       .then((values) => {
         if (values.initialPrice) {
-          setPaymentAmount(Math.round(values.initialPrice)); // Lưu giá trị cần thanh toán
+          setPaymentAmount(Math.round(values.initialPrice)*0.5); // Lưu giá trị cần thanh toán
           setIsPaymentModal(true); // Mở Payment Modal
         }
       })
@@ -668,7 +668,10 @@ function BreederRequest() {
                 Please pay {paymentAmount} VNĐ for Koi request
               </p>
               <BreederPayment
-               koiRequestAmount={Math.round(paymentAmount)}/>
+               koiRequestAmount={Math.round(paymentAmount)}
+               handlePayment={handlePayment}
+               />
+              
               <Button className={styles.paymentButton} onClick={handleCancelPayment}>
                 Cancel
               </Button>

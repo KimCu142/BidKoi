@@ -4,11 +4,11 @@ import { PlusOutlined } from '@ant-design/icons';
 import './ShippingInfo.css'; // Import CSS file
 import api from '../../config/axios';
 
-const ShippingInfo = ({ breeder, koiId, bidderId }) => {
+const ShippingInfo = ({ breeder, koiId, bidderId,roomId }) => {
     const [form] = Form.useForm(); // Tạo form để quản lý state của các input
     const handleSubmit = async (values) => {
-        // Gọi API với axios
         try {
+            // Gọi API để tạo thông tin shipping
             const response = await api.post(
                 `/shipping/creation/${koiId}/${bidderId}`,
                 {
@@ -17,12 +17,18 @@ const ShippingInfo = ({ breeder, koiId, bidderId }) => {
                     phone: values.phoneNumber
                 }
             );
+
+            // Sau khi tạo thông tin shipping, tạo invoice
+           
+            const invoiceResponse = await api.post(`/invoice/create/${roomId}`);
+
             message.success('Shipping info submitted successfully!');
         } catch (error) {
-            message.error('Failed to submit shipping info!');
+            message.error('Failed to submit shipping info !');
             console.error(error);
         }
     };
+
 
 
     return (
