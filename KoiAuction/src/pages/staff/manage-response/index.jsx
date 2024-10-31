@@ -7,6 +7,10 @@ function StaffResponse() {
   const [kois, setKois] = useState([]);
   const [breeders, setBreeders] = useState({});
 
+  const LocalUser = localStorage.getItem('user');
+  const UserData = JSON.parse(LocalUser);
+  const staffId = UserData.staff.staffId;
+
   //GET
   const fetchKoiAndBreeder = async () => {
     try {
@@ -48,11 +52,12 @@ function StaffResponse() {
 
   const handleApprove = async (koiId) => {
     try {
-      // Xác nhận yêu cầu cá
-      await api.post(`/staff/${koiId}/approve`);
+
 
       // Tạo room cho Koi
       await api.post(`/room/creation/${koiId}`);
+      // Lưu Staff 
+      await api.put(`/staff/${staffId}/approve/${koiId}`);
 
       toast.success("Koi request has been approved and room created");
       fetchKoiAndBreeder();
@@ -64,7 +69,8 @@ function StaffResponse() {
 
   const handleReject = async (koiId) => {
     try {
-      await api.post(`/staff/${koiId}/reject`);
+      // Lưu Staff 
+      await api.put(`/staff/${staffId}/reject/${koiId}`);
       toast.success("Koi request has been rejected");
       fetchKoiAndBreeder();
     } catch (error) {
@@ -171,7 +177,7 @@ function StaffResponse() {
                   <video src={record.video} controls width={230}></video>
                 </div>
               ),
-              onOk() {},
+              onOk() { },
             });
           }}
         >
