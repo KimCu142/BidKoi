@@ -15,7 +15,7 @@ import Bidding from "./pages/bidding/Bidding.jsx";
 import Login from "./pages/LoginPage/Login.jsx";
 import Register from "./pages/LoginPage/Register.jsx";
 import CreateAuction from "./pages/staff/manage-auction/index.jsx";
-import Password from "./pages/profile/password/index.jsx";
+
 import ProtectedRoute from "./components/ProtectedRoute.jsx";
 import AboutUs from "./pages/about/index.jsx";
 import { AuthProvider } from "./components/AuthContext.jsx";
@@ -36,6 +36,9 @@ import BreederActivities from "./pages/breeder/breeder-activities/index.jsx";
 import BreederConfirmImg from "./pages/breeder/confirm-breeder-image/index.jsx";
 import Overview from "./components/scenes/overview/index .jsx";
 import Pie from "./components/scenes/pie/index.jsx";
+import StaffActivities from "./pages/staff/staff-activities/index.jsx";
+import StaffConfirm from "./pages/staff/staff-confirm/index.jsx";
+import Password from "./pages/profile/password/index.jsx";
 import Invoice from "./components/Invoice/Invoice.jsx";
 // import Calendar from "./components/scenes/calendar/index.jsx";
 
@@ -140,6 +143,17 @@ function App() {
       ),
     },
     {
+      path: "/staff-activities",
+
+      element: (
+        <>
+          <AppLayout>
+            <StaffActivities />
+          </AppLayout>
+        </>
+      ),
+    },
+    {
       path: "/breeder/koi-details/:shippingId",
 
       element: (
@@ -161,6 +175,17 @@ function App() {
         </>
       ),
     },
+    {
+      path: "/staff/koi-details/:shippingId",
+
+      element: (
+        <>
+          <AppLayout>
+            <StaffConfirm />
+          </AppLayout>
+        </>
+      ),
+    },
 
     {
       path: "/auctions/:auctionId",
@@ -169,6 +194,17 @@ function App() {
         <>
           <AppLayout>
             <Auctions />
+          </AppLayout>
+        </>
+      ),
+    },
+    {
+      path: "/password",
+
+      element: (
+        <>
+          <AppLayout>
+            <Password />
           </AppLayout>
         </>
       ),

@@ -165,7 +165,7 @@ function StaffProfile({ accountId, token }) {
               </Link>
             </li>
             <li>
-              <Link to="/Password" className={styles.active}>
+              <Link to="/password" className={styles.active}>
                 <span className="las la-lock"></span>
                 <span> Password</span>
               </Link>
