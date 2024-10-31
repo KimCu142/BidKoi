@@ -39,6 +39,7 @@ import Pie from "./components/scenes/pie/index.jsx";
 import StaffActivities from "./pages/staff/staff-activities/index.jsx";
 import StaffConfirm from "./pages/staff/staff-confirm/index.jsx";
 import Password from "./pages/profile/password/index.jsx";
+import Invoice from "./components/Invoice/Invoice.jsx";
 // import Calendar from "./components/scenes/calendar/index.jsx";
 
 function AppLayout({ children }) {
@@ -239,6 +240,16 @@ function App() {
         <>
           <AppLayout>
             <Bidding />
+          </AppLayout>
+        </>
+      ),
+    },
+    {
+      path: "/invoice",
+      element: (
+        <>
+          <AppLayout>
+            <Invoice/>
           </AppLayout>
         </>
       ),

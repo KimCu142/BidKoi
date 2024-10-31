@@ -227,6 +227,7 @@ export default function Bidding() {
             koiId={room.koi.koiId}
             bidderId={currentBidderId}
             breeder={room.koi.breeder}
+            roomId= {roomId}
           /> {/* Truyền thông tin breeder vào ShippingInfo */}
         </Modal>
         <FloatButton

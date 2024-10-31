@@ -16,10 +16,25 @@ function Wallet() {
   const vnp_ResponseCode = params("vnp_ResponseCode");
   const vnp_Amount = params("vnp_Amount");
 
-  const LocalUser = localStorage.getItem("user");
-  const UserData = JSON.parse(LocalUser);
-  const accountId = UserData.bidder.account.id;
-  console.log(accountId);
+
+// Lấy dữ liệu từ localStorage
+const LocalUser = localStorage.getItem('user'); 
+const UserData = JSON.parse(LocalUser);
+
+// Kiểm tra role và lấy accountId tương ứng
+let accountId = null;
+if (UserData.role === "BIDDER" && UserData.bidder) {
+    accountId = UserData.bidder.account.id;
+} else if (UserData.role === "BREEDER" && UserData.breeder) {
+    accountId = UserData.breeder.account.id;
+}
+
+// Hiển thị accountId
+console.log(accountId);
+
+   
+
+
 
   const fetchBalance = async () => {
     try {

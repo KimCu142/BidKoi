@@ -1,6 +1,6 @@
 /* Kiểu dáng chung cho card */
 .card {
-  width: 351px; /* Điều chỉnh kích thước theo ý muốn */
+  width: 100%; /* Điều chỉnh kích thước theo ý muốn */
   border: 1px solid #ccc;
   border-radius: 24px;
   overflow: hidden;
