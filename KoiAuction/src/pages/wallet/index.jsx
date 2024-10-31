@@ -3,6 +3,7 @@ import React, { useEffect, useState } from "react";
 import { toast } from "react-toastify";
 import api from "../../config/axios";
 import useGetParams from "../../hooks/useGetParams";
+import styles from "./index.module.scss";
 
 function Wallet() {
   const [balance, setBalance] = useState("");
@@ -15,12 +16,10 @@ function Wallet() {
   const vnp_ResponseCode = params("vnp_ResponseCode");
   const vnp_Amount = params("vnp_Amount");
 
-  const LocalUser = localStorage.getItem('user');
-  const UserData=  JSON.parse(LocalUser);
-  const accountId= UserData.bidder.account.id;
-    console.log(accountId);
-   
-
+  const LocalUser = localStorage.getItem("user");
+  const UserData = JSON.parse(LocalUser);
+  const accountId = UserData.bidder.account.id;
+  console.log(accountId);
 
   const fetchBalance = async () => {
     try {
@@ -108,16 +107,17 @@ function Wallet() {
 
   return (
     <>
-      <div>
-        <h2>Nạp tiền vào ví</h2>
+      <div className={styles.container}>
+        <h2 className={styles.title}>Nạp tiền vào ví</h2>
 
-        <div>
+        <div className={styles.balance}>
           <label>Số dư hiện tại trong ví: </label>
           <strong>{currentBalance.balance} VND</strong>
         </div>
-        <div>
+        <div className={styles.inputGroup}>
           <lable> Số tiền muốn nạp: </lable>
           <input
+            className={styles.inputLabel}
             type="number"
             value={balance}
             onChange={(e) => setBalance(e.target.value)}
@@ -125,15 +125,25 @@ function Wallet() {
           />
         </div>
 
-        <button onClick={handleRecharge} disabled={isLoading}>
+        <button
+          className={styles.button}
+          onClick={handleRecharge}
+          disabled={isLoading}
+        >
           {isLoading ? "Đang xử lý..." : "Nạp tiền qua VNPay"}
         </button>
 
         {paymentUrl && (
-          <p>
-            Đang chuyển hướng tới VNPAY... Nếu không tự động chuyển, bạn có thể
-            nhấn <a href={paymentUrl}>vào đây</a> để thanh toán.
-          </p>
+          <div className={styles.paymentInfo}>
+            <p>
+              Đang chuyển hướng tới VNPAY... Nếu không tự động chuyển, bạn có
+              thể nhấn{" "}
+              <a href={paymentUrl} className={styles.paymentLink}>
+                vào đây
+              </a>{" "}
+              để thanh toán.
+            </p>
+          </div>
         )}
       </div>
     </>

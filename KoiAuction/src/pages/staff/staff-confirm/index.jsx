@@ -1,26 +1,18 @@
 /* eslint-disable react-hooks/exhaustive-deps */
-/* eslint-disable no-unused-vars */
-import { Upload, Image, Button, Form, Select, Input, Popconfirm } from "antd";
-import { PlusOutlined } from "@ant-design/icons";
-import { useEffect, useState } from "react";
-import styles from "./index.module.scss";
-import uploadBidderFile from "../../../utils/bidderFile";
 import { useForm } from "antd/es/form/Form";
+import React, { useEffect, useState } from "react";
 import api from "../../../config/axios";
 import { toast } from "react-toastify";
-import { useParams } from "react-router-dom";
 import { motion } from "framer-motion";
+import styles from "./index.module.scss";
+import { Button, Form, Input, Popconfirm, Select } from "antd";
+import { useParams } from "react-router-dom";
 
-function BidderConfirmImg() {
+function StaffConfirm() {
   const [koi, setKoi] = useState([]);
   const [breederId, setBreederId] = useState([]);
   const [form] = useForm();
-  const [previewOpen, setPreviewOpen] = useState(false);
-  const [previewImage, setPreviewImage] = useState("");
-  const [fileList, setFileList] = useState([]);
   const [loading, setLoading] = useState(false);
-  const [uploaded, setUploaded] = useState(false); // Trạng thái kiểm tra đã upload hay chưa
-  const [imageUrl, setImageUrl] = useState("");
   const [confirmType, setConfirmType] = useState("success");
   const [reason, setReason] = useState("");
   const { shippingId } = useParams();
@@ -38,14 +30,9 @@ function BidderConfirmImg() {
     try {
       const response = await api.get(`/shipping/${shippingId}`);
       if (response.data.length > 0) {
-        const koiData = response.data[0]; // Lấy phần tử đầu tiên từ mảng
-        setKoi(koiData); // Đặt dữ liệu vào state koi
+        const koiData = response.data[0];
+        setKoi(koiData);
         console.log("Response data:", koiData);
-
-        // if (koiData.imgBidder) {
-        //   setImageUrl(koiData.imgBidder);
-        //   setUploaded(true);
-        // }
 
         if (koiData.bidderConfirm === "Successful delivery") {
           setConfirmType("success");
@@ -75,18 +62,10 @@ function BidderConfirmImg() {
   const handleReasonChange = (e) => setReason(e.target.value);
 
   const handleSubmit = async () => {
-    let confirmUrl = imageUrl;
-
-    if (fileList.length > 0) {
-      const file = fileList[0];
-      confirmUrl = await uploadBidderFile(file.originFileObj);
-    }
-
     try {
       setLoading(true);
 
       const payload = {
-        img: confirmUrl,
         confirm: confirmType === "success" ? "Successful delivery" : reason,
       };
 
@@ -97,12 +76,10 @@ function BidderConfirmImg() {
       );
 
       if (response.status === 204) {
-        toast.success("Upload successful");
-        setImageUrl(confirmUrl);
-        setUploaded(true);
+        toast.success("Send successful");
         fetchData();
       } else {
-        console.error("Failed to save image:", response.data);
+        console.error("Failed to send:", response.data);
       }
     } catch (error) {
       console.error("Upload failed:", error);
@@ -110,41 +87,6 @@ function BidderConfirmImg() {
       setLoading(false);
     }
   };
-
-  const getBase64 = (file) =>
-    new Promise((resolve, reject) => {
-      const reader = new FileReader();
-      reader.readAsDataURL(file);
-      reader.onload = () => resolve(reader.result);
-      reader.onerror = (error) => reject(error);
-    });
-
-  const handlePreview = async (file) => {
-    if (!file.url && !file.preview) {
-      file.preview = await getBase64(file.originFileObj);
-    }
-    setPreviewImage(file.url || file.preview);
-    setPreviewOpen(true);
-  };
-  const handleChange = ({ fileList: newFileList }) => setFileList(newFileList);
-  const uploadButton = (
-    <button
-      style={{
-        border: 0,
-        background: "none",
-      }}
-      type="button"
-    >
-      <PlusOutlined />
-      <div
-        style={{
-          marginTop: 8,
-        }}
-      >
-        Upload
-      </div>
-    </button>
-  );
 
   return (
     <motion.div
@@ -201,51 +143,24 @@ function BidderConfirmImg() {
             <span>Full Name</span>
             <span>{koi.name}</span>
           </div>
-          <Form form={form} onFinish={handleSubmit}>
-            <div className={styles.imageFields}>
-              <div className={styles.column}>
-                <h3 className={styles.avatarTitle}>
-                  Confirm image before Shipping
-                </h3>
 
-                <img src={koi.imgBreeder} />
-              </div>
-              <div className={styles.column}>
-                <h3 className={styles.avatarTitle}>
-                  Confirm image after Shipping
-                </h3>
-                {uploaded ? (
-                  <Image
-                    // wrapperStyle={{
-                    //   display: "none",
-                    // }}
-                    preview={{
-                      visible: previewOpen,
-                      onVisibleChange: (visible) => setPreviewOpen(visible),
-                      afterOpenChange: (visible) =>
-                        !visible && setPreviewImage(""),
-                    }}
-                    src={imageUrl}
-                  />
-                ) : (
-                  <Form.Item>
-                    <Upload
-                      action="https://660d2bd96ddfa2943b33731c.mockapi.io/api/upload"
-                      listType="picture-card"
-                      fileList={fileList}
-                      onPreview={handlePreview}
-                      onChange={handleChange}
-                      disabled={uploaded} // ko cho chỉnh sửa
-                    >
-                      {fileList.length >= 8 ? null : uploadButton}
-                    </Upload>
-                  </Form.Item>
-                )}
-              </div>
+          <div className={styles.imageFields}>
+            <div className={styles.column}>
+              <h3 className={styles.avatarTitle}>
+                Confirm image before Shipping
+              </h3>
+
+              <img src={koi.imgBreeder} />
             </div>
-            {!uploaded && (
-              <div className={styles.textLight2}>Allowed JPG, PNG.</div>
-            )}
+            <div className={styles.column}>
+              <h3 className={styles.avatarTitle}>
+                Confirm image after Shipping
+              </h3>
+
+              <img src={koi.imgBidder} />
+            </div>
+          </div>
+          <Form form={form} onFinish={handleSubmit}>
             <Form.Item
               label={<span style={{ fontSize: "18px" }}>Confirm Shipping</span>}
               style={{ marginTop: "16px" }}
@@ -322,4 +237,4 @@ function BidderConfirmImg() {
   );
 }
 
-export default BidderConfirmImg;
+export default StaffConfirm;

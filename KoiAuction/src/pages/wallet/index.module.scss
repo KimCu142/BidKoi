@@ -1,0 +1,107 @@
+.container {
+  width: 100%;
+  max-width: 50%;
+  margin: 0 auto;
+  padding: 30px;
+  background-color: #ffffff;
+  box-shadow: 0 8px 16px rgba(0, 0, 0, 0.1);
+  border-radius: 10px;
+  font-family: "Montserrat", sans-serif;
+  transition: transform 0.3s ease, box-shadow 0.3s ease;
+}
+
+.title {
+  text-align: center;
+  color: #444444;
+  margin-bottom: 25px;
+  font-size: 26px;
+  font-weight: 600;
+}
+
+.balance {
+  margin-bottom: 20px;
+  font-size: 18px;
+  color: #666666;
+}
+
+.balance strong {
+  color: #ff5722;
+  font-size: 22px;
+  font-weight: 700;
+}
+
+.inputGroup {
+  margin-bottom: 25px;
+  display: flex;
+  flex-direction: column;
+}
+
+.inputLabel {
+  margin-bottom: 10px; /* Tăng khoảng cách dưới */
+  font-size: 16px;
+  color: #555555; /* Giữ màu sắc dịu nhẹ */
+  font-weight: 500;
+}
+
+.inputField {
+  padding: 12px; /* Tăng padding để nội dung thoải mái hơn */
+  font-size: 16px;
+  border: 1px solid #cccccc; /* Đổi màu border */
+  border-radius: 8px; /* Tăng độ cong border */
+  outline: none;
+  transition: border-color 0.3s, box-shadow 0.3s; /* Thêm hiệu ứng */
+}
+
+/* Hiệu ứng khi focus vào input */
+.inputField:focus {
+  border-color: #007bff;
+  box-shadow: 0 0 5px rgba(0, 123, 255, 0.4);
+}
+
+.button {
+  display: block;
+  width: 100%;
+  padding: 14px; /* Tăng padding */
+  font-size: 16px;
+  color: #ffffff;
+  background-color: #007bff;
+  border: none;
+  border-radius: 8px; /* Tăng độ cong border */
+  cursor: pointer;
+  transition: background-color 0.3s, transform 0.2s; /* Thêm hiệu ứng */
+  text-align: center;
+  font-weight: 600; /* Tăng độ đậm font */
+}
+
+/* Hiệu ứng khi nút bị disable */
+.button:disabled {
+  background-color: #9da6b1; /* Đổi màu xám cho nút bị disable */
+  cursor: not-allowed;
+}
+
+/* Hiệu ứng khi hover nút */
+.button:hover:not(:disabled) {
+  background-color: #0056b3;
+  transform: translateY(-2px);
+}
+
+.paymentInfo {
+  margin-top: 30px; /* Tăng khoảng cách trên */
+  color: #333333;
+  font-size: 15px; /* Giảm một chút kích thước */
+  text-align: center;
+  line-height: 1.5; /* Tăng khoảng cách dòng */
+}
+
+.paymentLink {
+  color: #ff5722;
+  text-decoration: none;
+  font-weight: bold;
+  transition: color 0.3s;
+}
+
+/* Hiệu ứng khi hover vào link */
+.paymentLink:hover {
+  color: #e64a19;
+  text-decoration: underline;
+}
