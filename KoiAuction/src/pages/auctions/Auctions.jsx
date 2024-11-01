@@ -8,22 +8,6 @@ import Payment from "../payment/Payment";
 import { motion } from "framer-motion";
 import api from "../../config/axios";
 
-const auctionInfoContent = (
-  <div>
-    <p>
-      In-House Auctions have a shorter shipping lead time (1-2 weeks) on average
-      and lower overall cost.
-    </p>
-    <p>
-      Koi in this auction are currently being held at Select Koi in Sevierville,
-      TN and thus are ready to ship after fasting to ensure safe delivery.
-    </p>
-    <p>
-      A shipping deposit of $110/koi won will be charged at the end of the
-      auction, then adjusted when bulk shipping is calculated.
-    </p>
-  </div>
-);
 
 const Auctions = () => {
   const bellSoundUrl =
@@ -73,20 +57,7 @@ const Auctions = () => {
             <p className={styles.ended}>Ended 7 days Ago</p>
           </div>
         </div>
-        <div>
-          <Space wrap>
-            <Popover
-              content={auctionInfoContent}
-              title="In-House Auction Info"
-              trigger="click"
-            >
-              <Button className={styles.Button}>
-                <InfoCircleOutlined style={{ color: "rgba(0,0,0,.45)" }} />{" "}
-                In-House Auction Info
-              </Button>
-            </Popover>
-          </Space>
-        </div>
+     
       </div>
     );
   };

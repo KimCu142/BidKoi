@@ -3,10 +3,14 @@ import styles from "./index.module.scss";
 import { Link, useNavigate } from "react-router-dom";
 import api from "../../../config/axios";
 import { motion } from "framer-motion";
+import { Modal } from "antd";
+import Invoice from "../../../components/Invoice/Invoice";
 
 function BidderActivities() {
   const [koiList, setKoiList] = useState([]);
   const [bidderId, setBidderId] = useState([]);
+  const [isModalVisible, setIsModalVisible] = useState(false);
+  const [invoiceData, setInvoiceData] = useState(null);
   const navigate = useNavigate();
 
   useEffect(() => {
@@ -31,7 +35,22 @@ function BidderActivities() {
   }, [bidderId]);
 
   const handleKoiClick = (shippingId) => {
-    navigate(`/bidder/koi-details/${shippingId}`);
+    navigate(`/profile/bidder/koi-details/${shippingId}`);
+  };
+
+  const handleInvoiceClick = async (koiId) => {
+    try {
+      const response = await api.get(`/invoice/get/${koiId}`);
+      setInvoiceData(response.data);
+      setIsModalVisible(true);
+    } catch (error) {
+      console.error("Error fetching invoice data:", error);
+    }
+  };
+
+  const handleModalClose = () => {
+    setIsModalVisible(false);
+    setInvoiceData(null);
   };
 
   return (
@@ -64,15 +83,36 @@ function BidderActivities() {
                   <p>Final bidding price: ${koi.koi.finalPrice}</p>
                 </div>
               </div>
+              <div>
               <button
                 className={styles.confirmBtn}
                 onClick={() => handleKoiClick(koi.shippingId)}
               >
                 Confirm
               </button>
+              <button
+                className={styles.confirmBtn}
+                onClick={() => handleInvoiceClick(koi.koi.koiId)}
+              >
+                View Invoice
+              </button>
+              </div>
             </motion.div>
           ))}
         </div>
+        <Modal
+          title="Invoice Details"
+          visible={isModalVisible}
+          onCancel={handleModalClose}
+          footer={null}
+          width="50%"
+        >
+          {invoiceData ? (
+            <Invoice {...invoiceData} />
+          ) : (
+            <div>Loading invoice...</div>
+          )}
+        </Modal>
       </div>
     </>
   );
