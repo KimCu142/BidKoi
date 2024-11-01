@@ -1,39 +1,13 @@
 import React, { useEffect, useState } from 'react';
 import './Invoice.css';
-import api from '../../config/axios';
 import KoiCard from '../KoiCard/KoiCard';
 import { MdOutlineLocalShipping } from "react-icons/md";
 import { IoLocationOutline } from "react-icons/io5";
-const Invoice = () => {
-    const [invoiceData, setInvoiceData] = useState(null);
-    const [isLoading, setIsLoading] = useState(true);
-
-    const fetchInvoiceData = async () => {
-        try {
-            const response = await api.get(`/invoice/get/1`);
-            setInvoiceData(response.data);
-            setIsLoading(false);
-        } catch (error) {
-            console.error('Error fetching invoice data:', error);
-            setIsLoading(false);
-        }
-    };
-
-    useEffect(() => {
-        fetchInvoiceData();
-    }, []);
-
-    if (isLoading) {
-        return <div>Loading...</div>;
-    }
-
-    if (!invoiceData) {
-        return <div>No Invoice Data Found</div>;
-    }
+const Invoice = (invoiceData) => {
 
     const { date, room, shipping } = invoiceData;
-    const { koi, winner, auctionId } = room || {};
-    const { bidder, name: shippingName, address, phone, imgBreeder, breederConfirm, imgBidder, bidderConfirm, staffConfirm, description: shippingDescription, status: shippingStatus } = shipping || {};
+    const { koi, auctionId } = room || {};
+    const { name: shippingName, address, phone, staffConfirm, description: shippingDescription, status: shippingStatus } = shipping || {};
 
     return (
         <div className='invoice-body'>

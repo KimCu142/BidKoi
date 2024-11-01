@@ -1,7 +1,5 @@
 /* Invoice.css */
 .invoice-body{
-  padding-top: 100px;
-  padding-bottom: 70px;
   display: flex;
   justify-content: center;
 }
