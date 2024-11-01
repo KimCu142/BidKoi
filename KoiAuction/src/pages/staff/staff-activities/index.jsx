@@ -5,61 +5,27 @@ import { motion } from "framer-motion";
 import styles from "./index.module.scss";
 
 function StaffActivities() {
-  const [staffId, setStaffId] = useState([]);
   const [koiList, setKoiList] = useState([]);
   const navigate = useNavigate();
 
   useEffect(() => {
-    const storedUser = localStorage.getItem("user");
-    if (storedUser) {
-      const userData = JSON.parse(storedUser);
-      console.log("Stored User:", userData);
-      setStaffId(userData.breeder.breederID);
-    }
-  }, []);
-
-  useEffect(() => {
     const fetchKoiList = async () => {
       try {
-        const response = await api.get(`/shipping/breeder/${staffId}`);
+        const response = await api.get(`/shipping`);
         setKoiList(response.data);
       } catch (error) {
         console.error("Error fetching data: ", error);
       }
     };
     fetchKoiList();
-  }, [staffId]);
+  }, []);
 
   const handleKoiClick = (shippingId) => {
-    navigate(`/staff/koi-details/${shippingId}`);
+    navigate(`/profile/staff/koi-details/${shippingId}`);
   };
+
   return (
     <>
-      <div className={styles.sidebar}>
-        <div className={styles.sidebarMenu}>
-          <ul>
-            <li>
-              <Link to="/profile" className={styles.active}>
-                <span className="las la-user"></span>
-                <span> Account</span>
-              </Link>
-            </li>
-            <li>
-              <Link to="/password" className={styles.active}>
-                <span className="las la-lock"></span>
-                <span> Password</span>
-              </Link>
-            </li>
-            <li>
-              <Link to="/staff-activities" className={styles.active}>
-                <span className="las la-fish"></span>
-                <span> Activities</span>
-              </Link>
-            </li>
-          </ul>
-        </div>
-      </div>
-
       <div className={styles.mainBox}>
         <div className={styles.koiList}>
           {koiList.map((koi, index) => (

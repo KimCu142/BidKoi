@@ -42,10 +42,10 @@ function BidderConfirmImg() {
         setKoi(koiData); // Đặt dữ liệu vào state koi
         console.log("Response data:", koiData);
 
-        // if (koiData.imgBidder) {
-        //   setImageUrl(koiData.imgBidder);
-        //   setUploaded(true);
-        // }
+        if (koiData.imgBidder) {
+          setImageUrl(koiData.imgBidder);
+          setUploaded(true);
+        }
 
         if (koiData.bidderConfirm === "Successful delivery") {
           setConfirmType("success");
@@ -100,7 +100,7 @@ function BidderConfirmImg() {
         toast.success("Upload successful");
         setImageUrl(confirmUrl);
         setUploaded(true);
-        fetchData();
+        await fetchData();
       } else {
         console.error("Failed to save image:", response.data);
       }

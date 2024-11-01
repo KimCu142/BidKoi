@@ -40,9 +40,24 @@ import StaffActivities from "./pages/staff/staff-activities/index.jsx";
 import StaffConfirm from "./pages/staff/staff-confirm/index.jsx";
 import Password from "./pages/profile/password/index.jsx";
 import Invoice from "./components/Invoice/Invoice.jsx";
+import SidebarLayout from "./components/profileSidebar/index.jsx";
+import PrivacyPolicy from "./pages/policy/index.jsx";
+import Terms from "./pages/term/index.jsx";
 // import Calendar from "./components/scenes/calendar/index.jsx";
 
-function AppLayout({ children }) {
+function AppLayout() {
+  return (
+    <div className="appLayout">
+      <Header />
+      <div className="contentWrapper">
+        <Outlet />
+      </div>
+      <Footer className="siteFooter" />
+    </div>
+  );
+}
+
+function AppLayout2({ children }) {
   return (
     <div className="appLayout ">
       <Header />
@@ -64,169 +79,91 @@ function DashboardLayout() {
   );
 }
 
+function ProfileLayout() {
+  return (
+    <div className="appLayout">
+      <Header />
+      <div className="contentWrapper">
+        <SidebarLayout />
+        <Outlet />
+      </div>
+      <Footer className="siteFooter" />
+    </div>
+  );
+}
+
+function ProfileDetailLayout() {
+  return (
+    <div className="appLayout">
+      <Header />
+      <div className="contentWrapper">
+        <Outlet />
+      </div>
+      <Footer className="siteFooter" />
+    </div>
+  );
+}
+
 function App() {
   const router = createBrowserRouter([
     {
-      path: "/auctions/:auctionId/:roomId",
-      element: (
-        <>
-          <AppLayout>
-            <Bidding />
-          </AppLayout>
-        </>
-      ),
-    },
-    {
-      path: "/",
-
-      element: (
-        <>
-          <AppLayout>
-            <HomePage />
-          </AppLayout>
-        </>
-      ),
-    },
-    {
-      path: "/about",
-      element: (
-        <>
-          <AppLayout>
-            <AboutUs />
-          </AppLayout>
-        </>
-      ),
+      element: <AppLayout />,
+      children: [
+        { path: "/", element: <HomePage /> },
+        { path: "/about", element: <AboutUs /> },
+        { path: "/privacy", element: <PrivacyPolicy /> },
+        { path: "/terms", element: <Terms /> },
+        { path: "/wallet", element: <Wallet /> },
+        { path: "/availableaution", element: <Availableaution /> },
+        { path: "/AuctionSchedule", element: <AuctionCard /> },
+        { path: "/auctions/:auctionId", element: <Auctions /> },
+        { path: "/auctions/:auctionId/:roomId", element: <Bidding /> },
+        { path: "/invoice", element: <Invoice /> },
+      ],
     },
     {
       path: "/profile",
-
       element: (
-        <>
-          <AppLayout>
-            <Profile />
-          </AppLayout>
-        </>
+        <ProtectedRoute allowedRoles={["BIDDER", "STAFF", "BREEDER"]}>
+          <ProfileLayout />
+        </ProtectedRoute>
       ),
+      children: [
+        { path: "", element: <Profile /> },
+        { path: "password", element: <Password /> },
+        { path: "wallet", element: <Wallet /> },
+        { path: "bidder-activities", element: <BidderActivities /> },
+        { path: "breeder-activities", element: <BreederActivities /> },
+        { path: "staff-activities", element: <StaffActivities /> },
+      ],
     },
-
+    {
+      path: "/profile",
+      element: (
+        <ProtectedRoute allowedRoles={["BIDDER", "STAFF", "BREEDER"]}>
+          <ProfileDetailLayout />
+        </ProtectedRoute>
+      ),
+      children: [
+        {
+          path: "breeder/koi-details/:shippingId",
+          element: <BreederConfirmImg />,
+        },
+        {
+          path: "bidder/koi-details/:shippingId",
+          element: <BidderConfirmImg />,
+        },
+        { path: "staff/koi-details/:shippingId", element: <StaffConfirm /> },
+      ],
+    },
     {
       path: "/wallet",
 
       element: (
         <>
-          <AppLayout>
+          <AppLayout2>
             <Wallet />
-          </AppLayout>
-        </>
-      ),
-    },
-    {
-      path: "/bidder-activities",
-
-      element: (
-        <>
-          <AppLayout>
-            <BidderActivities />
-          </AppLayout>
-        </>
-      ),
-    },
-    {
-      path: "/breeder-activities",
-
-      element: (
-        <>
-          <AppLayout>
-            <BreederActivities />
-          </AppLayout>
-        </>
-      ),
-    },
-    {
-      path: "/staff-activities",
-
-      element: (
-        <>
-          <AppLayout>
-            <StaffActivities />
-          </AppLayout>
-        </>
-      ),
-    },
-    {
-      path: "/breeder/koi-details/:shippingId",
-
-      element: (
-        <>
-          <AppLayout>
-            <BreederConfirmImg />
-          </AppLayout>
-        </>
-      ),
-    },
-    {
-      path: "/bidder/koi-details/:shippingId",
-
-      element: (
-        <>
-          <AppLayout>
-            <BidderConfirmImg />
-          </AppLayout>
-        </>
-      ),
-    },
-    {
-      path: "/staff/koi-details/:shippingId",
-
-      element: (
-        <>
-          <AppLayout>
-            <StaffConfirm />
-          </AppLayout>
-        </>
-      ),
-    },
-
-    {
-      path: "/auctions/:auctionId",
-
-      element: (
-        <>
-          <AppLayout>
-            <Auctions />
-          </AppLayout>
-        </>
-      ),
-    },
-    {
-      path: "/password",
-
-      element: (
-        <>
-          <AppLayout>
-            <Password />
-          </AppLayout>
-        </>
-      ),
-    },
-    {
-      path: "/availableaution",
-
-      element: (
-        <>
-          <AppLayout>
-            <Availableaution />
-          </AppLayout>
-        </>
-      ),
-    },
-    {
-      path: "/AuctionSchedule",
-      element: (
-        <>
-          <AppLayout>
-            <AuctionCard />
-          </AppLayout>
+          </AppLayout2>
         </>
       ),
     },
@@ -235,105 +172,72 @@ function App() {
       element: <Login />,
     },
     {
-      path: "/Bid",
-      element: (
-        <>
-          <AppLayout>
-            <Bidding />
-          </AppLayout>
-        </>
-      ),
-    },
-    {
-      path: "/invoice",
-      element: (
-        <>
-          <AppLayout>
-            <Invoice/>
-          </AppLayout>
-        </>
-      ),
-    },
-    {
       path: "/Register",
       element: <Register />,
     },
     {
+      path: "/success",
+      element: <SuccessPage />,
+    },
+    {
+      path: "/fail",
+      element: <FailPage />,
+    },
+    {
       path: "/breeder-dashboard",
       element: (
-        <ProtectedRoute
-          element={<BreederDashboard />}
-          allowedRoles={["BREEDER"]}
-        />
+        <ProtectedRoute allowedRoles={["BREEDER"]}>
+          <BreederDashboard />
+        </ProtectedRoute>
       ),
       children: [
         {
           path: "breeder-request",
-          element: <BreederRequest />,
+          element: (
+            <ProtectedRoute allowedRoles={["BREEDER"]}>
+              <BreederRequest />
+            </ProtectedRoute>
+          ),
         },
       ],
     },
     {
       path: "/staff-dashboard",
       element: (
-        <ProtectedRoute element={<StaffDashboard />} allowedRoles={["STAFF"]} />
+        <ProtectedRoute allowedRoles={["STAFF"]}>
+          <StaffDashboard />
+        </ProtectedRoute>
       ),
       children: [
         {
           path: "staff-request",
           element: (
-            <ProtectedRoute
-              element={<StaffResponse />}
-              allowedRoles={["STAFF"]}
-            />
+            <ProtectedRoute allowedRoles={["STAFF"]}>
+              <StaffResponse />
+            </ProtectedRoute>
           ),
         },
         {
           path: "create-auction",
           element: (
-            <ProtectedRoute
-              element={<CreateAuction />}
-              allowedRoles={["STAFF"]}
-            />
+            <ProtectedRoute allowedRoles={["STAFF"]}>
+              <CreateAuction />
+            </ProtectedRoute>
           ),
         },
       ],
     },
-
     {
       path: "/admin-dashboard",
       element: <DashboardLayout />,
       children: [
         { path: "dashboard", element: <AdminDashboard /> },
         { path: "team", element: <Team /> },
-        // { path: "/contacts", element: <Contacts /> },
         { path: "invoices", element: <Invoices /> },
         { path: "form", element: <Form /> },
         { path: "overview", element: <Overview /> },
         { path: "pie", element: <Pie /> },
-        // { path: "/line", element: <Line /> },
-        // { path: "/faq", element: <FAQ /> },
-        // { path: "/geography", element: <Geography /> },
-        // { path: "calendar", element: <Calendar /> },
       ],
-    },
-    {
-      path: "/success",
-
-      element: (
-        <>
-          <SuccessPage />
-        </>
-      ),
-    },
-    {
-      path: "/fail",
-
-      element: (
-        <>
-          <FailPage />
-        </>
-      ),
     },
   ]);
 

@@ -37,13 +37,13 @@ function Footer() {
         <ul>
           <h1 className="footer-title">Policy</h1>
           <li>
-            <Link to="/" className="nav-button">
+            <Link to="/privacy" className="nav-button">
               <span className="majesticons--scan-fingerprint"></span>
               <span className="nav__name">Privacy Policy</span>
             </Link>
           </li>
           <li>
-            <Link to="/" className="nav-button">
+            <Link to="/terms" className="nav-button">
               <span className="majesticons--document-line"></span>
               <span className="nav__name">Terms and Conditions</span>
             </Link>

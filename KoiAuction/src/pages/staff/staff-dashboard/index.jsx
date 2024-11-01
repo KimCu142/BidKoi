@@ -8,7 +8,7 @@ import {
   ToTopOutlined,
   UserOutlined,
 } from "@ant-design/icons";
-import { Breadcrumb, Layout, Menu, theme } from "antd";
+import { Breadcrumb, Layout, Menu, theme, Button } from "antd";
 import { Outlet, useNavigate } from "react-router-dom";
 import api from "../../../config/axios";
 const { Header, Content, Footer, Sider } = Layout;
@@ -56,6 +56,10 @@ const StaffDashboard = () => {
     }
   };
 
+  const handleBackToHome = () => {
+    navigate("/");
+  };
+
   return (
     <Layout
       style={{
@@ -80,10 +84,18 @@ const StaffDashboard = () => {
       <Layout>
         <Header
           style={{
-            padding: 0,
+            display: "flex",
+            justifyContent: "space-between",
+            alignItems: "center",
+            padding: "0 16px",
             background: colorBgContainer,
           }}
-        />
+        >
+          <h2>Staff Dashboard</h2>
+          <Button type="link" onClick={handleBackToHome}>
+            Back to Home
+          </Button>
+        </Header>
         <Content
           style={{
             margin: "0 16px",

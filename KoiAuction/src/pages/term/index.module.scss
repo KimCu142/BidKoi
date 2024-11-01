@@ -1,0 +1,111 @@
+* {
+  margin: 0;
+  padding: 0;
+  box-sizing: border-box;
+}
+
+.appShell {
+  display: flex;
+  flex-direction: column;
+  min-height: 100vh;
+}
+
+.Content {
+  flex: 1;
+  overflow-x: hidden;
+  display: flex;
+  flex-direction: column;
+}
+
+.pageContent {
+  padding: 70px 74px 32px;
+  flex: 1;
+}
+
+.privacyPolicySection {
+  min-height: calc(100vh - 64px);
+  padding: 32px 16px 32px 16px;
+  display: flex;
+  justify-content: center;
+}
+
+.privacyPolicyContainer {
+  max-width: 1500px;
+  width: 100%;
+}
+
+.privacyPolicyContainer h1 {
+  font-family: "Montserrat", sans-serif;
+  margin-bottom: 32px;
+  font-size: 24px;
+  font-weight: bold;
+}
+
+.auctionInfo {
+  font-family: "Montserrat", sans-serif;
+  margin-left: 8px;
+  margin-bottom: 24px;
+  font-size: 18px;
+}
+
+.auctionInfo .link:hover {
+  text-decoration: underline;
+}
+
+.policyList {
+  margin-left: 16px;
+  list-style-position: inside;
+  list-style-type: decimal;
+}
+
+.sectionTitle {
+  font-family: "Montserrat", sans-serif;
+  margin-bottom: 8px;
+  font-weight: bold;
+}
+
+.sectionTitle::marker {
+  content: counter(list-item) ". ";
+  color: #15171f;
+  font-size: 1.2em;
+}
+
+.sectionDescription {
+  font-family: "Montserrat", sans-serif;
+  font-size: 17px;
+  font-weight: 400;
+  padding: 0 0 20 px 8px;
+}
+
+.infoList {
+  font-family: "Montserrat", sans-serif;
+  margin-left: 16px;
+  font-size: 18px;
+  margin-bottom: 24px;
+  list-style-position: inside;
+  list-style-type: disc;
+}
+
+.infoList li::marker {
+  content: "• ";
+  color: #15171f;
+  font-size: 1.2em;
+  font-weight: bold;
+}
+
+.contactInfo {
+  font-family: "Montserrat", sans-serif;
+  font-size: 17px;
+  margin-left: 16px;
+  margin-bottom: 24px;
+  line-height: 1.625;
+}
+
+.contactInfo li a:hover {
+  text-decoration: underline;
+}
+
+.closingMessage {
+  font-family: "Montserrat", sans-serif;
+  font-size: 17px;
+}
