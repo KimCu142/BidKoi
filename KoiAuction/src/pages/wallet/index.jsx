@@ -127,8 +127,8 @@ console.log(accountId);
 
         <div className={styles.balance}>
           <label>Số dư hiện tại trong ví: </label>
-          <strong>{currentBalance.balance} VND</strong>
-        </div>
+          <strong>{Number(currentBalance.balance).toLocaleString()} VND</strong>
+          </div>
         <div className={styles.inputGroup}>
           <lable> Số tiền muốn nạp: </lable>
           <input
