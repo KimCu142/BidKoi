@@ -14,7 +14,8 @@ export default function KoiTable({ name, initialPrice, id, rating, sex, length, 
                     </div>
                     <div className="table-info">
                         <div>
-                        <p className="card-number">▶ ${initialPrice}</p>
+                        <p className="card-number">▶ {parseFloat(initialPrice).toLocaleString()} VND</p>
+
                         </div>
                         <div className="card-number">
                             <svg xmlns="http://www.w3.org/2000/svg" width="1.5em" height="1.5em" viewBox="0 0 24 24">

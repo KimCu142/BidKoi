@@ -88,8 +88,8 @@ const KoiCard = ({
             </svg>
             {status}
           </p>
-          <p className={styles.price}>▶${price}</p>
-        </div>
+          <p className={styles.price}>▶${price.toLocaleString()}</p>
+          </div>
       </div>
 
       <div className={styles["card-content2"]}>

@@ -108,12 +108,14 @@ const BidTable = ({ initialPrice ,isAuctionEnded}) => {
   };
 
   // Tính giá cao nhất từ các bids
-  const highestBid = pastBids.length === 0
-    ? initialPrice
-    : Math.max(initialPrice, Math.max(...pastBids.map(bid => parseFloat(bid.price))));
-  // Tính Increments và Minimum Bid
-  const increments = (highestBid * 0.05).toFixed(0);
-  const minimumBid = (parseFloat(highestBid) + parseFloat(increments)).toFixed(0); // Giá cao nhất + Increments
+// Tính giá cao nhất từ các bids
+const highestBid = pastBids.length === 0
+  ? initialPrice
+  : Math.max(initialPrice, Math.max(...pastBids.map(bid => parseFloat(bid.price))));
+
+// Tính Increments và Minimum Bid
+const increments = (initialPrice * 0.05).toFixed(0);
+const minimumBid = (parseFloat(highestBid) + parseFloat(increments)).toFixed(0); // Giá cao nhất + Increments
 
   return (
     <>
@@ -152,7 +154,7 @@ const BidTable = ({ initialPrice ,isAuctionEnded}) => {
           <p style={{ color: 'red', marginTop: '10px' }}>{inputError}</p>
         )}
         <p style={{ fontSize: '12px', color: '#666', marginTop: '10px' }}>
-          (Minimum bid: {minimumBid}, Increments of {increments} only)
+        (Minimum bid: {parseFloat(minimumBid).toLocaleString()}, Increments of {parseFloat(increments).toLocaleString()} only)
         </p>
         <Button
           style={{
@@ -164,7 +166,8 @@ const BidTable = ({ initialPrice ,isAuctionEnded}) => {
           }}
           disabled={isAuctionEnded} // Vô hiệu hóa nút khi đấu giá kết thúc
         >
-          Current Bid: {highestBid > 0 ? highestBid : "No Bids Yet"}
+      Current Bid: {highestBid > 0 ? `${highestBid.toLocaleString()} VND` : "No Bids Yet"}
+
         </Button>
       </Card>
 
@@ -178,25 +181,36 @@ const BidTable = ({ initialPrice ,isAuctionEnded}) => {
         className="customCard"
       >
         <div className="Bids">
-          {pastBids.filter(bid => bid.price > 0).length === 0 ? (
-            <>
-              <p style={{ fontWeight: 'bold', marginBottom: '5px' }}>No Bids Yet</p>
-              <p style={{ color: '#777' }}>Be the first to bid!</p>
-            </>
-          ) : (
-            pastBids
-              .filter(bid => bid.price > 0) // Lọc bỏ các bid có price bằng 0
-              .sort((a, b) => b.price - a.price) // Sắp xếp theo giá từ cao đến thấp
-              .slice(0, 5) // Lấy 5 bid đầu tiên
-              .map((bid, index) => (
-                <div key={index} className="bidEntry">
-                  <p style={{ fontWeight: 'bold' }}>{bid.username}</p>
-                  <p>{bid.price}</p>
-                  <p>{new Date(bid.date).toLocaleString()}</p> {/* Hiển thị thời gian ở định dạng dễ đọc */}
-                </div>
-              ))
-          )}
-        </div>
+  {pastBids.filter(bid => bid.price > 0).length === 0 ? (
+    <>
+      <p style={{ fontWeight: 'bold', marginBottom: '5px' }}>No Bids Yet</p>
+      <p style={{ color: '#777' }}>Be the first to bid!</p>
+    </>
+  ) : (
+    <>
+      {/* Tiêu đề các cột */}
+      <div className="bidHeader">
+        <p style={{ fontWeight: 'bold', textAlign: 'left' }}>Username</p>
+        <p style={{ fontWeight: 'bold', textAlign: 'left' }}>Price</p>
+        <p style={{ fontWeight: 'bold', textAlign: 'left' }}>Date</p>
+      </div>
+
+      {/* Danh sách các bid */}
+      {pastBids
+        .filter(bid => bid.price > 0) // Lọc bỏ các bid có price bằng 0
+        .sort((a, b) => b.price - a.price) // Sắp xếp theo giá từ cao đến thấp
+        .slice(0, 5) // Lấy 5 bid đầu tiên
+        .map((bid, index) => (
+          <div key={index} className="bidEntry">
+            <p style={{ textAlign: 'left' }}>{bid.username}</p>
+            <p style={{ textAlign: 'left' }}>{parseFloat(bid.price).toLocaleString()}</p>
+            <p style={{ textAlign: 'left' }}>{new Date(bid.date).toLocaleString()}</p>
+          </div>
+        ))}
+    </>
+  )}
+</div>
+
 
       </Card>
     </>
