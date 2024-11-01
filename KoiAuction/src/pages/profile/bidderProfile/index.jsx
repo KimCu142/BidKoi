@@ -1,5 +1,5 @@
 /* eslint-disable no-unused-vars */
-import { DatePicker, Form, Image, Input, Upload } from "antd";
+import { DatePicker, Form, Image, Input, Select, Upload } from "antd";
 import styles from "./index.module.scss";
 import TextArea from "antd/es/input/TextArea";
 import { useCallback, useEffect, useState } from "react";
@@ -11,6 +11,8 @@ import uploadAvatarFile from "../../../utils/avatarFile";
 import { Link } from "react-router-dom";
 import api from "../../../config/axios";
 import { motion } from "framer-motion";
+import SpinImage from "../../../components/spin/spin";
+import { Option } from "antd/es/mentions";
 
 // Thay đổi đường dẫn tùy vào vị trí của utils/file
 
@@ -19,7 +21,7 @@ function BidderProfile({ accountId, token }) {
     id: "",
     firstname: "",
     lastname: "",
-    gender: "None",
+    gender: "",
     phone: "",
     address: "",
     email: "",
@@ -116,6 +118,15 @@ function BidderProfile({ accountId, token }) {
       formErrors.email = "Email is invalid";
     }
 
+    if (userData.birthday) {
+      const age = moment().diff(moment(userData.birthday), "years");
+      if (age < 18) {
+        formErrors.birthday = "You must be at least 18 years old.";
+      } else if (moment(userData.birthday).isSameOrAfter(moment(), "day")) {
+        formErrors.birthday = "Birthday cannot be today or a future date";
+      }
+    }
+
     setErrors(formErrors);
     return Object.keys(formErrors).length === 0;
   };
@@ -163,6 +174,11 @@ function BidderProfile({ accountId, token }) {
 
       toast.success("Update successfully!");
 
+      // Lưu thông tin người dùng vào localStorage sau khi cập nhật
+      const storedUser = JSON.parse(localStorage.getItem("user"));
+      storedUser.bidder = { ...storedUser.bidder, ...updatedData };
+      localStorage.setItem("user", JSON.stringify(storedUser));
+
       // Cập nhật dữ liệu người dùng sau khi lưu thành công
       await fetchUserData();
       setIsEdit(false);
@@ -177,15 +193,6 @@ function BidderProfile({ accountId, token }) {
       setFileList([]); // Reset danh sách file sau khi cập nhật
     }
   };
-
-  // const onChange = (date, dateString) => {
-  //   setUserData((prev) => ({
-  //     ...prev,
-  //     birthday: dateString
-  //       ? moment(dateString, "YYYY-MM-DD").format("YYYY-MM-DD")
-  //       : null,
-  //   }));
-  // };
 
   const onChange = (date, dateString) => {
     setUserData((prev) => ({
@@ -259,31 +266,6 @@ function BidderProfile({ accountId, token }) {
 
   return (
     <>
-      <div className={styles.sidebar}>
-        <div className={styles.sidebarMenu}>
-          <ul>
-            <li>
-              <Link to="/profile" className={styles.active}>
-                <span className="las la-user"></span>
-                <span> Account</span>
-              </Link>
-            </li>
-            <li>
-              <Link to="/password" className={styles.active}>
-                <span className="las la-lock"></span>
-                <span> Password</span>
-              </Link>
-            </li>
-            <li>
-              <Link to="/bidder-activities" className={styles.active}>
-                <span className="las la-fish"></span>
-                <span> Activities</span>
-              </Link>
-            </li>
-          </ul>
-        </div>
-      </div>
-
       <motion.div
         className={styles.mainBox}
         initial={{ opacity: 0 }}
@@ -291,46 +273,49 @@ function BidderProfile({ accountId, token }) {
         transition={{ duration: 0.5 }}
       >
         <div className={styles.profileBox}>
-          {/* <div className={styles.userId}>
-            <strong>User ID: </strong>
-            {accountId}
-          </div> */}
           <Form className={styles.profileContainer}>
-            <div className={styles.imageFields}>
-              <Form.Item name="avatar">
-                <label className={styles.avatarTitle}>Your avatar</label>
-                {previewImage && !isEdit ? (
-                  <Image
-                    src={previewImage}
-                    alt="Avatar"
-                    style={{
-                      width: "200px",
-                      height: "220px",
-                      borderRadius: "50%",
-                    }}
-                  />
-                ) : (
-                  <Upload
-                    action="https://660d2bd96ddfa2943b33731c.mockapi.io/api/upload"
-                    listType="picture-circle"
-                    fileList={fileList}
-                    onPreview={handlePreview}
-                    onChange={handleChange}
-                    disabled={!isEdit}
-                    beforeUpload={() => false}
-                  >
-                    {fileList.length === 0 && isEdit ? uploadButton : null}
-                  </Upload>
-                )}
-                {isEdit && (
-                  <div className={styles.textlight}>
-                    Allowed JPG, GIF or PNG.
-                  </div>
-                )}
-              </Form.Item>
-            </div>
-
             <div className={styles.formFields}>
+              {/* Avatar section */}
+              <div className={styles.avatarContainer}>
+                <Form.Item name="avatar">
+                  <div className={styles.logoContainer}>
+                    <label className={styles.avatarTitle}>Avatar</label>
+                    {previewImage && !isEdit ? (
+                      <Image
+                        src={previewImage}
+                        alt="Avatar"
+                        style={{
+                          width: "150px",
+                          height: "160px",
+                          borderRadius: "50%",
+                        }}
+                      />
+                    ) : (
+                      <Upload
+                        action="https://660d2bd96ddfa2943b33731c.mockapi.io/api/upload"
+                        listType="picture-circle"
+                        fileList={fileList}
+                        onPreview={handlePreview}
+                        onChange={handleChange}
+                        disabled={!isEdit}
+                        beforeUpload={() => false}
+                        maxCount={1}
+                      >
+                        {/* Always show the upload button if no previewImage is available */}
+                        {!previewImage || fileList.length === 0
+                          ? uploadButton
+                          : null}
+                      </Upload>
+                    )}
+                  </div>
+                  {isEdit && (
+                    <div className={styles.textlight}>
+                      Allowed JPG, GIF or PNG.
+                    </div>
+                  )}
+                </Form.Item>
+              </div>
+
               <Form.Item>
                 <label className={styles.formLabel}>First name</label>
                 <Input
@@ -365,14 +350,18 @@ function BidderProfile({ accountId, token }) {
               </Form.Item>
               <Form.Item>
                 <label className={styles.formLabel}>Gender</label>
-                <Input
-                  placeholder="Gender"
+                <Select
                   value={userData.gender}
-                  onChange={(e) =>
-                    setUserData({ ...userData, gender: e.target.value })
+                  onChange={(value) =>
+                    setUserData({ ...userData, gender: value })
                   }
                   disabled={!isEdit}
-                />
+                  className={styles.genderSelect}
+                >
+                  <Option value="Female">Female</Option>
+                  <Option value="Male">Male</Option>
+                  <Option value="Other">Other</Option>
+                </Select>
               </Form.Item>
               <Form.Item>
                 <label className={styles.formLabel}>Phone number</label>
@@ -404,16 +393,6 @@ function BidderProfile({ accountId, token }) {
               </Form.Item>
               <Form.Item>
                 <label className={styles.formLabel}>Birthday</label>
-                {/* <DatePicker
-                  onChange={onChange}
-                  value={
-                    userData.birthday
-                      ? moment(userData.birthday, "YYYY-MM-DD")
-                      : null
-                  }
-                  disabled={!isEdit}
-                  className={styles.birthdayDatepicker}
-                /> */}
                 <DatePicker
                   onChange={onChange}
                   value={
@@ -423,8 +402,15 @@ function BidderProfile({ accountId, token }) {
                   }
                   disabled={!isEdit}
                   className={styles.birthdayDatepicker}
+                  style={{ width: "100%" }}
                 />
+                {errors.birthday && (
+                  <span className="error" style={{ color: "red" }}>
+                    {errors.birthday}
+                  </span>
+                )}
               </Form.Item>
+
               <Form.Item>
                 <label className={styles.formLabel}>Email</label>
                 <Input
@@ -444,35 +430,34 @@ function BidderProfile({ accountId, token }) {
 
               <div className={styles.profileButton}>
                 <div className={styles.twoButton}>
-                  {isEdit ? (
-                    <>
-                      <motion.button
-                        className={styles.btn1}
-                        onClick={handleUpdate}
-                        whileHover={{ scale: 1.1 }}
-                        whileTap={{ scale: 0.9, y: -10 }}
-                      >
-                        Save changes
-                      </motion.button>
-
-                      <div onClick={handleReset} className={styles.btn2}>
-                        Reset
-                      </div>
-                    </>
-                  ) : (
-                    <div className={styles.btn1} onClick={handleEdit}>
-                      Edit
-                    </div>
+                  <motion.button
+                    className={styles.btn1}
+                    onClick={isEdit ? handleUpdate : handleEdit}
+                    whileHover={{ scale: 1.1 }}
+                  >
+                    {isEdit ? "Save changes" : "Edit"}
+                  </motion.button>
+                  {isEdit && (
+                    <motion.button
+                      className={styles.btn2}
+                      onClick={handleCancel}
+                    >
+                      Cancel
+                    </motion.button>
                   )}
-                  <div className={styles.btn2} onClick={handleCancel}>
-                    Cancel
-                  </div>
                 </div>
               </div>
             </div>
           </Form>
         </div>
       </motion.div>
+      {/* Loading Spinner */}
+      {isUpdate && (
+        <div className={styles.loadingOverlay}>
+          {/* Sử dụng component spinner của bạn */}
+          <SpinImage />
+        </div>
+      )}
     </>
   );
 }

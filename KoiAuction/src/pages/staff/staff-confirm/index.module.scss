@@ -97,3 +97,24 @@
   text-align: center;
   padding: 10px 0;
 }
+
+//Scrollbar
+.customerScrollbar {
+  overflow-y: auto;
+  height: 500px;
+  padding-right: 10px;
+}
+
+.customerScrollbar::-webkit-scrollbar {
+  width: 5px;
+}
+
+.customerScrollbar::-webkit-scrollbar-track {
+  background: transparent;
+}
+
+.customerScrollbar::-webkit-scrollbar-thumb {
+  background-color: #e4e4e4;
+  border-radius: 10px;
+  border: 2px solid transparent;
+}

@@ -36,19 +36,19 @@ function Profile() {
     <div className={styles.profileContainer}>
       {role === "BIDDER" && (
         <BidderProfile
-          accountId={userData.bidder.account.id}
+          accountId={userData.bidder?.account?.id}
           token={userData.token}
         />
       )}
       {role === "STAFF" && (
         <StaffProfile
-          accountId={userData.staff.account.id}
+          accountId={userData.staff?.account?.id}
           token={userData.token}
         />
       )}
       {role === "BREEDER" && (
         <BreederProfile
-          accountId={userData.breeder.account.id}
+          accountId={userData.breeder?.account?.id}
           token={userData.token}
         />
       )}

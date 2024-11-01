@@ -206,3 +206,25 @@
     margin-top: 7px;
   }
 }
+
+.avatar-container {
+  position: absolute;
+  right: 20px; // Căn chỉnh khoảng cách từ cạnh phải
+  top: 50%;
+  transform: translateY(-50%);
+  display: flex;
+  align-items: center;
+  margin-left: 10px; // Khoảng cách giữa avatar và các phần tử xung quanh
+}
+
+.Loged-Box {
+  padding-top: 5px;
+  margin-right: 30px;
+
+  .ant-btn {
+    background-color: #d4163c;
+    color: white;
+    border-color: red;
+    border-radius: 24px;
+  }
+}

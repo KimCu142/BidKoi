@@ -37,7 +37,9 @@ import BreederPayment from "../../payment/BreederPayment";
 function BreederRequest() {
   const [kois, setKois] = useState([]);
   const [breeders, setBreeders] = useState({});
-  const [openModal, setOpenModal] = useState(false);
+  const [openEditModal, setOpenEditModal] = useState(false);
+  const [openDetailModal, setOpenDetailModal] = useState(false);
+  const [selectedKoi, setSelectedKoi] = useState(null);
   const [form] = useForm();
   const [loading, setLoading] = useState(false);
   const [previewOpen, setPreviewOpen] = useState(false);
@@ -73,16 +75,15 @@ function BreederRequest() {
       .validateFields() // Không truyền tham số để validate toàn bộ form
       .then((values) => {
         if (values.initialPrice) {
-          setPaymentAmount(Math.round(values.initialPrice)*0.5); // Lưu giá trị cần thanh toán
+          setPaymentAmount(Math.round(values.initialPrice) * 0.5); // Lưu giá trị cần thanh toán
           setIsPaymentModal(true); // Mở Payment Modal
         }
       })
       .catch((errorInfo) => {
-        console.error('Validation Failed:', errorInfo);
+        console.error("Validation Failed:", errorInfo);
         // Nếu có lỗi thì dừng và không mở Payment Modal
       });
   };
-
 
   const handleCancelPayment = () => {
     setIsPaymentModal(false); // Đóng Payment Modal
@@ -173,55 +174,9 @@ function BreederRequest() {
       key: "detail",
       render: (text, record) => (
         <Button
-          style={{
-            backgroundColor: "#4685af",
-            color: "white",
-            fontWeight: "500",
-          }}
           type="link"
-          onClick={() => {
-            Modal.info({
-              title: "Koi Details",
-              content: (
-                <div>
-                  <p>
-                    <strong>ID:</strong> {record.koiId}
-                  </p>
-                  <p>
-                    <strong>Varieties:</strong> {record.varieties}
-                  </p>
-                  <p>
-                    <strong>Length:</strong> {record.length} cm
-                  </p>
-                  <p>
-                    <strong>Sex:</strong> {record.sex}
-                  </p>
-                  <p>
-                    <strong>Age:</strong> {getJapaneseAge(record.age)} (
-                    {record.age}y)
-                  </p>
-                  <p>
-                    <strong>Breeder:</strong>{" "}
-                    {record.breeder?.name || breeders.name}
-                  </p>
-                  <p>
-                    <strong>Description:</strong> {record.description}
-                  </p>
-                  <p>
-                    <strong>Initial Price:</strong>{" "}
-                    {record.initialPrice.toLocaleString()} VNĐ
-                  </p>
-                  <p>
-                    <strong>Rating:</strong>{" "}
-                    <Rate disabled value={record.rating} />
-                  </p>
-                  <Image src={record.image} alt="Koi Image" width={115} />
-                  <video src={record.video} controls width={230}></video>
-                </div>
-              ),
-              onOk() { },
-            });
-          }}
+          style={{ backgroundColor: "#4685af", color: "white" }}
+          onClick={() => handleOpenDetailModal(record)}
         >
           Detail
         </Button>
@@ -241,10 +196,7 @@ function BreederRequest() {
                     <Button
                       type="link"
                       style={{ fontWeight: "600" }}
-                      onClick={() => {
-                        setOpenModal(true);
-                        form.setFieldsValue(koiRequest);
-                      }}
+                      onClick={() => handleEditKoi(koiRequest)}
                     >
                       Edit
                     </Button>
@@ -278,12 +230,25 @@ function BreederRequest() {
     },
   ];
 
-  const handleOpenModal = () => {
-    setOpenModal(true);
+  const handleEditKoi = (koiRequest) => {
+    setSelectedKoi(koiRequest);
+    form.setFieldsValue(koiRequest);
+    setOpenEditModal(true);
   };
 
-  const handleCloseModal = () => {
-    setOpenModal(false);
+  const handleOpenDetailModal = (koi) => {
+    setSelectedKoi(koi);
+    setOpenDetailModal(true);
+  };
+
+  const handleCloseEditModal = () => {
+    setOpenEditModal(false);
+    form.resetFields();
+  };
+
+  const handleCloseDetailModal = () => {
+    setOpenDetailModal(false);
+    setSelectedKoi(null);
   };
 
   //DELETE
@@ -346,7 +311,7 @@ function BreederRequest() {
       }
 
       await fetchKoiAndBreeder();
-      setOpenModal(false);
+      setOpenEditModal(false);
       form.resetFields();
       setUploadProgress(0);
     } catch (err) {
@@ -429,14 +394,59 @@ function BreederRequest() {
   return (
     <div>
       <h1>Breeder Request</h1>
-      <Button onClick={handleOpenModal}>Create new Koi Request</Button>
+      <Button onClick={() => setOpenEditModal(true)}>
+        Create new Koi Request
+      </Button>
       <Table columns={columns} dataSource={kois} />
+
+      {/* Detail Modal */}
       <Modal
-        confirmLoading={loading}
+        visible={openDetailModal}
+        title="Koi Details"
+        onCancel={handleCloseDetailModal}
+        footer={null}
+      >
+        {selectedKoi && (
+          <div>
+            <p>
+              <strong>ID:</strong> {selectedKoi.koiId}
+            </p>
+            <p>
+              <strong>Varieties:</strong> {selectedKoi.varieties}
+            </p>
+            <p>
+              <strong>Length:</strong> {selectedKoi.length} cm
+            </p>
+            <p>
+              <strong>Sex:</strong> {selectedKoi.sex}
+            </p>
+            <p>
+              <strong>Age:</strong> {selectedKoi.age} years
+            </p>
+            <p>
+              <strong>Description:</strong> {selectedKoi.description}
+            </p>
+            <p>
+              <strong>Initial Price:</strong> {selectedKoi.initialPrice} VNĐ
+            </p>
+            <p>
+              <strong>Rating:</strong>{" "}
+              <Rate disabled value={selectedKoi.rating} />
+            </p>
+            <Image src={selectedKoi.image} alt="Koi Image" width={115} />
+            {selectedKoi.video && (
+              <video src={selectedKoi.video} controls width={230}></video>
+            )}
+          </div>
+        )}
+      </Modal>
+
+      <Modal
+        visible={openEditModal}
+        title={selectedKoi ? "Edit Koi" : "Create Koi"}
+        onCancel={handleCloseEditModal}
         onOk={handleOk}
-        centered
-        open={openModal}
-        onCancel={handleCloseModal}
+        confirmLoading={loading}
         width={1000}
       >
         <h2 className={styles.koiTitle}>Basic Information</h2>
@@ -449,12 +459,12 @@ function BreederRequest() {
               label="KoiID"
               name="koiId"
               hidden
-            // rules={[
-            //   {
-            //     required: true,
-            //     message: "Please enter KoiID",
-            //   },
-            // ]}
+              // rules={[
+              //   {
+              //     required: true,
+              //     message: "Please enter KoiID",
+              //   },
+              // ]}
             >
               <Input />
             </Form.Item>
@@ -668,19 +678,20 @@ function BreederRequest() {
                 Please pay {paymentAmount} VNĐ for Koi request
               </p>
               <BreederPayment
-               koiRequestAmount={Math.round(paymentAmount)}
-               handlePayment={handlePayment}
-               />
-              
-              <Button className={styles.paymentButton} onClick={handleCancelPayment}>
+                koiRequestAmount={Math.round(paymentAmount)}
+                handlePayment={handlePayment}
+              />
+
+              <Button
+                className={styles.paymentButton}
+                onClick={handleCancelPayment}
+              >
                 Cancel
               </Button>
             </motion.div>
           </div>
         )}
       </Modal>
-
-
 
       {previewImage && (
         <Image

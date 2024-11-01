@@ -100,7 +100,8 @@ function BreederConfirmImg() {
       if (response.status === 204) {
         toast.success("Upload successful");
         setImageUrl(confirmUrl);
-        fetchData();
+        setUploaded(true);
+        await fetchData();
       } else {
         console.error("Failed to save image:", response.data);
       }

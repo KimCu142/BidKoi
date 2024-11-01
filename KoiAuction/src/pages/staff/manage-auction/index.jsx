@@ -233,22 +233,26 @@ const Auction = () => {
           >
             Add Room
           </Button>
-          <Button
-            style={{ marginRight: "8px" }}
-            type="primary"
-            onClick={() => handleOpenAuctionModal(auction)}
-          >
-            Edit
-          </Button>
-          <Popconfirm
-            title="Delete"
-            description="Do you want to delete this auction?"
-            onConfirm={() => handleDelete(auctionId)}
-          >
-            <Button type="primary" danger>
-              Delete
-            </Button>
-          </Popconfirm>
+          {auction.status !== "ACTIVE" && auction.status !== "END" && (
+            <>
+              <Button
+                style={{ marginRight: "8px" }}
+                type="primary"
+                onClick={() => handleOpenAuctionModal(auction)}
+              >
+                Edit
+              </Button>
+              <Popconfirm
+                title="Delete"
+                description="Do you want to delete this auction?"
+                onConfirm={() => handleDelete(auctionId)}
+              >
+                <Button type="primary" danger>
+                  Delete
+                </Button>
+              </Popconfirm>
+            </>
+          )}
           {auction.status !== "ACTIVE" && auction.status !== "END" && (
             <Popconfirm
               title="Activate Auction"

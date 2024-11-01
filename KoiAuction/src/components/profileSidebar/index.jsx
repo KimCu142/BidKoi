@@ -17,23 +17,23 @@ const SidebarLayout = () => {
   }, []);
 
   return (
-    <Layout>
-      <Sider width={250} className={styles.sidebar}>
+    <div>
+      <div width={250} className={styles.sidebar}>
         <ul className={styles.sidebarMenu}>
           {role === "BIDDER" && (
             <>
               <li>
-                <Link to="/profile" className={styles.link}>
+                <Link to="/profile" className={styles.active}>
                   <span className="las la-user" /> <span>Account</span>
                 </Link>
               </li>
               <li>
-                <Link to="/password" className={styles.link}>
+                <Link to="/profile/password" className={styles.active}>
                   <span className="las la-lock" /> <span>Password</span>
                 </Link>
               </li>
               <li>
-                <Link to="/bidder-activities" className={styles.link}>
+                <Link to="/profile/bidder-activities" className={styles.active}>
                   <span className="las la-fish" /> <span>Activities</span>
                 </Link>
               </li>
@@ -43,17 +43,17 @@ const SidebarLayout = () => {
           {role === "STAFF" && (
             <>
               <li>
-                <Link to="/profile" className={styles.link}>
+                <Link to="/profile" className={styles.active}>
                   <span className="las la-user" /> <span>Account</span>
                 </Link>
               </li>
               <li>
-                <Link to="/password" className={styles.link}>
+                <Link to="/profile/password" className={styles.active}>
                   <span className="las la-lock" /> <span>Password</span>
                 </Link>
               </li>
               <li>
-                <Link to="/staff-activities" className={styles.link}>
+                <Link to="/profile/staff-activities" className={styles.active}>
                   <span className="las la-fish" /> <span>Activities</span>
                 </Link>
               </li>
@@ -63,30 +63,28 @@ const SidebarLayout = () => {
           {role === "BREEDER" && (
             <>
               <li>
-                <Link to="/profile" className={styles.link}>
+                <Link to="/profile" className={styles.active}>
                   <span className="las la-user" /> <span>Account</span>
                 </Link>
               </li>
               <li>
-                <Link to="/password" className={styles.link}>
+                <Link to="/profile/password" className={styles.active}>
                   <span className="las la-lock" /> <span>Password</span>
                 </Link>
               </li>
               <li>
-                <Link to="/breeder-activities" className={styles.link}>
+                <Link
+                  to="/profile/breeder-activities"
+                  className={styles.active}
+                >
                   <span className="las la-fish" /> <span>Activities</span>
                 </Link>
               </li>
             </>
           )}
         </ul>
-      </Sider>
-      <Layout style={{ padding: "0 24px 24px" }}>
-        <Content className={styles.mainBox}>
-          <Outlet /> {/* Đây là nơi các trang con sẽ được render */}
-        </Content>
-      </Layout>
-    </Layout>
+      </div>
+    </div>
   );
 };
 

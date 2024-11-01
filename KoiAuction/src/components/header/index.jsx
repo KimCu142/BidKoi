@@ -1,7 +1,7 @@
 import { Link, Navigate, useLocation, useNavigate } from "react-router-dom";
 import "./index.scss";
 import { useState, useEffect, useContext } from "react";
-import { Button, Dropdown, message, Space } from "antd";
+import { Avatar, Button, Dropdown, message, Space } from "antd";
 import {
   DownOutlined,
   LogoutOutlined,
@@ -15,10 +15,32 @@ function Header() {
   const location = useLocation();
   const navigate = useNavigate();
   const [menuOpen, setMenuOpen] = useState(false);
+  const [role, setRole] = useState("");
+  const [avatarUrl, setAvatarUrl] = useState("");
+
   const { isLoggedIn, username, logout } = useContext(AuthContext);
   const handleMenuClick = (e) => {
     console.log("click", e);
   };
+
+  useEffect(() => {
+    const storedUser = JSON.parse(localStorage.getItem("user"));
+    console.log("Stored User:", storedUser);
+    if (storedUser) {
+      setRole(storedUser.role);
+
+      // Kiểm tra nếu role là BIDDER hoặc BREEDER và chỉ đặt avatarUrl khi có đối tượng avatar hoặc logo
+      const avatarPath =
+        storedUser.role === "BIDDER" && storedUser.bidder
+          ? storedUser.bidder.avatar
+          : storedUser.role === "BREEDER" && storedUser.breeder
+          ? storedUser.breeder.logo
+          : null;
+
+      setAvatarUrl(avatarPath);
+      console.log("Avatar URL:", avatarPath); // Log URL để kiểm tra
+    }
+  }, []);
 
   const handleLogout = () => {
     logout();
@@ -117,6 +139,16 @@ function Header() {
                     </Button>
                   </Dropdown>
                 </div>
+                {/* Avatar or Logo */}
+                {role !== "STAFF" && (
+                  <div className="avatar-container">
+                    <Avatar
+                      src={avatarUrl}
+                      size={40}
+                      alt={role === "BIDDER" ? "User Avatar" : "Breeder Logo"}
+                    />
+                  </div>
+                )}
               </li>
             ) : (
               <>
@@ -145,6 +177,7 @@ function Header() {
           </div>
         </ul>
       </nav>
+
       <div className="menu-icon" onClick={toggleMenu}>
         <MenuOutlined />
       </div>

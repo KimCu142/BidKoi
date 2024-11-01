@@ -36,31 +36,6 @@ function BidderActivities() {
 
   return (
     <>
-      <div className={styles.sidebar}>
-        <div className={styles.sidebarMenu}>
-          <ul>
-            <li>
-              <Link to="/Profile" className={styles.active}>
-                <span className="las la-user"></span>
-                <span> Account</span>
-              </Link>
-            </li>
-            <li>
-              <Link to="/Password" className={styles.active}>
-                <span className="las la-lock"></span>
-                <span> Password</span>
-              </Link>
-            </li>
-            <li>
-              <Link to="/bidder-activities" className={styles.active}>
-                <span className="las la-fish"></span>
-                <span> Activities</span>
-              </Link>
-            </li>
-          </ul>
-        </div>
-      </div>
-
       <div className={styles.mainBox}>
         <div className={styles.koiList}>
           {koiList.map((koi, index) => (

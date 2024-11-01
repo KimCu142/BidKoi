@@ -1,4 +1,3 @@
-/* eslint-disable no-unused-vars */
 /* eslint-disable react-hooks/exhaustive-deps */
 import { Button, Result } from "antd";
 import { useEffect } from "react";
@@ -31,27 +30,23 @@ function SuccessPage() {
       });
 
       if (response.data && response.data.includes("successfully")) {
-        toast.success("Nạp tiền thành công! Số dư của bạn đã được cập nhật.");
+        toast.success("Top-up successful! Your balance has been updated");
       } else {
         throw new Error("Giao dịch không thành công");
       }
     } catch (error) {
       console.error("Lỗi khi gọi API callback", error);
       toast.warning({
-        message: "Nạp tiền thất bại",
-        description: "Có lỗi xảy ra khi xử lý giao dịch. Vui lòng thử lại.",
+        message: "Top-up failed",
       });
     }
   };
 
   useEffect(() => {
     if (vnp_ResponseCode === "00") {
-      handleVNPayCallback(); // Gọi API nếu giao dịch thành công
+      handleVNPayCallback();
     } else {
-      toast.error({
-        message: "Thanh toán thất bại",
-        description: "Giao dịch không thành công. Vui lòng thử lại!",
-      });
+      toast.error("Thanh toán thất bại");
       navigate("/fail");
     }
   }, [vnp_ResponseCode]);
