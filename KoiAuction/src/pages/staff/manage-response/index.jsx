@@ -69,6 +69,7 @@ function StaffResponse() {
 
   const handleReject = async (koiId) => {
     try {
+      await api.post(`/transaction/rollback-to-breeder/${koiId}`);
       // Lưu Staff 
       await api.put(`/staff/${staffId}/reject/${koiId}`);
       toast.success("Koi request has been rejected");
