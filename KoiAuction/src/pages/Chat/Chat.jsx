@@ -53,16 +53,10 @@ const Chat = () => {
   const onConnected = () => {
     setUserData((prevData) => ({ ...prevData, connected: true }));
     stompClient.subscribe(`/room/${roomId}`, onMessageReceived);
-    userJoin();
+ 
   };
 
-  const userJoin = () => {
-    var chatMessage = {
-      senderName: userData.username,
-      status: "JOIN",
-    };
-    stompClient.send(`/app/message/${roomId}`, {}, JSON.stringify(chatMessage));
-  };
+
 
   const fetchPastChats = async () => {
     try {

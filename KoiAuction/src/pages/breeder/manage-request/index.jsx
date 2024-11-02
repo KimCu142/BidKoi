@@ -30,7 +30,6 @@ import { storage } from "../../../config/firebase";
 import api from "../../../config/axios";
 import TextArea from "antd/es/input/TextArea";
 import { Option } from "antd/es/mentions";
-import Payment from "../../payment/Payment";
 import { motion } from "framer-motion";
 import BreederPayment from "../../payment/BreederPayment";
 

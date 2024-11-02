@@ -8,17 +8,15 @@
 }
 
 .chat-box {
+  height: 500px;
   display: flex;
   flex-direction: column;
-  .chat-box {
-    height: calc(100% - 16px);
-  }
+
   
 }
 
 .chat-content {
-  height: 500px;
-
+  height: 80%;
   margin-bottom: 16px;
   padding-right: 8px;
   border-bottom: 1px solid #f0f0f0;
@@ -29,7 +27,7 @@
   list-style: none;
   padding: 0;
   margin: 0;
-  height: 50%;
+  
 }
 
 .message {

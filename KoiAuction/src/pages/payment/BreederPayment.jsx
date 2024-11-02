@@ -3,13 +3,11 @@ import api from "../../config/axios";
 import styles from "./index.module.scss";
 import { toast } from "react-toastify";
 import PropTypes from "prop-types";
-import { useNavigate } from "react-router-dom";
 
 function BreederPayment({ koiRequestAmount, handlePayment }) {
   const paymentAmount = Math.round(koiRequestAmount);
   const [loading, setLoading] = useState(false);
   const [walletBalance, setWalletBalance] = useState(null);
-  const navigate = useNavigate();
   const [breederId, setbreederId] = useState(null);
   const [accountId, setaccountId] = useState(null);
 
