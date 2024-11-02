@@ -41,6 +41,7 @@
   }
   p {
     height: 24px;
+    width: 200px;
   }
   .time .ended {
     opacity: 0; /* Ban đầu trong suốt */
@@ -49,16 +50,6 @@
     position: absolute;
   }
 
-  .time:hover .dateRange {
-    opacity: 0;
-  }
-
-  .time:hover .ended {
-    transition: opacity 0.5s;
-    opacity: 1;
-    display: block;
-    position: absolute;
-  }
   display: flex;
   flex-direction: column; /* Sắp xếp các phần tử theo cột */
 }

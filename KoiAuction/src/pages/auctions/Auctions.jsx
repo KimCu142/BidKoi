@@ -52,9 +52,7 @@ const Auctions = () => {
         <div className={styles.auctionTitle}>
           <span>Auction #{auctionDetails.auctionId} </span>
           <div className={styles.time}>
-            <p className={styles.dateRange}>{startDate} -</p>
-            <p className={styles.dateRange}>{endDate}</p>
-            <p className={styles.ended}>Ended 7 days Ago</p>
+          <p className={styles.dateRange}>{startDate} - {endDate}</p>
           </div>
         </div>
      
