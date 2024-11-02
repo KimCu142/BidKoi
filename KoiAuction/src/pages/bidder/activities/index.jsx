@@ -35,6 +35,7 @@ function BidderActivities() {
   }, [bidderId]);
 
   const handleKoiClick = (shippingId) => {
+
     navigate(`/profile/bidder/koi-details/${shippingId}`);
   };
 
@@ -51,6 +52,7 @@ function BidderActivities() {
   const handleModalClose = () => {
     setIsModalVisible(false);
     setInvoiceData(null);
+
   };
 
   return (

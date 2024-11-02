@@ -57,7 +57,9 @@ function BreederRequest() {
     if (storedUser) {
       const userData = JSON.parse(storedUser);
       console.log("Stored User:", userData);
-      setBreeders(userData.breeder.name);
+      if (userData.breeder && userData.breeder.name) {
+        setBreeders(userData.breeder.name);
+      }
       setBreederId(userData.breeder.breederID);
       console.log("Breeder Name:", userData.breeder.name);
     }
@@ -70,19 +72,27 @@ function BreederRequest() {
   };
 
   const handleOk = () => {
-    // Lấy giá trị initialPrice từ form và mở Payment Modal
-    form
-      .validateFields() // Không truyền tham số để validate toàn bộ form
-      .then((values) => {
-        if (values.initialPrice) {
-          setPaymentAmount(Math.round(values.initialPrice) * 0.5); // Lưu giá trị cần thanh toán
-          setIsPaymentModal(true); // Mở Payment Modal
-        }
-      })
-      .catch((errorInfo) => {
-        console.error("Validation Failed:", errorInfo);
-        // Nếu có lỗi thì dừng và không mở Payment Modal
-      });
+    // Nếu là tạo mới (không có selectedKoi), mở Payment Modal
+    if (!selectedKoi) {
+      form
+        .validateFields() // Validate toàn bộ form
+        .then((values) => {
+          if (values.initialPrice) {
+            const numericPrice = parseFloat(
+              values.initialPrice.replace(/,/g, "")
+            );
+            setPaymentAmount(Math.round(numericPrice) * 0.5); // Tính số tiền thanh toán
+            setIsPaymentModal(true); // Mở Payment Modal
+          }
+        })
+        .catch((errorInfo) => {
+          console.error("Validation Failed:", errorInfo);
+          // Không mở Payment Modal nếu có lỗi
+        });
+    } else {
+      // Nếu là chỉnh sửa, submit form luôn
+      form.submit();
+    }
   };
 
   const handleCancelPayment = () => {
@@ -187,7 +197,7 @@ function BreederRequest() {
       dataIndex: "status",
       key: "actions",
       render: (status, koiRequest) => {
-        if (status === "PENDING") {
+        if (status === "PENDING" || status === "REJECTED") {
           return (
             <Dropdown
               overlay={
@@ -222,7 +232,11 @@ function BreederRequest() {
         } else {
           return (
             <div style={{ color: statusColors[status], fontWeight: "700" }}>
-              {status === "ACCEPTED" ? "Approved" : "Rejected"}
+              {status === "ACCEPTED" && (
+                <div style={{ color: statusColors[status], fontWeight: "700" }}>
+                  Approved
+                </div>
+              )}
             </div>
           );
         }
@@ -230,26 +244,83 @@ function BreederRequest() {
     },
   ];
 
-  const handleEditKoi = (koiRequest) => {
-    setSelectedKoi(koiRequest);
-    form.setFieldsValue(koiRequest);
+  const formatNumber = (value) => {
+    return value.toString().replace(/\B(?=(\d{3})+(?!\d))/g, ",");
+  };
+
+  //Open Create
+  const handleOpenCreateModal = () => {
+    setSelectedKoi(null);
+    form.resetFields();
+    setFileList([]);
+    setVideoFileList([]);
     setOpenEditModal(true);
   };
 
-  const handleOpenDetailModal = (koi) => {
-    setSelectedKoi(koi);
-    setOpenDetailModal(true);
+  //Open edit
+  const handleEditKoi = (koiRequest) => {
+    // Tạo một bản sao của `koiRequest` và đặt `status` là "PENDING"
+    const koiData = { ...koiRequest, status: "PENDING" };
+
+    // Cập nhật `selectedKoi` và thiết lập giá trị cho form
+    setSelectedKoi(koiData);
+    form.setFieldsValue({
+      ...koiData,
+      breeder: koiRequest.breeder.name,
+      initialPrice: formatNumber(koiRequest.initialPrice),
+    });
+
+    // Đặt lại fileList cho ảnh từ koiRequest
+    if (koiRequest.image) {
+      setFileList([
+        {
+          uid: `${Date.now()}-image`,
+          name: "image",
+          status: "done",
+          url: koiRequest.image,
+        },
+      ]);
+    } else {
+      setFileList([]);
+    }
+
+    // Đặt lại videoFileList cho video từ koiRequest
+    if (koiRequest.video) {
+      setVideoFileList([
+        {
+          uid: `${Date.now()}-video`,
+          name: "video",
+          status: "done",
+          url: koiRequest.video,
+        },
+      ]);
+    } else {
+      setVideoFileList([]);
+    }
+
+    // Mở modal chỉnh sửa
+    setOpenEditModal(true);
   };
 
+  //Close edit
   const handleCloseEditModal = () => {
     setOpenEditModal(false);
     form.resetFields();
   };
 
+  //Open detail
+  const handleOpenDetailModal = (koi) => {
+    setSelectedKoi(koi);
+    setOpenDetailModal(true);
+  };
+
+  //Close detail
   const handleCloseDetailModal = () => {
     setOpenDetailModal(false);
     setSelectedKoi(null);
   };
+
+  //Input money form
 
   //DELETE
   const handleDelete = async (koiId) => {
@@ -264,22 +335,47 @@ function BreederRequest() {
 
   //CREATE OR UPDATE
   const handleSubmitKoi = async (kois) => {
-    kois.status = "PENDING";
+    if (selectedKoi && selectedKoi.status === "REJECTED") {
+      kois.status = "PENDING";
+    } else {
+      kois.status = "PENDING"; // Mặc định "PENDING" cho các trường hợp khác
+    }
 
+    kois.initialPrice = kois.initialPrice.replace(/,/g, "");
     try {
       setLoading(true);
 
+      // Kiểm tra và upload file ảnh nếu có `originFileObj`
       if (fileList.length > 0) {
         const file = fileList[0];
-        console.log(file);
-        const url = await uploadFile(file.originFileObj);
-        kois.image = url;
+        const originFile = file.originFileObj;
+
+        if (originFile) {
+          const url = await uploadFile(originFile);
+          kois.image = url;
+        } else {
+          // Nếu `originFileObj` không tồn tại, giữ nguyên URL nếu đã có
+          kois.image = file.url || "";
+          console.warn(
+            "File originFileObj is undefined, using existing URL if available."
+          );
+        }
       }
 
+      // Kiểm tra và upload file video nếu có `originFileObj`
       if (videoFileList.length > 0) {
         const videoFile = videoFileList[0].originFileObj;
-        const videoUrl = await handleUpload(videoFile, "videos");
-        kois.video = videoUrl;
+
+        if (videoFile) {
+          const videoUrl = await handleUpload(videoFile);
+          kois.video = videoUrl;
+        } else {
+          // Nếu `originFileObj` không tồn tại, giữ nguyên URL nếu đã có
+          kois.video = videoFileList[0].url || "";
+          console.warn(
+            "Video originFileObj is undefined, using existing URL if available."
+          );
+        }
       }
 
       switch (kois.rating) {
@@ -315,6 +411,7 @@ function BreederRequest() {
       form.resetFields();
       setUploadProgress(0);
     } catch (err) {
+      console.error("Create request error:", err);
       toast.error("Create fail");
     } finally {
       setLoading(false);
@@ -394,9 +491,7 @@ function BreederRequest() {
   return (
     <div>
       <h1>Breeder Request</h1>
-      <Button onClick={() => setOpenEditModal(true)}>
-        Create new Koi Request
-      </Button>
+      <Button onClick={handleOpenCreateModal}>Create new Koi Request</Button>
       <Table columns={columns} dataSource={kois} />
 
       {/* Detail Modal */}
@@ -486,10 +581,7 @@ function BreederRequest() {
               <Input />
             </Form.Item>
             <Form.Item label="Breeder" name="breeder" initialValue={breeders}>
-              <Input
-                value={breeders} // Nếu breeder chưa được tải, mặc định là chuỗi rỗng
-                disabled
-              />
+              <Input value={breeders} disabled />
             </Form.Item>
             <Form.Item
               label="Length"
@@ -503,6 +595,14 @@ function BreederRequest() {
                   pattern: /^[0-9]+$/,
                   message:
                     "Length must be a number and cannot contain letters or special characters",
+                },
+                {
+                  validator: (_, value) => {
+                    if (value && parseInt(value, 10) > 102) {
+                      return Promise.reject("Length cannot exceed 102 cm");
+                    }
+                    return Promise.resolve();
+                  },
                 },
               ]}
             >
@@ -560,16 +660,27 @@ function BreederRequest() {
               rules={[
                 {
                   required: true,
-                  message: "Please enter initialPrice",
+                  message: "Please enter initial price",
                 },
                 {
-                  pattern: /^[0-9]+$/,
+                  pattern: /^[0-9,]+$/,
                   message:
                     "Price must be a number and cannot contain letters or special characters",
                 },
               ]}
             >
-              <Input addonAfter="VNĐ" />
+              <Input
+                addonAfter="VNĐ"
+                value={form.getFieldValue("initialPrice")}
+                onChange={(e) =>
+                  form.setFieldsValue({
+                    initialPrice: formatNumber(
+                      e.target.value.replace(/,/g, "")
+                    ),
+                  })
+                }
+                placeholder="Enter amount"
+              />
             </Form.Item>
           </div>
           <div className={styles.koiDetail}>
@@ -587,8 +698,18 @@ function BreederRequest() {
                     fileList={fileList}
                     onPreview={handlePreview}
                     onChange={handleImageChange}
+                    accept="image/*"
+                    beforeUpload={(file) => {
+                      const isImage = file.type.startsWith("image/");
+                      if (!isImage) {
+                        toast.error("Please upload an image file only!");
+                        return Upload.LIST_IGNORE;
+                      }
+                      return isImage;
+                    }}
+                    onRemove={() => setFileList([])}
                   >
-                    {fileList.length >= 8 ? null : uploadButton}
+                    {fileList.length < 1 ? uploadButton : null}
                   </Upload>
                 </Form.Item>
               </Col>
@@ -606,14 +727,24 @@ function BreederRequest() {
                     onChange={handleVideoChange}
                     accept="video/*"
                     beforeUpload={(file) => {
-                      const isLt50M = file.size / 1024 / 1024 < 20; // Giới hạn dung lượng file là 50MB
+                      const isVideo = file.type.startsWith("video/");
+                      const isLt50M = file.size / 1024 / 1024 < 50;
+
+                      if (!isVideo) {
+                        toast.error("Please upload a video file only!");
+                        return Upload.LIST_IGNORE;
+                      }
+
                       if (!isLt50M) {
                         toast.error("File must be smaller than 50MB!");
+                        return Upload.LIST_IGNORE;
                       }
-                      return isLt50M; // Chặn upload nếu vượt quá giới hạn
+
+                      return isVideo && isLt50M;
                     }}
+                    onRemove={() => setVideoFileList([])}
                   >
-                    {fileList.length >= 8 ? null : uploadButton}
+                    {videoFileList.length < 1 ? uploadButton : null}
                   </Upload>
                   {uploadProgress > 0 && (
                     <Flex vertical>
@@ -660,7 +791,7 @@ function BreederRequest() {
             </Form.Item>
           </div>
         </Form>
-        {isPaymentModal && (
+        {isPaymentModal && !selectedKoi && (
           <div className={styles.overlay}>
             <motion.div className={styles.paymentBox}>
               <p className={styles.warningText}>
@@ -675,7 +806,7 @@ function BreederRequest() {
                     <path d="M12 2C10.346 2 9 3.346 9 5v.086C6.717 6.598 5 9.134 5 12v4.586L3.293 19.293c-.391.391-.391 1.023 0 1.414.391.391 1.023.391 1.414 0L7 17.414V12c0-2.348 1.37-4.25 3.25-5.067.056.356.131.7.232 1.026C9.707 8.41 8 10.408 8 13v5h8v-5c0-2.592-1.707-4.59-3.482-5.041.101-.326.176-.67.232-1.026C15.63 7.75 17 9.652 17 12v5.414l2.293 2.293c.391.391 1.023.391 1.414 0s.391-1.023 0-1.414L19 16.586V12c0-2.866-1.717-5.402-4-6.914V5c0-1.654-1.346-3-3-3zM12 24c1.104 0 2-.896 2-2h-4c0 1.104.896 2 2 2z" />
                   </svg>
                 </div>
-                Please pay {paymentAmount} VNĐ for Koi request
+                Please pay {paymentAmount.toLocaleString()} VNĐ for Koi request
               </p>
               <BreederPayment
                 koiRequestAmount={Math.round(paymentAmount)}

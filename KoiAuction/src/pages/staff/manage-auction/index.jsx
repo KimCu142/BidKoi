@@ -328,14 +328,44 @@ const Auction = () => {
             <Form.Item
               label="Start Time"
               name="startTime"
-              rules={[{ required: true, message: "Please enter start time" }]}
+              rules={[
+                {
+                  required: true,
+                  message: "Please enter start time",
+                },
+                {
+                  validator: (_, value) => {
+                    if (!value || value.isAfter(moment())) {
+                      return Promise.resolve();
+                    }
+                    return Promise.reject(
+                      new Error("Start time must be after current time")
+                    );
+                  },
+                },
+              ]}
             >
               <DatePicker showTime format="YYYY/MM/DD, hh:mm:ss A" />
             </Form.Item>
             <Form.Item
               label="End Time"
               name="endTime"
-              rules={[{ required: true, message: "Please enter end time" }]}
+              rules={[
+                {
+                  required: true,
+                  message: "Please enter end time",
+                },
+                ({ getFieldValue }) => ({
+                  validator(_, value) {
+                    if (!value || value.isAfter(getFieldValue("startTime"))) {
+                      return Promise.resolve();
+                    }
+                    return Promise.reject(
+                      new Error("End time must be after start time")
+                    );
+                  },
+                }),
+              ]}
             >
               <DatePicker showTime format="YYYY/MM/DD, hh:mm:ss A" />
             </Form.Item>
