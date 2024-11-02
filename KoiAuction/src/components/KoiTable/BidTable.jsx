@@ -70,34 +70,48 @@ const BidTable = ({ initialPrice ,isAuctionEnded}) => {
     }
   };
 
+  const formatNumber = (value) => {
+    return value.replace(/\B(?=(\d{3})+(?!\d))/g, ","); // Thêm dấu phẩy sau mỗi 3 chữ số
+  };
+
   const handleBidAmount = (event) => {
     const { value } = event.target;
-    setBidData({ ...bidData, price: value });
-
-    // Validate if the entered price is greater than the minimum bid
-    if (parseFloat(value) < parseFloat(minimumBid)) {
+  
+    // Loại bỏ dấu phẩy trước khi so sánh và định dạng
+    const numericValue = value.replace(/,/g, '');
+  
+    // Cập nhật giá trị hiển thị trong input với dấu phẩy
+    setBidData({ ...bidData, price: formatNumber(numericValue) });
+  
+    // Kiểm tra giá trị nhập vào có lớn hơn minimum bid không
+    if (parseFloat(numericValue) < parseFloat(minimumBid)) {
       setInputError(`Bid must be higher than Minimum bid: ${minimumBid}`);
     } else {
       setInputError(''); // Clear error if the input is valid
     }
   };
+  
 
   const sendBid = () => {
-    if (parseFloat(bidData.price) < parseFloat(minimumBid)) {
+    // Loại bỏ dấu phẩy trước khi gửi giá trị
+    const numericPrice = bidData.price.replace(/,/g, '');
+  
+    if (parseFloat(numericPrice) < parseFloat(minimumBid)) {
       message.error(`Your bid must be higher than Minimum bid: ${minimumBid}`);
       return;
     }
-
-    if (stompClient && bidData.price && bidderId) {
+  
+    if (stompClient && numericPrice && bidderId) {
       const bidMessage = {
         userId: bidderId,
-        price: bidData.price,
+        price: numericPrice,
         status: "MESSAGE"
       };
       stompClient.send(`/app/bid/${roomId}`, {}, JSON.stringify(bidMessage));
       setBidData({ ...bidData, price: "" });
     }
   };
+  
 
   const onError = (err) => {
     console.error("Connection error", err);
@@ -114,7 +128,7 @@ const highestBid = pastBids.length === 0
   : Math.max(initialPrice, Math.max(...pastBids.map(bid => parseFloat(bid.price))));
 
 // Tính Increments và Minimum Bid
-const increments = (initialPrice * 0.05).toFixed(0);
+const increments = (highestBid * 0.05).toFixed(0);
 const minimumBid = (parseFloat(highestBid) + parseFloat(increments)).toFixed(0); // Giá cao nhất + Increments
 
   return (
