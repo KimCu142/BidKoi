@@ -165,8 +165,9 @@ const Auctions = () => {
                   <path d="M12 2C10.346 2 9 3.346 9 5v.086C6.717 6.598 5 9.134 5 12v4.586L3.293 19.293c-.391.391-.391 1.023 0 1.414.391.391 1.023.391 1.414 0L7 17.414V12c0-2.348 1.37-4.25 3.25-5.067.056.356.131.7.232 1.026C9.707 8.41 8 10.408 8 13v5h8v-5c0-2.592-1.707-4.59-3.482-5.041.101-.326.176-.67.232-1.026C15.63 7.75 17 9.652 17 12v5.414l2.293 2.293c.391.391 1.023.391 1.414 0s.391-1.023 0-1.414L19 16.586V12c0-2.866-1.717-5.402-4-6.914V5c0-1.654-1.346-3-3-3zM12 24c1.104 0 2-.896 2-2h-4c0 1.104.896 2 2 2z" />
                 </svg>
               </div>
-              Please pay {Math.round(selectedRoom.koi.initialPrice)} VNĐ before
-              participating the room
+              Please pay{" "}
+              {Math.round(selectedRoom.koi.initialPrice).toLocaleString()} VNĐ
+              before participating the room
             </p>
             <Payment
               roomId={selectedRoom.roomId}

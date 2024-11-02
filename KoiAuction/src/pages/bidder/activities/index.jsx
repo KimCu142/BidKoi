@@ -31,7 +31,7 @@ function BidderActivities() {
   }, [bidderId]);
 
   const handleKoiClick = (shippingId) => {
-    navigate(`/bidder/koi-details/${shippingId}`);
+    navigate(`profile/bidder/koi-details/${shippingId}`);
   };
 
   return (

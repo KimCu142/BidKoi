@@ -31,7 +31,7 @@ function BreederActivities() {
   }, [breederId]);
 
   const handleKoiClick = (shippingId) => {
-    navigate(`/breeder/koi-details/${shippingId}`);
+    navigate(`profile/breeder/koi-details/${shippingId}`);
   };
 
   return (

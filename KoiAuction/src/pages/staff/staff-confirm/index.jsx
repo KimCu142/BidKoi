@@ -7,7 +7,6 @@ import { motion } from "framer-motion";
 import styles from "./index.module.scss";
 import { Button, Form, Input, Popconfirm, Select } from "antd";
 import { useParams } from "react-router-dom";
-import { Scrollbars } from "react-custom-scrollbars-2";
 
 function StaffConfirm() {
   const [koi, setKoi] = useState([]);

@@ -5,12 +5,12 @@ import { toast } from "react-toastify";
 import PropTypes from "prop-types";
 import { useNavigate } from "react-router-dom";
 
-function BreederPayment({ koiRequestAmount,handlePayment }) {
+function BreederPayment({ koiRequestAmount, handlePayment }) {
   const paymentAmount = Math.round(koiRequestAmount);
   const [loading, setLoading] = useState(false);
   const [walletBalance, setWalletBalance] = useState(null);
   const navigate = useNavigate();
-  const [breederId, setbreederId] = useState(null); 
+  const [breederId, setbreederId] = useState(null);
   const [accountId, setaccountId] = useState(null);
 
   const fetchWalletBalance = async () => {
@@ -20,7 +20,7 @@ function BreederPayment({ koiRequestAmount,handlePayment }) {
       const { data } = response;
 
       if (data) {
-       console.log("Balance " ,data.balance);
+        console.log("Balance ", data.balance);
         setWalletBalance(data.balance);
       } else {
         console.error("Không thể lấy thông tin ví.");
@@ -38,13 +38,12 @@ function BreederPayment({ koiRequestAmount,handlePayment }) {
       setaccountId(userData.breeder.account.id);
     }
   }, []);
-  
+
   useEffect(() => {
     console.log("Updated BreederID:", breederId);
     console.log("Updated AccountID:", accountId);
   }, [breederId, accountId]);
-  
-  
+
   useEffect(() => {
     // Gọi API lấy thông tin ví khi accountId và breederId đã có giá trị
     if (accountId && breederId) {
@@ -62,12 +61,13 @@ function BreederPayment({ koiRequestAmount,handlePayment }) {
     setLoading(true);
     try {
       const response = await api.post(`/breeder/request-koi/${breederId}`, {
-        fee: paymentAmount
-      }
-    );
+        fee: paymentAmount,
+      });
 
       if (response.status === 200) {
-        console.log("Yêu cầu đấu giá Koi đã được tạo thành công và tiền đã bị trừ.");
+        console.log(
+          "Yêu cầu đấu giá Koi đã được tạo thành công và tiền đã bị trừ."
+        );
         toast.success("Yêu cầu đấu giá đã được tạo thành công!");
         handlePayment();
       } else {
@@ -88,10 +88,13 @@ function BreederPayment({ koiRequestAmount,handlePayment }) {
         className={styles.paymentButton}
         disabled={loading}
       >
-        {loading ? "Đang xử lý..." : `Pay ${paymentAmount} VNĐ to create Koi Request`}
+        {loading
+          ? "Đang xử lý..."
+          : `Pay ${paymentAmount.toLocaleString()} VNĐ to create Koi Request`}
       </button>
       <p className={styles.participationInfo}>
-        Please note: Creating a Koi request will deduct the specified amount from your wallet.
+        Please note: Creating a Koi request will deduct the specified amount
+        from your wallet.
       </p>
     </div>
   );
