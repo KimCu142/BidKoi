@@ -15,22 +15,7 @@ import confetti from "canvas-confetti";
 import ShippingInfo from "../ComfirmShipping/ShippingInfo";
 import api from "../../config/axios";
 
-const auctionInfoContent = (
-  <div>
-    <p>
-      In-House Auctions have a shorter shipping lead time (1-2 weeks) on average
-      and lower overall cost.
-    </p>
-    <p>
-      Koi in this auction are currently being held at Select Koi in Sevierville,
-      TN and thus are ready to ship after fasting to ensure safe delivery.
-    </p>
-    <p>
-      A shipping deposit of $110/koi won will be charged at the end of the
-      auction, then adjusted when bulk shipping is calculated.
-    </p>
-  </div>
-);
+
 
 export default function Bidding() {
   const token = localStorage.getItem("token");
@@ -78,6 +63,7 @@ export default function Bidding() {
   const [auctionDetails, setAuctionDetails] = useState({});
   const [room, setRoom] = useState([null]);
   const currentBidderId = JSON.parse(localStorage.getItem("user"))?.bidder.id;
+
 
   const fireConfetti = () => {
     const duration = 5 * 1000; // Thời gian kéo dài của pháo hoa
@@ -173,19 +159,35 @@ export default function Bidding() {
 
   return (
     <div className="BiddingPage ">
+      <div>
       <AuctionInfo
         roomId={roomId}
         startTime={auctionDetails.startTime}
         endTime={auctionDetails.endTime}
+        description={room.koi.description}
       />
+      </div>
       <div className="Bidding">
         <div className="Visual">
           <div className="img">
             <Image className="custom-image" src={room.koi.image} />
           </div>
-          <video src={room.koi.video} controls width="100%" alt="Koi Video">
-            Your browser does not support the video tag.
-          </video>
+          <div style={{ width: '100%', height: '30%', overflow: 'hidden' }}>
+  <video
+    src={room.koi.video}
+    controls
+    style={{
+      paddingTop:'10px',
+      width: '100%',
+      height: '100%',
+      objectFit: 'cover'
+    }}
+    alt="Koi Video"
+  >
+    Your browser does not support the video tag.
+  </video>
+</div>
+
         </div>
         <div className="KoiTable">
           <KoiTable
@@ -250,11 +252,18 @@ export default function Bidding() {
   );
 }
 
-const AuctionInfo = ({ roomId, startTime, endTime }) => {
+const AuctionInfo = ({ roomId, startTime, endTime,description }) => {
   // Format thời gian để hiển thị
   const formattedStartTime = new Date(startTime).toLocaleDateString("en-GB");
   const formattedEndTime = new Date(endTime).toLocaleDateString("en-GB");
-
+  const auctionInfoContent = (
+    <div>
+      <p>
+      {description}
+      </p>
+     
+    </div>
+  );
 
   return (
     <div >
@@ -272,10 +281,11 @@ const AuctionInfo = ({ roomId, startTime, endTime }) => {
               content={auctionInfoContent}
               title="Koi Info"
               trigger="click"
+              placement="bottom"
             >
               <Button className="Button">
                 <InfoCircleOutlined style={{ color: "rgba(0,0,0,.45)" }} />{" "}
-                Koi Info
+              Koi Info
               </Button>
             </Popover>
           </Space>
