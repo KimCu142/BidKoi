@@ -43,7 +43,7 @@ const Invoice = (invoiceData) => {
                     <div className="payment-info">
                         <h3>Thông tin thanh toán</h3>
                         <p><strong>Tiền cọc:</strong> {room?.koi?.initialPrice * 0.2} VND</p>
-                        <p><strong>Xử lý:</strong> {staffConfirm ? 'Đã xác nhận' : 'Chưa xác nhận'}</p>
+                        <p><strong>Xử lý:</strong> {staffConfirm }</p>
                     </div>
                  
                 </div>
