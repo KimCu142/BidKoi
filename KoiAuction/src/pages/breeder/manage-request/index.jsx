@@ -50,19 +50,43 @@ function BreederRequest() {
   const [breederId, setBreederId] = useState({});
   const [paymentAmount, setPaymentAmount] = useState(0);
   const [isPaymentModal, setIsPaymentModal] = useState(false);
+  const [userData, setUserData] = useState("");
 
   useEffect(() => {
+    // Lấy dữ liệu từ localStorage
     const storedUser = localStorage.getItem("user");
+  
     if (storedUser) {
-      const userData = JSON.parse(storedUser);
-      console.log("Stored User:", userData);
-      if (userData.breeder && userData.breeder.name) {
-        setBreeders(userData.breeder.name);
-      }
-      setBreederId(userData.breeder.breederID);
-      console.log("Breeder Name:", userData.breeder.name);
+      setUserData(JSON.parse(storedUser));
     }
   }, []);
+  
+  useEffect(() => { 
+    const fetchBreederData = async () => {
+      try {
+        // Sử dụng accountId từ userData
+        const accountId = userData?.breeder?.account?.id;
+  
+        if (accountId) {
+          const response = await api.get(`/breeder/profile/${accountId}`);
+          const userData = response.data;
+  
+          if (userData && userData.name) {
+            setBreeders(userData.name);
+            setBreederId(userData.breederID);
+            console.log("Breeder Name:", userData.name);
+          }
+        } else {
+          console.error("Account ID is not available.");
+        }
+      } catch (error) {
+        console.error("Error fetching breeder data:", error);
+      }
+    };
+  
+    fetchBreederData();
+  }, [userData]);
+
 
   const handlePayment = () => {
     // Thanh toán thành công, tiếp tục submit form

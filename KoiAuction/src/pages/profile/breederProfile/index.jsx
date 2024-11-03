@@ -133,16 +133,9 @@ function BreederProfile({ accountId, token }) {
         `/breeder/update-profile/${accountId}`,
         updatedData
       );
-
       toast.success("Update successfully!");
-
-      const storedUser = JSON.parse(localStorage.getItem("user"));
-      storedUser.breeder = { ...storedUser.breeder, ...updatedData };
-      localStorage.setItem("user", JSON.stringify(storedUser));
-
       await fetchUserData();
       setIsEdit(false);
-
       setTimeout(() => {
         setIsUpdate(false); // Kết thúc loading sau 1 giây
       }, 1000);
