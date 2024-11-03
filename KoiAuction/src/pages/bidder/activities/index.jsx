@@ -104,9 +104,10 @@ function BidderActivities() {
         </div>
         <Modal
           title="Invoice Details"
-          visible={isModalVisible}
+          open={isModalVisible}
           onCancel={handleModalClose}
           footer={null}
+          style={{ top: 5 }}
           width="50%"
         >
           {invoiceData ? (
