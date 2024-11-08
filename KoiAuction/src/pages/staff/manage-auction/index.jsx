@@ -177,10 +177,23 @@ const Auction = () => {
     }
   };
 
+  const handleEnd = async (auctionId) => {
+    try {
+      await api.put(`/auction/${auctionId}/closed`);
+      await api.put(`/transaction/rollback/${auctionId}`); // Rollback transaction
+  
+      toast.success("Auction ended and transaction rolled back successfully!");
+      fetchAuctions();
+    } catch (error) {
+      toast.error("Failed to end auction or rollback transaction");
+    }
+  };
+  
+
   const statusColors = {
     PENDING: "#d9d9d9",
     ACTIVE: "#52c41a",
-    END: "#ff4d4f",
+    CLOSED: "#ff4d4f",
   };
 
   const columns = [
@@ -226,14 +239,16 @@ const Auction = () => {
       key: "auctionId",
       render: (auctionId, auction) => (
         <>
-          <Button
-            style={{ marginRight: "8px" }}
-            type="primary"
-            onClick={() => handleOpenRoomModal(auction)} // Pass auction to open room modal
-          >
-            Add Room
-          </Button>
-          {auction.status !== "ACTIVE" && auction.status !== "END" && (
+          {auction.status !== "CLOSED" && (
+            <Button
+              style={{ marginRight: "8px" }}
+              type="primary"
+              onClick={() => handleOpenRoomModal(auction)} // Pass auction to open room modal
+            >
+              Add Room
+            </Button>
+          )}
+          {auction.status !== "ACTIVE" && auction.status !== "CLOSED" && (
             <>
               <Button
                 style={{ marginRight: "8px" }}
@@ -253,7 +268,25 @@ const Auction = () => {
               </Popconfirm>
             </>
           )}
-          {auction.status !== "ACTIVE" && auction.status !== "END" && (
+          {auction.status === "ACTIVE" && (
+            <Popconfirm
+              title="End Auction"
+              description="Are you sure you want to end this auction?"
+              onConfirm={() => handleEnd(auctionId)}
+            >
+              <Button
+                style={{
+                  marginLeft: "8px",
+                  color: "#fff",
+                  backgroundColor: "#ff4d4f",
+                  borderColor: "#ff4d4f",
+                }}
+              >
+                End
+              </Button>
+            </Popconfirm>
+          )}
+          {auction.status !== "ACTIVE" && auction.status !== "CLOSED" && (
             <Popconfirm
               title="Activate Auction"
               description="Are you sure you want to activate this auction?"
