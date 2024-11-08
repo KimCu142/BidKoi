@@ -31,9 +31,6 @@
   font-size: 20px;
 }
 
-.time p {
-  width: 140px;
-}
 
 .auctionTitle {
   span {
@@ -41,7 +38,7 @@
   }
   p {
     height: 24px;
-    width: 200px;
+    width: 400px;
   }
   .time .ended {
     opacity: 0; /* Ban đầu trong suốt */

@@ -41,7 +41,7 @@ function BidderActivities() {
 
   const handleInvoiceClick = async (koiId) => {
     try {
-      const response = await api.get(`/invoice/get/${koiId}`);
+      const response = await api.get(`/invoice/view/${koiId}`);
       setInvoiceData(response.data);
       setIsModalVisible(true);
     } catch (error) {

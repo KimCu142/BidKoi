@@ -115,6 +115,7 @@ const Auctions = () => {
               status={room.koi.status}
               breeder={room.koi.breeder.name}
               rating={room.koi.rating}
+              logo={room.koi.breeder.logo}
             />
           </div>
         ))}
