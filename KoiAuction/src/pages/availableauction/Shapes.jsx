@@ -31,7 +31,7 @@ export function Shapes({ isHover, isPress, mouseX, mouseY }) {
             hover: { z: isPress ? -0.9 : 0 },
           }}
         >
-          {/* <Cone /> */}
+          <Cone />
           <Torus/>
         </motion.group>
         <Sphere />
@@ -77,7 +77,9 @@ export function Cone() {
         },
       }}
     >
-      {/* <FishModel /> */}
+<Suspense fallback={null}>
+   <FishModel />
+</Suspense>
     </motion.mesh>
   );
 }
@@ -97,7 +99,9 @@ export function Torus() {
       }}
     >
 
-      <FishModel2/>
+<Suspense fallback={null}>
+   <FishModel2 />
+</Suspense>
     </motion.mesh>
   );
 }
