@@ -62,6 +62,7 @@ const Invoice = (invoiceData) => {
                             status={koi.status}
                             breeder={koi.breeder.name}
                             rating={koi.rating}
+                            logo={room.koi.breeder.logo}
                         />
                     )}
                 </div>
