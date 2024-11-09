@@ -9,6 +9,7 @@ import {
   InputAdornment,
   MenuItem,
   TextField,
+  Typography,
   useMediaQuery,
 } from "@mui/material";
 import { Visibility, VisibilityOff } from "@mui/icons-material";
@@ -35,20 +36,43 @@ const userSchema = yup.object().shape({
   password: yup
     .string()
     .required("Password is required")
-    .min(8, "Password must be at least 8 characters long")
-    .matches(/[A-Z]/, "Password must contain at least one uppercase letter")
-    .matches(/[a-z]/, "Password must contain at least one lowercase letter")
-    .matches(/\d/, "Password must contain at least one number")
-    .matches(
-      /[@$!%*#?&]/,
-      "Password must contain at least one special character"
-    ),
+    .min(8, "Password must be at least 8 characters long"),
   role: yup.string().required("Role is required"),
 });
 
+function CustomTitle({ title, subtitle, sx }) {
+  return (
+    <Box mb="20px" textAlign="center">
+      <Typography
+        variant="h4"
+        sx={{
+          fontFamily: "Righteous, sans-serif",
+          fontWeight: "bold",
+          fontSize: "32px",
+          color: "black",
+          letterSpacing: "1px",
+          ...sx,
+        }}
+      >
+        {title}
+      </Typography>
+      <Typography
+        variant="subtitle1"
+        sx={{
+          fontFamily: "Montserrat, sans-serif",
+          fontSize: "18px",
+          color: "green",
+          marginTop: "5px",
+        }}
+      >
+        {subtitle}
+      </Typography>
+    </Box>
+  );
+}
+
 function Form() {
   const [showPassword, setShowPassword] = useState(false);
-  // const [account, setAccount] = useState([]);
   const [loading, setLoading] = useState(false);
   const isNonMobile = useMediaQuery("(min-width: 600px)");
 
@@ -60,7 +84,7 @@ function Form() {
     try {
       setLoading(true);
       const response = await api.post("/account/creation", values);
-      toast.success("Create sucessfully");
+      toast.success("Create successfully");
       resetForm();
     } catch (error) {
       toast.error("Create fail");
@@ -70,10 +94,18 @@ function Form() {
   };
 
   return (
-    <Box m="20px">
-      <Title
+    <Box
+      m="20px"
+      p="30px"
+      sx={{
+        borderRadius: "12px",
+        boxShadow: "0 4px 12px rgba(0, 0, 0, 0.1)",
+        backgroundColor: "#f4f6f8",
+      }}
+    >
+      <CustomTitle
         title="CREATE STAFF ACCOUNT"
-        subtitle="Create a New Staf Profile"
+        subtitle="Create a New Breeder/Staff Profile"
       />
       <Formik
         onSubmit={handleFormSubmit}
@@ -91,7 +123,7 @@ function Form() {
           <form onSubmit={handleSubmit}>
             <Box
               display="grid"
-              gap="30px"
+              gap="20px"
               gridTemplateColumns="repeat(4, minmax(0, 1fr))"
               sx={{
                 "& > div": { gridColumn: isNonMobile ? undefined : "span 4" },
@@ -99,7 +131,7 @@ function Form() {
             >
               <TextField
                 fullWidth
-                variant="filled"
+                variant="outlined"
                 type="text"
                 label="Username"
                 onBlur={handleBlur}
@@ -108,11 +140,14 @@ function Form() {
                 name="username"
                 error={!!touched.username && !!errors.username}
                 helperText={touched.username && errors.username}
-                sx={{ gridColumn: "span 2" }}
+                sx={{
+                  gridColumn: "span 2",
+                  borderRadius: "8px",
+                }}
               />
               <TextField
                 fullWidth
-                variant="filled"
+                variant="outlined"
                 type={showPassword ? "text" : "password"}
                 label="Password"
                 onBlur={handleBlur}
@@ -121,27 +156,28 @@ function Form() {
                 name="password"
                 error={!!touched.password && !!errors.password}
                 helperText={touched.password && errors.password}
-                sx={{ gridColumn: "span 2" }}
-                slotProps={{
-                  input: {
-                    endAdornment: (
-                      <InputAdornment position="end">
-                        <IconButton
-                          aria-label="toggle password visibility"
-                          onClick={handleClickShowPassword}
-                          edge="end"
-                        >
-                          {showPassword ? <Visibility /> : <VisibilityOff />}
-                        </IconButton>
-                      </InputAdornment>
-                    ),
-                  },
+                sx={{
+                  gridColumn: "span 2",
+                  borderRadius: "8px",
+                }}
+                InputProps={{
+                  endAdornment: (
+                    <InputAdornment position="end">
+                      <IconButton
+                        aria-label="toggle password visibility"
+                        onClick={handleClickShowPassword}
+                        edge="end"
+                      >
+                        {showPassword ? <Visibility /> : <VisibilityOff />}
+                      </IconButton>
+                    </InputAdornment>
+                  ),
                 }}
               />
               <TextField
                 fullWidth
                 select
-                variant="filled"
+                variant="outlined"
                 label="Role"
                 onBlur={handleBlur}
                 onChange={handleChange}
@@ -149,7 +185,10 @@ function Form() {
                 name="role"
                 error={!!touched.role && !!errors.role}
                 helperText={touched.role && errors.role}
-                sx={{ gridColumn: "span 2" }}
+                sx={{
+                  gridColumn: "span 2",
+                  borderRadius: "8px",
+                }}
               >
                 <MenuItem value="STAFF">Staff</MenuItem>
                 <MenuItem value="BREEDER">Breeder</MenuItem>
@@ -158,10 +197,18 @@ function Form() {
             <Box display="flex" justifyContent="end" mt="20px">
               <Button
                 type="submit"
-                sx={{ backgroundColor: "#D4163C", borderRadius: "24px" }}
+                sx={{
+                  backgroundColor: "#D4163C",
+                  borderRadius: "24px",
+                  padding: "10px 20px",
+                  color: "#fff",
+                  "&:hover": { backgroundColor: "#A3122E" },
+                  transition: "background-color 0.3s ease",
+                }}
                 variant="contained"
+                disabled={loading}
               >
-                Create new Account
+                {loading ? "Creating..." : "Create New Account"}
               </Button>
             </Box>
           </form>

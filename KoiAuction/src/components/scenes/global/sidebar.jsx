@@ -13,10 +13,12 @@ import HelpIcon from "@mui/icons-material/Help";
 import LeaderboardIcon from "@mui/icons-material/Leaderboard";
 import PieChartIcon from "@mui/icons-material/PieChart";
 import TimelineOutlinedIcon from "@mui/icons-material/TimelineOutlined";
+import PaidIcon from "@mui/icons-material/Paid";
+import GavelOutlinedIcon from "@mui/icons-material/GavelOutlined";
 import "react-pro-sidebar/dist/css/styles.css";
 import { Link } from "react-router-dom";
 
-const Item = ({ title, to, icon, selected, setSelected }) => {
+const Item = ({ title, to, icon, selected, setSelected, sx }) => {
   return (
     <MenuItem
       active={selected === title}
@@ -26,7 +28,11 @@ const Item = ({ title, to, icon, selected, setSelected }) => {
       onClick={() => setSelected(title)}
       icon={icon}
     >
-      <Typography>{title}</Typography>
+      <Typography
+        sx={{ fontFamily: "Montserrat, sans-serif", fontSize: "16px", ...sx }}
+      >
+        {title}
+      </Typography>
       <Link to={to} />
     </MenuItem>
   );
@@ -40,7 +46,7 @@ function Besidebar() {
       sx={{
         height: "100vh",
         "& .pro-sidebar-inner": {
-          background: "#333333 !important",
+          background: "#e4e4e4 !important",
         },
         "& .pro-sidebar-wrapper": {
           backgroundColor: "transparent !important",
@@ -48,13 +54,18 @@ function Besidebar() {
         },
         "& .pro-inner-item": {
           padding: "5px 35px 5px 20px !important",
+          backgroundColor: "transparent !important",
         },
         "& .pro-inner-item:hover": {
           color: "#D4163C !important",
           backgroundColor: "transparent !important",
         },
+        "& .pro-menu-item .pro-icon-wrapper": {
+          backgroundColor: "transparent !important", // Đảm bảo nền của icon cũng trong suốt
+        },
         "& .pro-menu-item.active": {
           color: "#75051B !important",
+          backgroundColor: "transparent !important",
         },
       }}
     >
@@ -76,7 +87,11 @@ function Besidebar() {
                 alignItems="center"
                 ml="15px"
               >
-                <Typography variant="h5" color="black">
+                <Typography
+                  fontSize="24px"
+                  fontFamily="Montserrat, sans-serif"
+                  color="black"
+                >
                   ADMIN
                 </Typography>
                 <IconButton onClick={() => setIsCollapsed(!isCollapsed)}>
@@ -101,16 +116,21 @@ function Besidebar() {
 
               <Box textAlign="center">
                 <Typography
-                  variant="h3"
+                  fontSize="32px"
+                  fontFamily="Righteous, sans-serif"
                   color="black"
                   fontWeight="bold"
                   sx={{ m: "10px 0 0 0" }}
                 >
                   Kim Cuong
                 </Typography>
-                <Typography variant="h5" color="red">
+                {/* <Typography
+                  fontSize="16px"
+                  fontFamily="Montserrat, sans-serif"
+                  color="red"
+                >
                   BidKoi Admin
-                </Typography>
+                </Typography> */}
               </Box>
             </Box>
           )}
@@ -118,30 +138,42 @@ function Besidebar() {
           {/* MENU ITEMS */}
           <Box paddingLeft={isCollapsed ? undefined : "10%"}>
             <Item
+              sx={{ fontFamily: "Montserrat, sans-serif", fontSize: "16px" }}
               title="Dashboard"
               to="dashboard"
               icon={<DashboardIcon />}
               selected={selected}
               setSelected={setSelected}
             />
-            <Typography variant="h6" color="red" sx={{ m: "15px 0 5px 20px" }}>
+            <Typography
+              fontSize="18px"
+              fontFamily="Righteous, sans-serif"
+              color="black"
+              sx={{ m: "15px 0 5px 20px" }}
+            >
               Data
             </Typography>
             <Item
-              title="Manage Team"
+              title="Manage Account"
               to="team"
               icon={<PeopleIcon />}
               selected={selected}
               setSelected={setSelected}
             />
-            {/* <Item
-              title="Contacts Information"
-              to="/contacts"
-              icon={<ContactsIcon />}
+            <Item
+              title="Transaction"
+              to="transaction"
+              icon={<PaidIcon />}
               selected={selected}
               setSelected={setSelected}
-            /> */}
-
+            />
+            <Item
+              title="Auction & Room"
+              to="auction"
+              icon={<GavelOutlinedIcon />}
+              selected={selected}
+              setSelected={setSelected}
+            />
             <Item
               title="Invoices Balances"
               to="invoices"
@@ -149,7 +181,12 @@ function Besidebar() {
               selected={selected}
               setSelected={setSelected}
             />
-            <Typography variant="h6" color="red" sx={{ m: "15px 0 5px 20px" }}>
+            <Typography
+              fontSize="18px"
+              fontFamily="Righteous, sans-serif"
+              color="black"
+              sx={{ m: "15px 0 5px 20px" }}
+            >
               Pages
             </Typography>
             <Item
@@ -159,21 +196,26 @@ function Besidebar() {
               selected={selected}
               setSelected={setSelected}
             />
-            <Item
+            {/* <Item
               title="Calendar"
               to="calendar"
               icon={<DateRangeIcon />}
               selected={selected}
               setSelected={setSelected}
-            />
-            <Item
+            /> */}
+            {/* <Item
               title="FAQ Page"
               to="/faq"
               icon={<HelpIcon />}
               selected={selected}
               setSelected={setSelected}
-            />
-            <Typography variant="h6" color="red" sx={{ m: "15px 0 5px 20px" }}>
+            /> */}
+            <Typography
+              fontSize="18px"
+              fontFamily="Righteous, sans-serif"
+              color="black"
+              sx={{ m: "15px 0 5px 20px" }}
+            >
               Charts
             </Typography>
             <Item
@@ -183,7 +225,7 @@ function Besidebar() {
               selected={selected}
               setSelected={setSelected}
             />
-            <Item
+            {/* <Item
               title="Pie Chart"
               to="pie"
               icon={<PieChartIcon />}
@@ -196,7 +238,7 @@ function Besidebar() {
               icon={<TimelineOutlinedIcon />}
               selected={selected}
               setSelected={setSelected}
-            />
+            /> */}
           </Box>
         </Menu>
       </ProSidebar>

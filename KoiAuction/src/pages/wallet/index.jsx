@@ -1,9 +1,11 @@
+/* eslint-disable react-hooks/exhaustive-deps */
 /* eslint-disable no-unused-vars */
 import React, { useEffect, useState } from "react";
 import { toast } from "react-toastify";
 import api from "../../config/axios";
 import useGetParams from "../../hooks/useGetParams";
 import styles from "./index.module.scss";
+import { motion } from "framer-motion";
 
 function Wallet() {
   const [balance, setBalance] = useState("");
@@ -11,10 +13,14 @@ function Wallet() {
   const [paymentUrl, setPaymentUrl] = useState("");
   const [currentBalance, setCurrentBalance] = useState(0);
 
-  const params = useGetParams();
-  const vnp_TxnRef = params("vnp_TxnRef");
-  const vnp_ResponseCode = params("vnp_ResponseCode");
-  const vnp_Amount = params("vnp_Amount");
+  const denominations = [
+    { value: 1000000 },
+    { value: 3000000 },
+    { value: 5000000 },
+    { value: 10000000 },
+    { value: 15000000 },
+    { value: 20000000 },
+  ];
 
   // Lấy dữ liệu từ localStorage
   const LocalUser = localStorage.getItem("user");
@@ -27,8 +33,6 @@ function Wallet() {
   } else if (UserData.role === "BREEDER" && UserData.breeder) {
     accountId = UserData.breeder.account.id;
   }
-
-  // Hiển thị accountId
   console.log(accountId);
 
   const fetchBalance = async () => {
@@ -38,52 +42,33 @@ function Wallet() {
       if (data) {
         setCurrentBalance(data);
       } else {
-        console.log("Không lấy được số dư ví");
+        console.log("Failed to retrieve wallet balance");
       }
     } catch (error) {
-      console.log("Lỗi khi gọi API lấy số dư ví", error);
-    }
-  };
-
-  const handleVNPayCallback = async () => {
-    try {
-      const response = await api.get(`/wallet/vnpay-callback`, {
-        params: {
-          vnp_TxnRef: vnp_TxnRef,
-          vnp_ResponseCode: vnp_ResponseCode,
-          vnp_Amount: vnp_Amount,
-        },
-      });
-
-      if (response.data && response.data.includes("successfully")) {
-        toast.success({
-          message: "Nạp tiền thành công!",
-          description: "Số dư của bạn đã được cập nhật.",
-        });
-
-        await fetchBalance();
-      }
-    } catch (error) {
-      console.error("Lỗi khi gọi API callback", error);
-      toast.warning({
-        message: "Nạp tiền thất bại",
-        description: "Có lỗi xảy ra khi xử lý giao dịch. Vui lòng thử lại.",
-      });
+      console.log("Error fetching wallet balance", error);
     }
   };
 
   const handleRecharge = async () => {
-    if (!balance || isNaN(balance) || balance <= 0) {
-      toast.warning("Vui lòng nhập số tiền hợp lệ!");
+    const plainBalance = balance.replace(/,/g, "");
+
+    if (!plainBalance || isNaN(plainBalance) || plainBalance <= 0) {
+      toast.warning("Please enter a valid amount!");
       return;
     }
+
+    if (parseFloat(plainBalance) > 20000000) {
+      toast.warning("The maximum top-up amount is 20,000,000 VND!");
+      return;
+    }
+
     try {
       setIsLoading(true);
 
       const response = await api.post(
         `/wallet/${accountId}`,
         {
-          balance: parseFloat(balance), // Gửi số tiền nạp trong request body
+          balance: parseFloat(plainBalance), // Gửi số tiền nạp trong request body
         },
         {
           headers: {
@@ -97,66 +82,98 @@ function Wallet() {
         setPaymentUrl(data);
         window.location.href = data;
       } else {
-        console.log("Không lấy được URL thanh toán");
+        console.log("Failed to retrieve payment URL");
       }
     } catch (error) {
-      console.error("Lỗi khi gọi API nạp tiền", error);
-      toast.error("Có lỗi xảy ra khi nạp tiền. Vui lòng thử lại!");
+      console.error("Error calling top-up API", error);
+      toast.error("An error occurred during the top-up. Please try again!");
     } finally {
       setIsLoading(false);
     }
   };
 
+  const handleBalanceChange = (e) => {
+    const input = e.target.value.replace(/,/g, "");
+    if (!isNaN(input)) {
+      setBalance(Number(input).toLocaleString());
+    }
+  };
+
+  const selectDenomination = (value) => {
+    setBalance(value.toLocaleString());
+  };
+
   useEffect(() => {
     fetchBalance();
-
-    if (vnp_ResponseCode === "00") {
-      handleVNPayCallback();
-    }
-  }, [accountId, vnp_ResponseCode]);
+  }, [accountId]);
 
   return (
-    <>
-      <div className={styles.container}>
-        <h2 className={styles.title}>Nạp tiền vào ví</h2>
+    <div className={styles.formContainer}>
+      <motion.div
+        className={styles.walletContainer}
+        initial={{ opacity: 0, y: -50 }}
+        animate={{ opacity: 1, y: 0 }}
+        transition={{ duration: 0.6, ease: "easeOut" }}
+      >
+        <h2 className={styles.title}>Top-up Wallet</h2>
 
         <div className={styles.balance}>
-          <label>Số dư hiện tại trong ví: </label>
-          <strong>{Number(currentBalance.balance).toLocaleString()} VND</strong>
-          </div>
-        <div className={styles.inputGroup}>
-          <lable> Số tiền muốn nạp: </lable>
-          <input
-            className={styles.inputLabel}
-            type="number"
-            value={balance}
-            onChange={(e) => setBalance(e.target.value)}
-            placeholder="Nhập số tiền..."
-          />
+          <label>
+            Current wallet balance:{" "}
+            <strong>
+              {Number(currentBalance.balance).toLocaleString()} VND
+            </strong>
+          </label>
         </div>
 
-        <button
+        <h3 className={styles.denominationTitle}>Choose Denomination</h3>
+        <div className={styles.denominationSelector}>
+          {denominations.map((denom) => (
+            <motion.button
+              key={denom.value}
+              onClick={() => selectDenomination(denom.value)}
+              className={styles.denominationButton}
+              whileHover={{ scale: 1.1, backgroundColor: "#b3d7ff" }}
+              whileTap={{ scale: 0.9 }}
+              transition={{ type: "spring", stiffness: 300 }}
+            >
+              {denom.value.toLocaleString()}đ
+            </motion.button>
+          ))}
+        </div>
+
+        <div className={styles.inputGroup}>
+          <lable> Amount to top-up: </lable>
+          <div className={styles.inputWithUnit}>
+            <input
+              className={styles.inputLabel}
+              type="text"
+              value={balance}
+              onChange={handleBalanceChange}
+              placeholder="Enter amount..."
+            />
+            <span className={styles.unit}>VND</span>
+          </div>
+        </div>
+
+        <motion.button
           className={styles.button}
           onClick={handleRecharge}
           disabled={isLoading}
+          whileHover={{
+            scale: 1.05,
+            boxShadow: "0px 4px 15px rgba(0, 123, 255, 0.3)",
+          }}
+          whileTap={{ scale: 0.95 }}
         >
-          {isLoading ? "Đang xử lý..." : "Nạp tiền qua VNPay"}
-        </button>
-
-        {paymentUrl && (
-          <div className={styles.paymentInfo}>
-            <p>
-              Đang chuyển hướng tới VNPAY... Nếu không tự động chuyển, bạn có
-              thể nhấn{" "}
-              <a href={paymentUrl} className={styles.paymentLink}>
-                vào đây
-              </a>{" "}
-              để thanh toán.
-            </p>
-          </div>
-        )}
-      </div>
-    </>
+          {isLoading ? (
+            <span className={styles.loader}></span>
+          ) : (
+            "Top-up via VNPay"
+          )}
+        </motion.button>
+      </motion.div>
+    </div>
   );
 }
 

@@ -1,13 +1,43 @@
 import { useEffect, useState } from "react";
 import { Box, Typography } from "@mui/material";
-import Title from "../../subComponents/Title";
 import { DataGrid } from "@mui/x-data-grid";
-
-import axios from "axios";
 import AdminPanelSettingsOutlinedIcon from "@mui/icons-material/AdminPanelSettingsOutlined";
 import ManageAccountsOutlinedIcon from "@mui/icons-material/ManageAccountsOutlined";
 import PersonOutlineOutlinedIcon from "@mui/icons-material/PersonOutlineOutlined";
 import api from "../../../config/axios";
+
+function CustomTitle({ title, subtitle, sx }) {
+  return (
+    <Box mb="20px" textAlign="center">
+      <Typography
+        variant="h4"
+        sx={{
+          fontFamily: "Righteous, sans-serif",
+          fontWeight: "bold",
+          fontSize: "32px",
+          color: "black",
+          letterSpacing: "1px",
+          ...sx,
+        }}
+      >
+        {title}
+      </Typography>
+      <Typography
+        variant="subtitle1"
+        sx={{
+          fontFamily: "Montserrat, sans-serif",
+          fontSize: "18px",
+          color: "green",
+          marginTop: "5px",
+        }}
+      >
+        {subtitle}
+      </Typography>
+    </Box>
+  );
+}
+
+// Thành phần Team để quản lý và hiển thị thông tin thành viên
 function Team() {
   const [member, setMember] = useState([]);
 
@@ -41,13 +71,6 @@ function Team() {
       headerName: "Email",
       flex: 1,
     },
-    // {
-    //   field: "age",
-    //   headerName: "Age",
-    //   type: "number",
-    //   headerAlign: "left",
-    //   align: "left",
-    // },
     { field: "phone", headerName: "Phone", flex: 1 },
     {
       field: "role",
@@ -61,6 +84,7 @@ function Team() {
             p="5px"
             display="flex"
             justifyContent="center"
+            alignItems="center"
             backgroundColor={
               role === "STAFF"
                 ? "#D4163C"
@@ -79,7 +103,7 @@ function Team() {
             {role === "BIDDER" && (
               <PersonOutlineOutlinedIcon style={{ fill: "white" }} />
             )}
-            <Typography color="white" sx={{ ml: "5px", alignItems: "center" }}>
+            <Typography color="white" sx={{ ml: "5px" }}>
               {role}
             </Typography>
           </Box>
@@ -89,17 +113,27 @@ function Team() {
   ];
 
   return (
-    <Box m="20px">
-      <Title title="Account" subtitle="Manage the Members" />
+    <Box m="20px" textAlign="center">
+      <CustomTitle
+        title="Account"
+        subtitle="Manage accounts"
+        sx={{
+          fontSize: "32px", // Kích thước chữ của tiêu đề
+          color: "black", // Màu sắc của tiêu đề
+          textTransform: "uppercase", // Chuyển chữ thành chữ in hoa (nếu cần)
+        }}
+      />
       <Box
         m="40px 0 0 0"
         height="75vh"
         sx={{
           "& .MuiDataGrid-root": {
+            fontFamily: "Montserrat, sans-serif",
             border: "none",
           },
           "& .MuiDataGrid-cell": {
-            borderBottom: "none",
+            borderBottom: "1px solid #E0E0E0",
+            padding: "10px",
           },
           "& .name-column--cell": {
             color: "#4685AF",
@@ -107,14 +141,22 @@ function Team() {
           },
           "& .MuiDataGrid-columnHeaders": {
             backgroundColor: "#E8E8E8",
-            borderBottom: "none",
+            color: "#333",
+            fontWeight: "bold",
+            fontSize: "16px",
+            borderBottom: "2px solid #B0B0B0",
+          },
+          "& .MuiDataGrid-row": {
+            "&:hover": {
+              backgroundColor: "#F9F9F9",
+            },
           },
           "& .MuiDataGrid-virtualScroller": {
-            backgroundColor: "#f0f0f0",
+            backgroundColor: "#FAFAFA",
           },
           "& .MuiDataGrid-footerContainer": {
             backgroundColor: "#E8E8E8",
-            borderTop: "none",
+            borderTop: "1px solid #B0B0B0",
           },
           "& .MuiCheckbox-root": {
             color: "black !important",
@@ -128,6 +170,12 @@ function Team() {
           rows={member}
           columns={columns}
           getRowId={(row) => row.username}
+          sx={{
+            "& .MuiDataGrid-row.Mui-selected": {
+              backgroundColor: "#E6E6FA !important",
+              color: "#333",
+            },
+          }}
         />
       </Box>
     </Box>

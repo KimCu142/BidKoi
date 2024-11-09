@@ -53,7 +53,7 @@ function HomePage() {
                             <Link
                               to={
                                 userRole === "BIDDER"
-                                  ? "/auctions"
+                                  ? "/auctionschedule"
                                   : userRole === "BREEDER"
                                   ? "/breeder-dashboard"
                                   : userRole === "STAFF"
@@ -78,7 +78,7 @@ function HomePage() {
                                 ? "View Request"
                                 : "Dashboard"}
                             </Link>
-                            <Link to="/learn-more" className="btn-learn-more">
+                            <Link to="/about" className="btn-learn-more">
                               Learn More
                             </Link>
                           </>

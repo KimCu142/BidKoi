@@ -40,7 +40,7 @@ const Auction = () => {
       setAllAuctionRooms(allRooms);
       setAuctions(auctionData);
     } catch (error) {
-      toast.error("Failed to fetch Auction data");
+      console.error("Failed to fetch Auction data");
     }
   };
 
@@ -52,7 +52,7 @@ const Auction = () => {
       );
       setRooms(roomList);
     } catch (error) {
-      toast.error("Failed to fetch rooms");
+      console.error("Failed to fetch rooms");
     }
   };
 
@@ -74,7 +74,7 @@ const Auction = () => {
           : null,
       };
 
-      if (auctionData.auctionId) {
+      if (selectedAuction && selectedAuction.auctionId) {
         await api.put(
           `/auction/update/${auctionData.auctionId}`,
           formattedData
@@ -89,7 +89,15 @@ const Auction = () => {
       setOpenAuctionModal(false);
       form.resetFields();
     } catch (error) {
-      toast.error("Failed to create or update auction");
+      if (
+        error.response &&
+        error.response.data &&
+        error.response.data.message
+      ) {
+        toast.error(error.response.data.message);
+      } else {
+        toast.error("Failed to create or update auction");
+      }
     } finally {
       setLoading(false);
     }
@@ -136,7 +144,14 @@ const Auction = () => {
   };
 
   const handleOpenAuctionModal = (auction) => {
-    setSelectedAuction(auction); // Set the auction to be edited or created
+    setSelectedAuction(auction);
+    if (auction) {
+      form.setFieldsValue({
+        auctionId: auction.auctionId,
+      });
+    } else {
+      form.resetFields();
+    }
     setOpenAuctionModal(true);
   };
 
@@ -177,10 +192,20 @@ const Auction = () => {
     }
   };
 
+  const handleEnd = async (auctionId) => {
+    try {
+      await api.put(`/auction/${auctionId}/closed`);
+      toast.success("Auction ended successfully!");
+      fetchAuctions();
+    } catch (error) {
+      toast.error("Failed to end auction");
+    }
+  };
+
   const statusColors = {
     PENDING: "#d9d9d9",
     ACTIVE: "#52c41a",
-    END: "#ff4d4f",
+    CLOSED: "#ff4d4f",
   };
 
   const columns = [
@@ -226,14 +251,16 @@ const Auction = () => {
       key: "auctionId",
       render: (auctionId, auction) => (
         <>
-          <Button
-            style={{ marginRight: "8px" }}
-            type="primary"
-            onClick={() => handleOpenRoomModal(auction)} // Pass auction to open room modal
-          >
-            Add Room
-          </Button>
-          {auction.status !== "ACTIVE" && auction.status !== "END" && (
+          {auction.status !== "CLOSED" && (
+            <Button
+              style={{ marginRight: "8px" }}
+              type="primary"
+              onClick={() => handleOpenRoomModal(auction)} // Pass auction to open room modal
+            >
+              Add Room
+            </Button>
+          )}
+          {auction.status !== "ACTIVE" && auction.status !== "CLOSED" && (
             <>
               <Button
                 style={{ marginRight: "8px" }}
@@ -253,7 +280,25 @@ const Auction = () => {
               </Popconfirm>
             </>
           )}
-          {auction.status !== "ACTIVE" && auction.status !== "END" && (
+          {auction.status === "ACTIVE" && (
+            <Popconfirm
+              title="End Auction"
+              description="Are you sure you want to end this auction?"
+              onConfirm={() => handleEnd(auctionId)}
+            >
+              <Button
+                style={{
+                  marginLeft: "8px",
+                  color: "#fff",
+                  backgroundColor: "#ff4d4f",
+                  borderColor: "#ff4d4f",
+                }}
+              >
+                End
+              </Button>
+            </Popconfirm>
+          )}
+          {auction.status !== "ACTIVE" && auction.status !== "CLOSED" && (
             <Popconfirm
               title="Activate Auction"
               description="Are you sure you want to activate this auction?"
