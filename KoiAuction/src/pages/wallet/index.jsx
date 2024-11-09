@@ -1,8 +1,12 @@
+
+/* eslint-disable react-hooks/exhaustive-deps */
+/* eslint-disable no-unused-vars */
 import React, { useEffect, useState } from "react";
 import { toast } from "react-toastify";
 import api from "../../config/axios";
 import useGetParams from "../../hooks/useGetParams";
 import styles from "./index.module.scss";
+import { motion } from "framer-motion";
 import Transactions from "../../components/Transactions/Transactions";
 
 function Wallet() {
@@ -11,66 +15,76 @@ function Wallet() {
   const [paymentUrl, setPaymentUrl] = useState("");
   const [currentBalance, setCurrentBalance] = useState(0);
 
-  const params = useGetParams();
-  const vnp_TxnRef = params("vnp_TxnRef");
-  const vnp_ResponseCode = params("vnp_ResponseCode");
-  const vnp_Amount = params("vnp_Amount");
+  const denominations = [
+    { value: 1000000 },
+    { value: 3000000 },
+    { value: 5000000 },
+    { value: 10000000 },
+    { value: 15000000 },
+    { value: 20000000 },
+  ];
 
   const LocalUser = localStorage.getItem("user");
   const UserData = JSON.parse(LocalUser);
 
-  const accountId = UserData?.role === "BIDDER" && UserData.bidder
-    ? UserData.bidder.account.id
-    : UserData.role === "BREEDER" && UserData.breeder
-    ? UserData.breeder.account.id
-    : null;
+
+  // Kiểm tra role và lấy accountId tương ứng
+  let accountId = null;
+  if (UserData.role === "BIDDER" && UserData.bidder) {
+    accountId = UserData.bidder.account.id;
+  } else if (UserData.role === "BREEDER" && UserData.breeder) {
+    accountId = UserData.breeder.account.id;
+  }
+  console.log(accountId);
+
 
   const fetchBalance = async () => {
     try {
       const response = await api.get(`/wallet/view/${accountId}`);
-      setCurrentBalance(response.data || 0);
-    } catch (error) {
-      console.error("Error fetching wallet balance", error);
-      toast.error("Unable to fetch wallet balance. Please try again.");
-    }
-  };
 
-
-
-  const handleVNPayCallback = async () => {
-    try {
-      const response = await api.get(`/wallet/vnpay-callback`, {
-        params: {
-          vnp_TxnRef,
-          vnp_ResponseCode,
-          vnp_Amount,
-        },
-      });
-
-      if (response.data.includes("successfully")) {
-        toast.success("Recharge successful! Your balance has been updated.");
-        await fetchBalance();
+      const { data } = response;
+      if (data) {
+        setCurrentBalance(data);
       } else {
-        toast.warning("Recharge was unsuccessful. Please try again.");
+        console.log("Failed to retrieve wallet balance");
       }
     } catch (error) {
-      console.error("Error during VNPay callback", error);
-      toast.error("An error occurred during the recharge process.");
+      console.log("Error fetching wallet balance", error);
     }
   };
 
   const handleRecharge = async () => {
-    if (!balance || isNaN(balance) || balance <= 0) {
+    const plainBalance = balance.replace(/,/g, "");
+
+    if (!plainBalance || isNaN(plainBalance) || plainBalance <= 0) {
       toast.warning("Please enter a valid amount!");
       return;
+
     }
-    setIsLoading(true);
+
+
+    if (parseFloat(plainBalance) > 20000000) {
+      toast.warning("The maximum top-up amount is 20,000,000 VND!");
+      return;
+    }
+
+    try {
+      setIsLoading(true);
+
 
     try {
       const response = await api.post(
         `/wallet/${accountId}`,
-        { balance: parseFloat(balance) },
-        { headers: { "Content-Type": "application/json" } }
+
+        {
+          balance: parseFloat(plainBalance), // Gửi số tiền nạp trong request body
+        },
+        {
+          headers: {
+            "Content-Type": "application/json",
+          },
+        }
+
       );
 
       const { data } = response;
@@ -79,66 +93,100 @@ function Wallet() {
         toast.info("Redirecting to VNPay...");
         setTimeout(() => (window.location.href = data), 1000);
       } else {
-        toast.error("Failed to retrieve payment URL. Please try again.");
+        console.log("Failed to retrieve payment URL");
       }
     } catch (error) {
-      console.error("Error during recharge request", error);
-      toast.error("Recharge request failed. Try again later.");
+      console.error("Error calling top-up API", error);
+      toast.error("An error occurred during the top-up. Please try again!");
+
     } finally {
       setIsLoading(false);
     }
   };
 
+  const handleBalanceChange = (e) => {
+    const input = e.target.value.replace(/,/g, "");
+    if (!isNaN(input)) {
+      setBalance(Number(input).toLocaleString());
+    }
+  };
+
+  const selectDenomination = (value) => {
+    setBalance(value.toLocaleString());
+  };
+
   useEffect(() => {
-    if (accountId) {
-      fetchBalance();
-    }
-    if (vnp_ResponseCode === "00") {
-      handleVNPayCallback();
-    }
-  }, [accountId, vnp_ResponseCode]);
+    fetchBalance();
+  }, [accountId]);
 
   return (
-    <div className={styles.container}>
-      <h2 className={styles.title}>Recharge Wallet</h2>
-
-      <div className={styles.balance}>
-        <label>Current Balance: </label>
-        <strong>{Number(currentBalance.balance).toLocaleString()} VND</strong>
-      </div>
-      <div className={styles.inputGroup}>
-        <label>Amount to Recharge: </label>
-        <input
-          className={styles.inputLabel}
-          type="number"
-          value={balance}
-          onChange={(e) => setBalance(e.target.value)}
-          placeholder="Enter amount..."
-        />
-      </div>
-
-      <button
-        className={styles.button}
-        onClick={handleRecharge}
-        disabled={isLoading}
+    <div className={styles.formContainer}>
+      <motion.div
+        className={styles.walletContainer}
+        initial={{ opacity: 0, y: -50 }}
+        animate={{ opacity: 1, y: 0 }}
+        transition={{ duration: 0.6, ease: "easeOut" }}
       >
-        {isLoading ? "Processing..." : "Recharge via VNPay"}
-      </button>
+        <h2 className={styles.title}>Top-up Wallet</h2>
 
-      {/* Transactions list */}
-      <Transactions accountId={accountId} />
-
-      {paymentUrl && (
-        <div className={styles.paymentInfo}>
-          <p>
-            Redirecting to VNPay... If not redirected, click{" "}
-            <a href={paymentUrl} className={styles.paymentLink}>
-              here
-            </a>{" "}
-            to continue to payment.
-          </p>
+        <div className={styles.balance}>
+          <label>
+            Current wallet balance:{" "}
+            <strong>
+              {Number(currentBalance.balance).toLocaleString()} VND
+            </strong>
+          </label>
         </div>
-      )}
+
+        <h3 className={styles.denominationTitle}>Choose Denomination</h3>
+        <div className={styles.denominationSelector}>
+          {denominations.map((denom) => (
+            <motion.button
+              key={denom.value}
+              onClick={() => selectDenomination(denom.value)}
+              className={styles.denominationButton}
+              whileHover={{ scale: 1.1, backgroundColor: "#b3d7ff" }}
+              whileTap={{ scale: 0.9 }}
+              transition={{ type: "spring", stiffness: 300 }}
+            >
+              {denom.value.toLocaleString()}đ
+            </motion.button>
+          ))}
+        </div>
+
+        <div className={styles.inputGroup}>
+          <lable> Amount to top-up: </lable>
+          <div className={styles.inputWithUnit}>
+            <input
+              className={styles.inputLabel}
+              type="text"
+              value={balance}
+              onChange={handleBalanceChange}
+              placeholder="Enter amount..."
+            />
+            <span className={styles.unit}>VND</span>
+          </div>
+        </div>
+
+        <motion.button
+          className={styles.button}
+          onClick={handleRecharge}
+          disabled={isLoading}
+          whileHover={{
+            scale: 1.05,
+            boxShadow: "0px 4px 15px rgba(0, 123, 255, 0.3)",
+          }}
+          whileTap={{ scale: 0.95 }}
+        >
+          {isLoading ? (
+            <span className={styles.loader}></span>
+          ) : (
+            "Top-up via VNPay"
+          )}
+        </motion.button>
+      </motion.div>
+  <Transactions accountId={accountId} />
+
     </div>
   );
 }

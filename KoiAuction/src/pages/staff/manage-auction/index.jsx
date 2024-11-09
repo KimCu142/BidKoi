@@ -40,7 +40,7 @@ const Auction = () => {
       setAllAuctionRooms(allRooms);
       setAuctions(auctionData);
     } catch (error) {
-      toast.error("Failed to fetch Auction data");
+      console.error("Failed to fetch Auction data");
     }
   };
 
@@ -52,7 +52,7 @@ const Auction = () => {
       );
       setRooms(roomList);
     } catch (error) {
-      toast.error("Failed to fetch rooms");
+      console.error("Failed to fetch rooms");
     }
   };
 
@@ -74,7 +74,7 @@ const Auction = () => {
           : null,
       };
 
-      if (auctionData.auctionId) {
+      if (selectedAuction && selectedAuction.auctionId) {
         await api.put(
           `/auction/update/${auctionData.auctionId}`,
           formattedData
@@ -89,7 +89,15 @@ const Auction = () => {
       setOpenAuctionModal(false);
       form.resetFields();
     } catch (error) {
-      toast.error("Failed to create or update auction");
+      if (
+        error.response &&
+        error.response.data &&
+        error.response.data.message
+      ) {
+        toast.error(error.response.data.message);
+      } else {
+        toast.error("Failed to create or update auction");
+      }
     } finally {
       setLoading(false);
     }
@@ -136,7 +144,14 @@ const Auction = () => {
   };
 
   const handleOpenAuctionModal = (auction) => {
-    setSelectedAuction(auction); // Set the auction to be edited or created
+    setSelectedAuction(auction);
+    if (auction) {
+      form.setFieldsValue({
+        auctionId: auction.auctionId,
+      });
+    } else {
+      form.resetFields();
+    }
     setOpenAuctionModal(true);
   };
 
@@ -181,7 +196,7 @@ const Auction = () => {
     try {
       await api.put(`/auction/${auctionId}/closed`);
       await api.put(`/transaction/rollback/${auctionId}`); // Rollback transaction
-  
+
       toast.success("Auction ended and transaction rolled back successfully!");
       fetchAuctions();
     } catch (error) {
@@ -189,6 +204,7 @@ const Auction = () => {
     }
   };
   
+
 
   const statusColors = {
     PENDING: "#d9d9d9",

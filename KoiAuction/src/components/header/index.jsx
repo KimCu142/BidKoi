@@ -59,12 +59,16 @@ function Header() {
       icon: <UserOutlined />,
       onClick: () => navigate("/profile"),
     },
-    {
-      label: "Wallet",
-      key: "2",
-      icon: <WalletOutlined />,
-      onClick: () => navigate("/wallet"),
-    },
+    ...(role === "BIDDER" || role === "BREEDER"
+      ? [
+          {
+            label: "Wallet",
+            key: "2",
+            icon: <WalletOutlined />,
+            onClick: () => navigate("/wallet"),
+          },
+        ]
+      : []),
     {
       label: "Logout",
       key: "3",

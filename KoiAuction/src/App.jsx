@@ -43,9 +43,17 @@ import Invoice from "./components/Invoice/Invoice.jsx";
 import SidebarLayout from "./components/profileSidebar/index.jsx";
 import PrivacyPolicy from "./pages/policy/index.jsx";
 import Terms from "./pages/term/index.jsx";
+import requestPermissions from "./config/notification.js";
+import { useEffect } from "react";
+import Transaction from "./components/scenes/transaction/index.jsx";
+import Auction from "./components/scenes/auction/index.jsx";
 // import Calendar from "./components/scenes/calendar/index.jsx";
 
 function AppLayout() {
+  useEffect(() => {
+    requestPermissions();
+  }, []);
+
   return (
     <div className="appLayout">
       <Header />
@@ -233,6 +241,8 @@ function App() {
       children: [
         { path: "dashboard", element: <AdminDashboard /> },
         { path: "team", element: <Team /> },
+        { path: "transaction", element: <Transaction /> },
+        { path: "auction", element: <Auction /> },
         { path: "invoices", element: <Invoices /> },
         { path: "form", element: <Form /> },
         { path: "overview", element: <Overview /> },

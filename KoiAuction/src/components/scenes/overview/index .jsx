@@ -30,7 +30,7 @@ function Overview() {
               valueStyle={{
                 color: "#3f8600",
               }}
-              prefix={<ArrowUpOutlined />}
+              // prefix={<ArrowUpOutlined />}
               suffix="users"
             />
           </Card>

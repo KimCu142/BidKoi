@@ -50,8 +50,10 @@ function BreederRequest() {
   const [breederId, setBreederId] = useState({});
   const [paymentAmount, setPaymentAmount] = useState(0);
   const [isPaymentModal, setIsPaymentModal] = useState(false);
+  const [multiplierOption, setMultiplierOption] = useState("null");
   const [userData, setUserData] = useState("");
   const [isResubmit, setIsResubmit] = useState(false);
+
   useEffect(() => {
     try {
       // Lấy dữ liệu từ localStorage
@@ -66,6 +68,22 @@ function BreederRequest() {
   }, []);
 
   useEffect(() => {
+
+    const initialPrice = form.getFieldValue("initialPrice")?.replace(/,/g, "");
+    if (
+      initialPrice &&
+      !isNaN(parseFloat(initialPrice)) &&
+      multiplierOption !== "null"
+    ) {
+      const multiplier = parseInt(multiplierOption.replace("x", ""), 10);
+      const calculatedPrice =
+        (multiplier * parseFloat(initialPrice)).toLocaleString() + " VNĐ";
+      form.setFieldsValue({ immediatePrice: calculatedPrice });
+    } else {
+      form.setFieldsValue({ immediatePrice: null });
+    }
+  }, [multiplierOption]);
+
     const fetchBreederData = async () => {
       try {
         const accountId = userData?.breeder?.account?.id;
@@ -394,8 +412,6 @@ function BreederRequest() {
     setSelectedKoi(null);
   };
 
-  //Input money form
-
   //DELETE
   const handleDelete = async (koiId) => {
     try {
@@ -416,6 +432,12 @@ function BreederRequest() {
     }
 
     kois.initialPrice = kois.initialPrice.replace(/,/g, "");
+
+    const immediatePrice = form.getFieldValue("immediatePrice");
+    kois.immediatePrice = immediatePrice
+      ? immediatePrice.replace(/ VNĐ/g, "")
+      : null;
+
     try {
       setLoading(true);
 
@@ -727,18 +749,6 @@ function BreederRequest() {
               </Select>
             </Form.Item>
             <Form.Item
-              label="Description"
-              name="description"
-              rules={[
-                {
-                  required: true,
-                  message: "Please enter description",
-                },
-              ]}
-            >
-              <TextArea rows={4} />
-            </Form.Item>
-            <Form.Item
               label="Initial price"
               name="initialPrice"
               rules={[
@@ -755,16 +765,55 @@ function BreederRequest() {
             >
               <Input
                 addonAfter="VNĐ"
-                value={form.getFieldValue("initialPrice")}
-                onChange={(e) =>
-                  form.setFieldsValue({
-                    initialPrice: formatNumber(
-                      e.target.value.replace(/,/g, "")
-                    ),
-                  })
-                }
-                placeholder="Enter amount"
+                placeholder="Enter initial price"
+                onChange={(e) => {
+                  // Định dạng giá trị input cho Initial Price
+                  const formattedValue = formatNumber(
+                    e.target.value.replace(/,/g, "")
+                  );
+                  form.setFieldsValue({ initialPrice: formattedValue });
+
+                  // Tự động cập nhật immediatePrice khi initialPrice thay đổi
+                  if (formattedValue && multiplierOption !== "null") {
+                    const initialPrice = formattedValue.replace(/,/g, "");
+                    const multiplier = parseInt(
+                      multiplierOption.replace("x", ""),
+                      10
+                    );
+                    const calculatedPrice =
+                      (multiplier * parseFloat(initialPrice)).toLocaleString() +
+                      " VNĐ";
+                    form.setFieldsValue({ immediatePrice: calculatedPrice });
+                  } else {
+                    form.setFieldsValue({ immediatePrice: null });
+                  }
+                }}
               />
+            </Form.Item>
+            <Form.Item
+              label="Description"
+              name="description"
+              rules={[
+                {
+                  required: true,
+                  message: "Please enter description",
+                },
+              ]}
+            >
+              <TextArea rows={4} />
+            </Form.Item>
+            <Form.Item label="Immediate Price" name="immediatePrice">
+              <Select
+                placeholder="Select immediate price option"
+                onChange={(value) => {
+                  setMultiplierOption(value);
+                }}
+              >
+                <Option value="null">No immediate price</Option>
+                <Option value="x2">X2 (Double initial price)</Option>
+                <Option value="x3">X3 (Triple initial price)</Option>
+                <Option value="x5">X5 (Five times initial price)</Option>
+              </Select>
             </Form.Item>
           </div>
           <div className={styles.koiDetail}>
