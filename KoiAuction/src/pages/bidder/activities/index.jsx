@@ -41,7 +41,7 @@ function BidderActivities() {
 
   const handleInvoiceClick = async (koiId) => {
     try {
-      const response = await api.get(`/invoice/get/${koiId}`);
+      const response = await api.get(`/invoice/view/${koiId}`);
       setInvoiceData(response.data);
       setIsModalVisible(true);
     } catch (error) {
@@ -104,9 +104,10 @@ function BidderActivities() {
         </div>
         <Modal
           title="Invoice Details"
-          visible={isModalVisible}
+          open={isModalVisible}
           onCancel={handleModalClose}
           footer={null}
+          style={{ top: 5 }}
           width="50%"
         >
           {invoiceData ? (

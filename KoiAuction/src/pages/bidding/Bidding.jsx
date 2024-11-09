@@ -14,6 +14,7 @@ import "react-toastify/dist/ReactToastify.css";
 import confetti from "canvas-confetti";
 import ShippingInfo from "../ComfirmShipping/ShippingInfo";
 import api from "../../config/axios";
+import AuctionResult from "../../components/Result/Result";
 
 
 
@@ -21,6 +22,20 @@ export default function Bidding() {
   const token = localStorage.getItem("token");
   const [username, setUsername] = useState("");
   const [isShippingModalVisible, setIsShippingModalVisible] = useState(false); // Thêm state để quản lý Modal ShippingInfo
+  // Thêm state để điều khiển hiển thị của Modal AuctionResult
+  const [isAuctionResultModalVisible, setIsAuctionResultModalVisible] = useState(false);
+  const [auctionResultData, setAuctionResultData] = useState(null);
+
+  // Thêm hàm để mở Modal kết quả đấu giá
+  const showAuctionResultModal = (data) => {
+    setAuctionResultData(data);
+    setIsAuctionResultModalVisible(true);
+  };
+
+  // Hàm để đóng Modal kết quả đấu giá
+  const handleAuctionResultModalCancel = () => {
+    setIsAuctionResultModalVisible(false);
+  };
   useEffect(() => {
     const storedUser = localStorage.getItem("user");
     if (storedUser) {
@@ -41,9 +56,7 @@ export default function Bidding() {
   const handleCancel = () => {
     setIsModalVisible2(false);
   };
-  const handleShippingModalCancel = () => {
-    setIsShippingModalVisible(false); // Đóng modal ShippingInfo
-  };
+
 
 
   const checkShippingCreated = async (koiId) => {
@@ -107,7 +120,13 @@ export default function Bidding() {
       .catch((error) => console.error("Error fetching data:", error));
   }, [roomId]);
 
+  const handleShippingSubmit = () => {
+    setIsShippingModalVisible(false);
+  };
 
+  const handleShippingModalCancel = () => {
+    setIsShippingModalVisible(false);
+  };
 
   useEffect(() => {
     if (auctionDetails.endTime && room) {
@@ -134,6 +153,7 @@ export default function Bidding() {
                 setIsShippingModalVisible(true); // Hiển thị modal nếu chưa tạo shipping
               }
             } else {
+              showAuctionResultModal(response.data.data);
               toast.info("Unfortunately, you didn't win this auction. Better luck next time!", {
                 style: { backgroundColor: '#f8d7da', color: '#721c24' },
               });
@@ -160,12 +180,12 @@ export default function Bidding() {
   return (
     <div className="BiddingPage ">
       <div>
-      <AuctionInfo
-        roomId={roomId}
-        startTime={auctionDetails.startTime}
-        endTime={auctionDetails.endTime}
-        description={room.koi.description}
-      />
+        <AuctionInfo
+          roomId={roomId}
+          startTime={auctionDetails.startTime}
+          endTime={auctionDetails.endTime}
+          description={room.koi.description}
+        />
       </div>
       <div className="Bidding">
         <div className="Visual">
@@ -173,20 +193,20 @@ export default function Bidding() {
             <Image className="custom-image" src={room.koi.image} />
           </div>
           <div style={{ width: '100%', height: '30%', overflow: 'hidden' }}>
-  <video
-    src={room.koi.video}
-    controls
-    style={{
-      paddingTop:'10px',
-      width: '100%',
-      height: '100%',
-      objectFit: 'cover'
-    }}
-    alt="Koi Video"
-  >
-    Your browser does not support the video tag.
-  </video>
-</div>
+            <video
+              src={room.koi.video}
+              controls
+              style={{
+                paddingTop: '10px',
+                width: '100%',
+                height: '100%',
+                objectFit: 'cover'
+              }}
+              alt="Koi Video"
+            >
+              Your browser does not support the video tag.
+            </video>
+          </div>
 
         </div>
         <div className="KoiTable">
@@ -220,6 +240,14 @@ export default function Bidding() {
 
       <>
         <Modal
+          title="Kết quả đấu giá"
+          visible={isAuctionResultModalVisible}
+          onCancel={handleAuctionResultModalCancel}
+          footer={null}
+        >
+          {auctionResultData && <AuctionResult data={auctionResultData} />}
+        </Modal>
+        <Modal
           title="Shipping Information"
           visible={isShippingModalVisible}
           onCancel={handleShippingModalCancel}
@@ -229,8 +257,9 @@ export default function Bidding() {
             koiId={room.koi.koiId}
             bidderId={currentBidderId}
             breeder={room.koi.breeder}
-            roomId= {roomId}
-          /> {/* Truyền thông tin breeder vào ShippingInfo */}
+            roomId={roomId}
+            onSubmit={handleShippingSubmit} // Pass the callback here
+          />
         </Modal>
         <FloatButton
           type="primary"
@@ -252,16 +281,16 @@ export default function Bidding() {
   );
 }
 
-const AuctionInfo = ({ roomId, startTime, endTime,description }) => {
+const AuctionInfo = ({ roomId, startTime, endTime, description }) => {
   // Format thời gian để hiển thị
   const formattedStartTime = new Date(startTime).toLocaleDateString("en-GB");
   const formattedEndTime = new Date(endTime).toLocaleDateString("en-GB");
   const auctionInfoContent = (
     <div>
       <p>
-      {description}
+        {description}
       </p>
-     
+
     </div>
   );
 
@@ -285,7 +314,7 @@ const AuctionInfo = ({ roomId, startTime, endTime,description }) => {
             >
               <Button className="Button">
                 <InfoCircleOutlined style={{ color: "rgba(0,0,0,.45)" }} />{" "}
-              Koi Info
+                Koi Info
               </Button>
             </Popover>
           </Space>

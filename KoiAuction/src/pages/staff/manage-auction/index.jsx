@@ -195,12 +195,16 @@ const Auction = () => {
   const handleEnd = async (auctionId) => {
     try {
       await api.put(`/auction/${auctionId}/closed`);
-      toast.success("Auction ended successfully!");
+      await api.put(`/transaction/rollback/${auctionId}`); // Rollback transaction
+
+      toast.success("Auction ended and transaction rolled back successfully!");
       fetchAuctions();
     } catch (error) {
-      toast.error("Failed to end auction");
+      toast.error("Failed to end auction or rollback transaction");
     }
   };
+  
+
 
   const statusColors = {
     PENDING: "#d9d9d9",

@@ -45,7 +45,7 @@ function BreederActivities() {
   const handleInvoiceClick = async (koiId) => {
     setIsLoading(true);
     try {
-      const response = await api.get(`/invoice/get/${koiId}`);
+      const response = await api.get(`/invoice/view/${koiId}`);
       setInvoiceData(response.data);
       setIsModalVisible(true);
     } catch (error) {
@@ -109,13 +109,11 @@ function BreederActivities() {
         {isLoading && <div>Loading...</div>}
         <Modal
           title="Invoice Details"
-          style={{ top: 20 }}
-          visible={isModalVisible}
+          style={{ top: 5 }}
+          open={isModalVisible}
           onCancel={handleModalClose}
           width="50%" // Set the modal width to 90% of the viewport'
-        
-          bodyStyle={{ maxWidth: '80vw' }} // Ensure the content doesn't exceed 80vw
-        
+          footer={null}
         >
           {invoiceData && <Invoice {...invoiceData} />}
         </Modal>

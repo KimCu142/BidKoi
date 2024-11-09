@@ -159,7 +159,7 @@ const minimumBid = (parseFloat(highestBid) + parseFloat(increments)).toFixed(0);
               width: '30%',
             }}
             onClick={sendBid}
-            disabled={isAuctionEnded || parseFloat(bidData.price) < parseFloat(minimumBid)} // Vô hiệu hóa khi đấu giá kết thúc hoặc giá bid không hợp lệ
+            disabled={isAuctionEnded || parseFloat(bidData.price.replace(/,/g, '')) < parseFloat(minimumBid)} // Vô hiệu hóa khi đấu giá kết thúc hoặc giá bid không hợp lệ
           >
             Place Bid
           </Button>

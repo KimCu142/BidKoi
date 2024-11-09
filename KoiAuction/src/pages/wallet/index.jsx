@@ -1,3 +1,4 @@
+
 /* eslint-disable react-hooks/exhaustive-deps */
 /* eslint-disable no-unused-vars */
 import React, { useEffect, useState } from "react";
@@ -6,6 +7,7 @@ import api from "../../config/axios";
 import useGetParams from "../../hooks/useGetParams";
 import styles from "./index.module.scss";
 import { motion } from "framer-motion";
+import Transactions from "../../components/Transactions/Transactions";
 
 function Wallet() {
   const [balance, setBalance] = useState("");
@@ -22,9 +24,9 @@ function Wallet() {
     { value: 20000000 },
   ];
 
-  // Lấy dữ liệu từ localStorage
   const LocalUser = localStorage.getItem("user");
   const UserData = JSON.parse(LocalUser);
+
 
   // Kiểm tra role và lấy accountId tương ứng
   let accountId = null;
@@ -35,9 +37,11 @@ function Wallet() {
   }
   console.log(accountId);
 
+
   const fetchBalance = async () => {
     try {
       const response = await api.get(`/wallet/view/${accountId}`);
+
       const { data } = response;
       if (data) {
         setCurrentBalance(data);
@@ -55,7 +59,9 @@ function Wallet() {
     if (!plainBalance || isNaN(plainBalance) || plainBalance <= 0) {
       toast.warning("Please enter a valid amount!");
       return;
+
     }
+
 
     if (parseFloat(plainBalance) > 20000000) {
       toast.warning("The maximum top-up amount is 20,000,000 VND!");
@@ -65,8 +71,11 @@ function Wallet() {
     try {
       setIsLoading(true);
 
+
+    try {
       const response = await api.post(
         `/wallet/${accountId}`,
+
         {
           balance: parseFloat(plainBalance), // Gửi số tiền nạp trong request body
         },
@@ -75,18 +84,21 @@ function Wallet() {
             "Content-Type": "application/json",
           },
         }
+
       );
 
       const { data } = response;
-      if (data && data.includes("https")) {
+      if (data.includes("https")) {
         setPaymentUrl(data);
-        window.location.href = data;
+        toast.info("Redirecting to VNPay...");
+        setTimeout(() => (window.location.href = data), 1000);
       } else {
         console.log("Failed to retrieve payment URL");
       }
     } catch (error) {
       console.error("Error calling top-up API", error);
       toast.error("An error occurred during the top-up. Please try again!");
+
     } finally {
       setIsLoading(false);
     }
@@ -173,6 +185,8 @@ function Wallet() {
           )}
         </motion.button>
       </motion.div>
+  <Transactions accountId={accountId} />
+
     </div>
   );
 }

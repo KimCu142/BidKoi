@@ -51,21 +51,24 @@ function BreederRequest() {
   const [paymentAmount, setPaymentAmount] = useState(0);
   const [isPaymentModal, setIsPaymentModal] = useState(false);
   const [multiplierOption, setMultiplierOption] = useState("null");
+  const [userData, setUserData] = useState("");
+  const [isResubmit, setIsResubmit] = useState(false);
 
   useEffect(() => {
-    const storedUser = localStorage.getItem("user");
-    if (storedUser) {
-      const userData = JSON.parse(storedUser);
-      console.log("Stored User:", userData);
-      if (userData.breeder && userData.breeder.name) {
-        setBreeders(userData.breeder.name);
+    try {
+      // Lấy dữ liệu từ localStorage
+      const storedUser = localStorage.getItem("user");
+
+      if (storedUser) {
+        setUserData(JSON.parse(storedUser));
       }
-      setBreederId(userData.breeder.breederID);
-      console.log("Breeder Name:", userData.breeder.name);
+    } catch (error) {
+      console.error("Error parsing stored user data:", error);
     }
   }, []);
 
   useEffect(() => {
+
     const initialPrice = form.getFieldValue("initialPrice")?.replace(/,/g, "");
     if (
       initialPrice &&
@@ -81,53 +84,83 @@ function BreederRequest() {
     }
   }, [multiplierOption]);
 
+    const fetchBreederData = async () => {
+      try {
+        const accountId = userData?.breeder?.account?.id;
+
+        if (accountId) {
+          const response = await api.get(`/breeder/profile/${accountId}`);
+          const userData = response.data;
+
+          if (userData && userData.name) {
+            setBreeders(userData.name);
+            setBreederId(userData.breederID);
+            console.log("Breeder Name:", userData.name);
+          }
+        } else {
+          console.error("Account ID is not available.");
+        }
+      } catch (error) {
+        console.error("Error fetching breeder data:", error);
+      }
+    };
+
+    if (userData) {
+      fetchBreederData();
+    }
+  }, [userData]);
+
+  useEffect(() => {
+    if (breederId) {
+      fetchKoiAndBreeder(breederId);
+    }
+  }, [breederId]);
+
+
+
   const handlePayment = () => {
-    // Thanh toán thành công, tiếp tục submit form
     setIsPaymentModal(false);
+    setIsResubmit(false); // Đặt lại trạng thái sau khi thanh toán
+    setSelectedKoi(null); // Reset selectedKoi để không ảnh hưởng đến các lần tạo mới
     form.submit();
   };
 
   const handleOk = () => {
-    // Nếu là tạo mới (không có selectedKoi), mở Payment Modal
-    if (!selectedKoi) {
-      form
-        .validateFields() // Validate toàn bộ form
-        .then((values) => {
-          if (values.initialPrice) {
-            const numericPrice = parseFloat(
-              values.initialPrice.replace(/,/g, "")
-            );
-            setPaymentAmount(Math.round(numericPrice) * 0.5); // Tính số tiền thanh toán
-            setIsPaymentModal(true); // Mở Payment Modal
-          }
-        })
-        .catch((errorInfo) => {
-          console.error("Validation Failed:", errorInfo);
-          // Không mở Payment Modal nếu có lỗi
-        });
-    } else {
-      // Nếu là chỉnh sửa, submit form luôn
-      form.submit();
-    }
+    form
+      .validateFields()
+      .then((values) => {
+        const numericPrice = parseFloat(values.initialPrice.replace(/,/g, ""));
+        if (isResubmit || !selectedKoi) {
+          setPaymentAmount(Math.round(numericPrice) * 0.5); // Tính số tiền thanh toán
+          setIsPaymentModal(true); // Mở modal thanh toán cho cả Resubmit và Create New Request
+          setIsResubmit(false); 
+          setSelectedKoi(null);
+        } else {
+          form.submit();
+        }
+      })
+      .catch((errorInfo) => {
+        console.error("Validation Failed:", errorInfo);
+      });
   };
 
   const handleCancelPayment = () => {
-    setIsPaymentModal(false); // Đóng Payment Modal
+    setIsPaymentModal(false);
+    setIsResubmit(false); // Reset isResubmit để không ảnh hưởng đến các lần tạo mới
+    setSelectedKoi(null); // Reset selectedKoi để không ảnh hưởng đến các lần tạo mới
   };
 
-  const fetchKoiAndBreeder = async () => {
+  const fetchKoiAndBreeder = async (breederId) => {
     try {
-      // Fetch thông tin koi
-      const koiResponse = await api.get(`/koi`);
+      const koiResponse = await api.get(`/koi/breeder/${breederId}`);
       setKois(koiResponse.data);
     } catch (error) {
-      console.error("Error fetching data:", error);
+      console.error("Error fetching koi data:", error);
+      // Thêm logic xử lý lỗi nếu cần
     }
   };
 
-  useEffect(() => {
-    fetchKoiAndBreeder();
-  }, []);
+
 
   const getJapaneseAge = (age) => {
     age = Number(age);
@@ -213,7 +246,7 @@ function BreederRequest() {
       dataIndex: "status",
       key: "actions",
       render: (status, koiRequest) => {
-        if (status === "PENDING" || status === "REJECTED") {
+        if (status === "PENDING") {
           return (
             <Dropdown
               overlay={
@@ -245,6 +278,18 @@ function BreederRequest() {
               <EllipsisOutlined style={{ fontSize: "24px" }} />
             </Dropdown>
           );
+        } else if (status === "REJECTED") {
+          // Khi trạng thái là "REJECTED", chỉ hiển thị nút "Resubmit"
+          return (
+
+            <Button
+              type="link"
+              style={{ color: "darkviolet", fontWeight: "600" }}
+              onClick={() => handleResubmitKoi(koiRequest)}
+            >
+              Resubmit
+            </Button>
+          );
         } else {
           return (
             <div style={{ color: statusColors[status], fontWeight: "700" }}>
@@ -259,6 +304,37 @@ function BreederRequest() {
       },
     },
   ];
+
+  const handleResubmitKoi = (rejectedKoi) => {
+    // Tạo một request mới với dữ liệu từ cá Koi bị từ chối
+    const newKoiData = { ...rejectedKoi, status: "PENDING" };
+    setSelectedKoi({ ...rejectedKoi });
+    setIsResubmit(true);
+    form.setFieldsValue({
+      ...newKoiData,
+      breeder: breeders,
+      initialPrice: formatNumber(newKoiData.initialPrice),
+    });
+
+    // Đặt lại fileList và videoFileList cho ảnh và video từ rejectedKoi
+    setFileList([
+      {
+        uid: `${Date.now()}-image`,
+        name: "image",
+        status: "done",
+        url: rejectedKoi.image,
+      },
+    ]);
+    setVideoFileList([
+      {
+        uid: `${Date.now()}-video`,
+        name: "video",
+        status: "done",
+        url: rejectedKoi.video,
+      },
+    ]);
+    setOpenEditModal(true);
+  };
 
   const formatNumber = (value) => {
     return value.toString().replace(/\B(?=(\d{3})+(?!\d))/g, ",");
@@ -341,7 +417,7 @@ function BreederRequest() {
     try {
       await api.delete(`/koi/del/${koiId}`);
       toast.success("Successfully delete!");
-      fetchKoiAndBreeder();
+      fetchKoiAndBreeder(breederId);
     } catch (err) {
       toast.error(err.response.data);
     }
@@ -426,10 +502,16 @@ function BreederRequest() {
         toast.success("Create Koi request sucessfully!");
       }
 
-      await fetchKoiAndBreeder();
+      await fetchKoiAndBreeder(breederId);
       setOpenEditModal(false);
       form.resetFields();
       setUploadProgress(0);
+      if (isResubmit) {
+        const numericPrice = parseFloat(kois.initialPrice);
+        setPaymentAmount(Math.round(numericPrice) * 0.5);
+        setIsPaymentModal(true); // Hiển thị modal thanh toán sau khi submit thành công
+        setIsResubmit(false); // Reset lại trạng thái
+      }
     } catch (err) {
       console.error("Create request error:", err);
       toast.error("Create fail");
@@ -565,7 +647,11 @@ function BreederRequest() {
         width={1000}
       >
         <h2 className={styles.koiTitle}>Basic Information</h2>
-        <Form form={form} onFinish={handleSubmitKoi} labelCol={{ span: 24 }}>
+        <Form form={form} onFinish={(values) => {
+          handleSubmitKoi(values);
+          setIsResubmit(false); // Reset isResubmit để không ảnh hưởng đến các lần tạo mới
+          setSelectedKoi(null); // Reset selectedKoi sau khi submit
+        }} labelCol={{ span: 24 }}>
           <div className={styles.koiInfo}>
             <Form.Item name="status" initialValue={0} hidden>
               <Input type="hidden" />
@@ -574,12 +660,12 @@ function BreederRequest() {
               label="KoiID"
               name="koiId"
               hidden
-              // rules={[
-              //   {
-              //     required: true,
-              //     message: "Please enter KoiID",
-              //   },
-              // ]}
+            // rules={[
+            //   {
+            //     required: true,
+            //     message: "Please enter KoiID",
+            //   },
+            // ]}
             >
               <Input />
             </Form.Item>
@@ -838,7 +924,7 @@ function BreederRequest() {
             </Form.Item>
           </div>
         </Form>
-        {isPaymentModal && !selectedKoi && (
+        {isPaymentModal && (
           <div className={styles.overlay}>
             <motion.div className={styles.paymentBox}>
               <p className={styles.warningText}>
@@ -869,6 +955,7 @@ function BreederRequest() {
             </motion.div>
           </div>
         )}
+
       </Modal>
 
       {previewImage && (
