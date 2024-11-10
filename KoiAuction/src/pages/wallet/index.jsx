@@ -1,6 +1,3 @@
-
-/* eslint-disable react-hooks/exhaustive-deps */
-/* eslint-disable no-unused-vars */
 import React, { useEffect, useState } from "react";
 import { toast } from "react-toastify";
 import api from "../../config/axios";
@@ -8,12 +5,15 @@ import useGetParams from "../../hooks/useGetParams";
 import styles from "./index.module.scss";
 import { motion } from "framer-motion";
 import Transactions from "../../components/Transactions/Transactions";
+import WithdrawRequestForm from "../../components/Withdraw/Requestwithdraw";
+import { Modal } from "antd";
 
 function Wallet() {
   const [balance, setBalance] = useState("");
   const [isLoading, setIsLoading] = useState(false);
   const [paymentUrl, setPaymentUrl] = useState("");
   const [currentBalance, setCurrentBalance] = useState(0);
+  const [showWithdrawModal, setShowWithdrawModal] = useState(false);
 
   const denominations = [
     { value: 1000000 },
@@ -27,7 +27,6 @@ function Wallet() {
   const LocalUser = localStorage.getItem("user");
   const UserData = JSON.parse(LocalUser);
 
-
   // Kiểm tra role và lấy accountId tương ứng
   let accountId = null;
   if (UserData.role === "BIDDER" && UserData.bidder) {
@@ -36,7 +35,6 @@ function Wallet() {
     accountId = UserData.breeder.account.id;
   }
   console.log(accountId);
-
 
   const fetchBalance = async () => {
     try {
@@ -59,9 +57,7 @@ function Wallet() {
     if (!plainBalance || isNaN(plainBalance) || plainBalance <= 0) {
       toast.warning("Please enter a valid amount!");
       return;
-
     }
-
 
     if (parseFloat(plainBalance) > 20000000) {
       toast.warning("The maximum top-up amount is 20,000,000 VND!");
@@ -69,13 +65,8 @@ function Wallet() {
     }
 
     try {
-      setIsLoading(true);
-
-
-    try {
       const response = await api.post(
         `/wallet/${accountId}`,
-
         {
           balance: parseFloat(plainBalance), // Gửi số tiền nạp trong request body
         },
@@ -84,7 +75,6 @@ function Wallet() {
             "Content-Type": "application/json",
           },
         }
-
       );
 
       const { data } = response;
@@ -98,7 +88,6 @@ function Wallet() {
     } catch (error) {
       console.error("Error calling top-up API", error);
       toast.error("An error occurred during the top-up. Please try again!");
-
     } finally {
       setIsLoading(false);
     }
@@ -155,7 +144,7 @@ function Wallet() {
         </div>
 
         <div className={styles.inputGroup}>
-          <lable> Amount to top-up: </lable>
+          <label> Amount to top-up: </label>
           <div className={styles.inputWithUnit}>
             <input
               className={styles.inputLabel}
@@ -184,9 +173,37 @@ function Wallet() {
             "Top-up via VNPay"
           )}
         </motion.button>
-      </motion.div>
-  <Transactions accountId={accountId} />
 
+        <motion.button
+          onClick={() => setShowWithdrawModal(true)}
+          className={styles.button}
+          whileHover={{
+            scale: 1.05,
+            boxShadow: "0px 4px 15px rgba(0, 123, 255, 0.3)",
+          }}
+          whileTap={{ scale: 0.95 }}
+        >
+          Withdraw Funds
+        </motion.button>
+
+        <Modal
+          title="Withdraw Request"
+          visible={showWithdrawModal}
+          onCancel={() => setShowWithdrawModal(false)}
+          footer={null}
+          centered
+        >
+          <WithdrawRequestForm 
+            accountId={accountId} 
+            accountBalance={currentBalance.balance}
+            closeModal={() => setShowWithdrawModal(false)} // Truyền hàm đóng modal vào WithdrawRequestForm
+          />
+        </Modal>
+
+        <div className={styles.transactionsinwallet}>
+       <Transactions accountId={accountId} />
+        </div>
+      </motion.div>
     </div>
   );
 }

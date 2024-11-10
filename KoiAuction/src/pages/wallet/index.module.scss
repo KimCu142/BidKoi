@@ -2,12 +2,14 @@
   display: flex;
   align-items: center;
   justify-content: center;
-  height: 100vh;
+margin-top: 100px;
+margin-bottom: 50px;
+  height: 100%;
 }
 
 .walletContainer {
   width: 100%;
-  max-width: 40%;
+  max-width: 50%;
   margin: 0 auto;
   padding: 30px;
   background-color: #ffffff;
@@ -94,6 +96,7 @@
   transition: background-color 0.3s, transform 0.2s;
   text-align: center;
   font-weight: 600;
+  margin-bottom: 10px;
 }
 
 .button:disabled {
@@ -142,4 +145,8 @@
 
 .denominationButton:hover {
   background-color: #b3d7ff;
+}
+
+.transactionsinwallet{
+  margin-top: 30px;
 }
