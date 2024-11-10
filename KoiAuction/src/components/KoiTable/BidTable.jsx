@@ -8,7 +8,7 @@ import "./BidTable.css";
 import api from '../../config/axios';
 let stompClient = null;
 
-const BidTable = ({ initialPrice, immediatePrice, isAuctionEnded }) => {
+const BidTable = ({ initialPrice, immediatePrice, isAuctionEnded, onAuctionEnd }) => {
   const { roomId } = useParams();
   const [bidderId, setBidderId] = useState('');
   const [bidTable, setBidTable] = useState([]);
@@ -17,6 +17,10 @@ const BidTable = ({ initialPrice, immediatePrice, isAuctionEnded }) => {
     connected: false,
     price: ''
   });
+  const highestBid = pastBids.length === 0
+  ? initialPrice
+  : Math.max(initialPrice, Math.max(...pastBids.map(bid => parseFloat(bid.price))));
+
 
   const [inputError, setInputError] = useState('');
   useEffect(() => {
@@ -31,6 +35,13 @@ const BidTable = ({ initialPrice, immediatePrice, isAuctionEnded }) => {
     }
     connect();
   }, []);
+
+  useEffect(() => {
+    // Chỉ gọi onAuctionEnd nếu đấu giá chưa kết thúc và điều kiện giá đã đạt giá mua ngay
+    if (!isAuctionEnded && immediatePrice && immediatePrice !== 0 && highestBid >= immediatePrice) {
+      onAuctionEnd();
+    }
+  }, [immediatePrice, highestBid, onAuctionEnd, isAuctionEnded]);
 
   const connect = () => {
     let Sock = new SockJS('http://localhost:8080/BidKoi/ws');
@@ -72,12 +83,18 @@ const BidTable = ({ initialPrice, immediatePrice, isAuctionEnded }) => {
   const handleBidAmount = (event) => {
     const { value } = event.target;
     const numericValue = value.replace(/,/g, '');
-    setBidData({ ...bidData, price: formatNumber(numericValue) });
 
-    if (parseFloat(numericValue) < parseFloat(minimumBid)) {
-      setInputError(`Bid must be higher than Minimum bid: ${minimumBid}`);
+    if (immediatePrice && immediatePrice !== 0 && parseFloat(numericValue) > parseFloat(immediatePrice)) {
+      setInputError(`Bid cannot exceed the Buy Now price: ${immediatePrice}`);
+      setBidData({ ...bidData, price: formatNumber(immediatePrice) });
     } else {
-      setInputError('');
+      setBidData({ ...bidData, price: formatNumber(numericValue) });
+
+      if (parseFloat(numericValue) < parseFloat(minimumBid)) {
+        setInputError(`Bid must be higher than Minimum bid: ${minimumBid}`);
+      } else {
+        setInputError('');
+      }
     }
   };
 
@@ -85,6 +102,11 @@ const BidTable = ({ initialPrice, immediatePrice, isAuctionEnded }) => {
     const numericPrice = bidData.price.replace(/,/g, '');
     if (parseFloat(numericPrice) < parseFloat(minimumBid)) {
       message.error(`Your bid must be higher than Minimum bid: ${minimumBid}`);
+      return;
+    }
+
+    if (immediatePrice && immediatePrice !== 0 && parseFloat(numericPrice) > parseFloat(immediatePrice)) {
+      message.error(`Your bid cannot exceed the Buy Now price: ${immediatePrice}`);
       return;
     }
 
@@ -116,15 +138,23 @@ const BidTable = ({ initialPrice, immediatePrice, isAuctionEnded }) => {
       };
       stompClient.send(`/app/bid/${roomId}`, {}, JSON.stringify(immediateBuyMessage));
       message.success(`You have successfully purchased the item at ${parseFloat(immediatePrice).toLocaleString()} VND`);
+      if (onAuctionEnd) {
+        onAuctionEnd(); // Kết thúc đấu giá sau khi mua ngay
+      }
     }
   };
 
-  const highestBid = pastBids.length === 0
-    ? initialPrice
-    : Math.max(initialPrice, Math.max(...pastBids.map(bid => parseFloat(bid.price))));
 
   const increments = (highestBid * 0.05).toFixed(0);
-  const minimumBid = (parseFloat(highestBid) + parseFloat(increments)).toFixed(0);
+  let minimumBid = (parseFloat(highestBid) + parseFloat(increments)).toFixed(0);
+
+  // Giới hạn giá trị của minimumBid không vượt quá immediatePrice nếu có giá bán ngay
+  if (immediatePrice && immediatePrice !== 0) {
+    minimumBid = Math.min(minimumBid, immediatePrice).toFixed(0);
+  }
+
+  // Check if bidding should be disabled
+  const isBiddingDisabled = isAuctionEnded || (immediatePrice && immediatePrice !== 0 && highestBid >= immediatePrice);
 
   return (
     <>
@@ -134,7 +164,7 @@ const BidTable = ({ initialPrice, immediatePrice, isAuctionEnded }) => {
       >
         <div className="BidInput">
           <Input
-            placeholder={`Enter bid amount (Minimum bid: ${minimumBid})`}
+            placeholder={`Enter bid amount ${immediatePrice && immediatePrice !== 0 ? `(Maximum bid: ${immediatePrice})` : ""} (Minimum bid: ${minimumBid})`}
             value={bidData.price}
             onChange={handleBidAmount}
             style={{
@@ -142,7 +172,7 @@ const BidTable = ({ initialPrice, immediatePrice, isAuctionEnded }) => {
               padding: '15px 15px',
               width: '60%',
             }}
-            disabled={isAuctionEnded}
+            disabled={isBiddingDisabled}
           />
           <Button
             type="primary"
@@ -154,24 +184,26 @@ const BidTable = ({ initialPrice, immediatePrice, isAuctionEnded }) => {
               width: '30%',
             }}
             onClick={sendBid}
-            disabled={isAuctionEnded || parseFloat(bidData.price.replace(/,/g, '')) < parseFloat(minimumBid)}
+            disabled={isBiddingDisabled || parseFloat(bidData.price.replace(/,/g, '')) < parseFloat(minimumBid)}
           >
             Place Bid
           </Button>
-          <Button
-            type="danger"
-            shape="round"
-            style={{
-              borderRadius: '24px',
-              padding: '15px 15px',
-              margin: '5px',
-              width: '30%',
-            }}
-            onClick={handleImmediateBuy}
-            disabled={isAuctionEnded || !immediatePrice}
-          >
-            Buy Now at {parseFloat(immediatePrice).toLocaleString()} VND
-          </Button>
+          {immediatePrice && immediatePrice !== 0 && (
+            <Button
+              type="danger"
+              shape="round"
+              style={{
+                borderRadius: '24px',
+                padding: '15px 15px',
+                margin: '5px',
+                width: '30%',
+              }}
+              onClick={handleImmediateBuy}
+              disabled={isAuctionEnded || highestBid >= immediatePrice}
+            >
+              Buy Now at {parseFloat(immediatePrice).toLocaleString()} VND
+            </Button>
+          )}
         </div>
         {inputError && (
           <p style={{ color: 'red', marginTop: '10px' }}>{inputError}</p>
