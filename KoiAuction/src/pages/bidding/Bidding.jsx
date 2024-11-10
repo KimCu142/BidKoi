@@ -221,11 +221,13 @@ export default function Bidding() {
             age={room.koi.age}
             status={room.koi.status}
             endTime={auctionDetails.endTime}
+            immediatePrice={room.koi.immediatePrice}
           />
           <div className="Bidding2">
             <div className="Bidding2mini" >
               <BidTable
                 initialPrice={room.koi.initialPrice}
+                immediatePrice={room.koi.immediatePrice}
                 isAuctionEnded={isAuctionEnded}
               />
             </div>

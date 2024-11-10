@@ -62,7 +62,12 @@
 
 .table-info {
     display: flex;
-    gap: 16px
+    gap: 10px;
+}
+
+.minitable-info {
+    display: flex;
+    gap: 10px;
 }
 
 .countdown-timer {
@@ -107,14 +112,31 @@
 
 @media (max-width: 768px) {
     .Status {
-        font-size: 18px; /* Màn hình nhỏ hơn 768px */
+        font-size: 18px;
+        /* Màn hình nhỏ hơn 768px */
+
     }
+
+    .table-header {
+        align-items: center;
+        justify-content: center;
+    }
+
+    .minitable-info {
+        flex-direction: column;
+
+    }
+
+
+
 }
 
 @media (max-width: 476px) {
     .Status {
-        font-size: 16px; /* Màn hình nhỏ hơn 576px */
+        font-size: 16px;
+        /* Màn hình nhỏ hơn 576px */
     }
+
     .detail-item {
         display: flex;
         justify-content: space-between;

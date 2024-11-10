@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import { Card, Input, Button, message } from 'antd'; // Import message from antd for displaying notifications
+import { Card, Input, Button, message } from 'antd';
 import { ReloadOutlined } from '@ant-design/icons';
 import { over } from 'stompjs';
 import SockJS from 'sockjs-client';
@@ -8,7 +8,7 @@ import "./BidTable.css";
 import api from '../../config/axios';
 let stompClient = null;
 
-const BidTable = ({ initialPrice ,isAuctionEnded}) => {
+const BidTable = ({ initialPrice, immediatePrice, isAuctionEnded }) => {
   const { roomId } = useParams();
   const [bidderId, setBidderId] = useState('');
   const [bidTable, setBidTable] = useState([]);
@@ -18,7 +18,7 @@ const BidTable = ({ initialPrice ,isAuctionEnded}) => {
     price: ''
   });
 
-  const [inputError, setInputError] = useState(''); // State to handle input error
+  const [inputError, setInputError] = useState('');
   useEffect(() => {
     fetchPastBids();
   }, []);
@@ -26,10 +26,9 @@ const BidTable = ({ initialPrice ,isAuctionEnded}) => {
   useEffect(() => {
     const storedUser = localStorage.getItem("user");
     if (storedUser) {
-      const userData = JSON.parse(storedUser); // Parse the JSON string
-      setBidderId(userData.bidder.id); // Access bidder.id
+      const userData = JSON.parse(storedUser);
+      setBidderId(userData.bidder.id);
     }
-
     connect();
   }, []);
 
@@ -42,25 +41,21 @@ const BidTable = ({ initialPrice ,isAuctionEnded}) => {
   const onConnected = () => {
     setBidData({ ...bidData, connected: true });
     stompClient.subscribe(`/bid/${roomId}`, onMessageReceived);
-  }
+  };
+
   const fetchPastBids = async () => {
     try {
-      // Gửi yêu cầu tới API để lấy past bids
       const response = await api.get(`/placeBid/${roomId}`);
       const data = response.data;
-      console.log(data);
-      // Cập nhật danh sách past bids
       setPastBids(data);
     } catch (error) {
       console.error('Error fetching past bids:', error);
     }
   };
+
   const onMessageReceived = (payload) => {
     const payloadData = JSON.parse(payload.body);
     switch (payloadData.status) {
-      case "JOIN":
-
-        break;
       case "MESSAGE":
         setBidTable((prevBids) => [...prevBids, payloadData]);
         setPastBids((prevBids) => [...prevBids, payloadData]);
@@ -71,36 +66,28 @@ const BidTable = ({ initialPrice ,isAuctionEnded}) => {
   };
 
   const formatNumber = (value) => {
-    return value.replace(/\B(?=(\d{3})+(?!\d))/g, ","); // Thêm dấu phẩy sau mỗi 3 chữ số
+    return value.replace(/\B(?=(\d{3})+(?!\d))/g, ",");
   };
 
   const handleBidAmount = (event) => {
     const { value } = event.target;
-  
-    // Loại bỏ dấu phẩy trước khi so sánh và định dạng
     const numericValue = value.replace(/,/g, '');
-  
-    // Cập nhật giá trị hiển thị trong input với dấu phẩy
     setBidData({ ...bidData, price: formatNumber(numericValue) });
-  
-    // Kiểm tra giá trị nhập vào có lớn hơn minimum bid không
+
     if (parseFloat(numericValue) < parseFloat(minimumBid)) {
       setInputError(`Bid must be higher than Minimum bid: ${minimumBid}`);
     } else {
-      setInputError(''); // Clear error if the input is valid
+      setInputError('');
     }
   };
-  
 
   const sendBid = () => {
-    // Loại bỏ dấu phẩy trước khi gửi giá trị
     const numericPrice = bidData.price.replace(/,/g, '');
-  
     if (parseFloat(numericPrice) < parseFloat(minimumBid)) {
       message.error(`Your bid must be higher than Minimum bid: ${minimumBid}`);
       return;
     }
-  
+
     if (stompClient && numericPrice && bidderId) {
       const bidMessage = {
         userId: bidderId,
@@ -111,7 +98,6 @@ const BidTable = ({ initialPrice ,isAuctionEnded}) => {
       setBidData({ ...bidData, price: "" });
     }
   };
-  
 
   const onError = (err) => {
     console.error("Connection error", err);
@@ -121,15 +107,24 @@ const BidTable = ({ initialPrice ,isAuctionEnded}) => {
     fetchPastBids();
   };
 
-  // Tính giá cao nhất từ các bids
-// Tính giá cao nhất từ các bids
-const highestBid = pastBids.length === 0
-  ? initialPrice
-  : Math.max(initialPrice, Math.max(...pastBids.map(bid => parseFloat(bid.price))));
+  const handleImmediateBuy = () => {
+    if (stompClient && immediatePrice && bidderId) {
+      const immediateBuyMessage = {
+        userId: bidderId,
+        price: immediatePrice,
+        status: "MESSAGE"
+      };
+      stompClient.send(`/app/bid/${roomId}`, {}, JSON.stringify(immediateBuyMessage));
+      message.success(`You have successfully purchased the item at ${parseFloat(immediatePrice).toLocaleString()} VND`);
+    }
+  };
 
-// Tính Increments và Minimum Bid
-const increments = (highestBid * 0.05).toFixed(0);
-const minimumBid = (parseFloat(highestBid) + parseFloat(increments)).toFixed(0); // Giá cao nhất + Increments
+  const highestBid = pastBids.length === 0
+    ? initialPrice
+    : Math.max(initialPrice, Math.max(...pastBids.map(bid => parseFloat(bid.price))));
+
+  const increments = (highestBid * 0.05).toFixed(0);
+  const minimumBid = (parseFloat(highestBid) + parseFloat(increments)).toFixed(0);
 
   return (
     <>
@@ -147,7 +142,7 @@ const minimumBid = (parseFloat(highestBid) + parseFloat(increments)).toFixed(0);
               padding: '15px 15px',
               width: '60%',
             }}
-            disabled={isAuctionEnded}  // Vô hiệu hóa input khi đấu giá kết thúc
+            disabled={isAuctionEnded}
           />
           <Button
             type="primary"
@@ -159,16 +154,30 @@ const minimumBid = (parseFloat(highestBid) + parseFloat(increments)).toFixed(0);
               width: '30%',
             }}
             onClick={sendBid}
-            disabled={isAuctionEnded || parseFloat(bidData.price.replace(/,/g, '')) < parseFloat(minimumBid)} // Vô hiệu hóa khi đấu giá kết thúc hoặc giá bid không hợp lệ
+            disabled={isAuctionEnded || parseFloat(bidData.price.replace(/,/g, '')) < parseFloat(minimumBid)}
           >
             Place Bid
+          </Button>
+          <Button
+            type="danger"
+            shape="round"
+            style={{
+              borderRadius: '24px',
+              padding: '15px 15px',
+              margin: '5px',
+              width: '30%',
+            }}
+            onClick={handleImmediateBuy}
+            disabled={isAuctionEnded || !immediatePrice}
+          >
+            Buy Now at {parseFloat(immediatePrice).toLocaleString()} VND
           </Button>
         </div>
         {inputError && (
           <p style={{ color: 'red', marginTop: '10px' }}>{inputError}</p>
         )}
         <p style={{ fontSize: '12px', color: '#666', marginTop: '10px' }}>
-        (Minimum bid: {parseFloat(minimumBid).toLocaleString()}, Increments of {parseFloat(increments).toLocaleString()} only)
+          (Minimum bid: {parseFloat(minimumBid).toLocaleString()}, Increments of {parseFloat(increments).toLocaleString()} only)
         </p>
         <Button
           style={{
@@ -178,10 +187,9 @@ const minimumBid = (parseFloat(highestBid) + parseFloat(increments)).toFixed(0);
             color: 'white',
             borderRadius: '20px',
           }}
-          disabled={isAuctionEnded} // Vô hiệu hóa nút khi đấu giá kết thúc
+          disabled={isAuctionEnded}
         >
-      Current Bid: {highestBid > 0 ? `${highestBid.toLocaleString()} VND` : "No Bids Yet"}
-
+          Current Bid: {highestBid > 0 ? `${highestBid.toLocaleString()} VND` : "No Bids Yet"}
         </Button>
       </Card>
 
@@ -195,37 +203,33 @@ const minimumBid = (parseFloat(highestBid) + parseFloat(increments)).toFixed(0);
         className="customCard"
       >
         <div className="Bids">
-  {pastBids.filter(bid => bid.price > 0).length === 0 ? (
-    <>
-      <p style={{ fontWeight: 'bold', marginBottom: '5px' }}>No Bids Yet</p>
-      <p style={{ color: '#777' }}>Be the first to bid!</p>
-    </>
-  ) : (
-    <>
-      {/* Tiêu đề các cột */}
-      <div className="bidHeader">
-        <p style={{ fontWeight: 'bold', textAlign: 'left' }}>Username</p>
-        <p style={{ fontWeight: 'bold', textAlign: 'left' }}>Price</p>
-        <p style={{ fontWeight: 'bold', textAlign: 'left' }}>Date</p>
-      </div>
+          {pastBids.filter(bid => bid.price > 0).length === 0 ? (
+            <>
+              <p style={{ fontWeight: 'bold', marginBottom: '5px' }}>No Bids Yet</p>
+              <p style={{ color: '#777' }}>Be the first to bid!</p>
+            </>
+          ) : (
+            <>
+              <div className="bidHeader">
+                <p style={{ fontWeight: 'bold', textAlign: 'left' }}>Username</p>
+                <p style={{ fontWeight: 'bold', textAlign: 'left' }}>Price</p>
+                <p style={{ fontWeight: 'bold', textAlign: 'left' }}>Date</p>
+              </div>
 
-      {/* Danh sách các bid */}
-      {pastBids
-        .filter(bid => bid.price > 0) // Lọc bỏ các bid có price bằng 0
-        .sort((a, b) => b.price - a.price) // Sắp xếp theo giá từ cao đến thấp
-        .slice(0, 5) // Lấy 5 bid đầu tiên
-        .map((bid, index) => (
-          <div key={index} className="bidEntry">
-            <p style={{ textAlign: 'left' }}>{bid.username}</p>
-            <p style={{ textAlign: 'left' }}>{parseFloat(bid.price).toLocaleString()}</p>
-            <p style={{ textAlign: 'left' }}>{new Date(bid.date).toLocaleString()}</p>
-          </div>
-        ))}
-    </>
-  )}
-</div>
-
-
+              {pastBids
+                .filter(bid => bid.price > 0)
+                .sort((a, b) => b.price - a.price)
+                .slice(0, 5)
+                .map((bid, index) => (
+                  <div key={index} className="bidEntry">
+                    <p style={{ textAlign: 'left' }}>{bid.username}</p>
+                    <p style={{ textAlign: 'left' }}>{parseFloat(bid.price).toLocaleString()}</p>
+                    <p style={{ textAlign: 'left' }}>{new Date(bid.date).toLocaleString()}</p>
+                  </div>
+                ))}
+            </>
+          )}
+        </div>
       </Card>
     </>
   );

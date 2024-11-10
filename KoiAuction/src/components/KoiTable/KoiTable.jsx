@@ -1,7 +1,8 @@
 import "./KoiTable.css";
 import { useState, useEffect } from "react";
-
-export default function KoiTable({ name, initialPrice, id, rating, sex, length, breeder, age, status, endTime }) {
+import { FaCartArrowDown } from "react-icons/fa";
+import { BsFillSkipStartFill } from "react-icons/bs";
+export default function KoiTable({ name, initialPrice, id, rating, sex, length, breeder, age, status, endTime, immediatePrice }) {
     return (
         <>
             <div className="table-container">
@@ -13,21 +14,34 @@ export default function KoiTable({ name, initialPrice, id, rating, sex, length, 
                         </div>
                     </div>
                     <div className="table-info">
-                        <div>
-                        <p className="card-number">▶ {parseFloat(initialPrice).toLocaleString()} VND</p>
+                        <div className="minitable-info">
+                            <div>
+                                <p className="card-number"><FaCartArrowDown size={25} />{parseFloat(immediatePrice).toLocaleString()} VND</p>
 
+                            </div>
+                            <div>
+                                <p className="card-number"><BsFillSkipStartFill size={30} /> {parseFloat(initialPrice).toLocaleString()} VND</p>
+
+                            </div>
                         </div>
-                        <div className="card-number">
-                            <svg xmlns="http://www.w3.org/2000/svg" width="1.5em" height="1.5em" viewBox="0 0 24 24">
-                                <g fill="none" stroke="currentColor" strokeLinecap="round" strokeLinejoin="round" strokeWidth={2}>
-                                    <path d="M12.586 2.586A2 2 0 0 0 11.172 2H4a2 2 0 0 0-2 2v7.172a2 2 0 0 0 .586 1.414l8.704 8.704a2.426 2.426 0 0 0 3.42 0l6.58-6.58a2.426 2.426 0 0 0 0-3.42z"></path>
-                                    <circle cx={7.5} cy={7.5} r={0.5} fill="currentColor"></circle>
-                                </g>
-                            </svg>
-                            <div>{id}</div>
+                        <div className="minitable-info">
+                        <div>
+                                <p className="card-number">  <svg xmlns="http://www.w3.org/2000/svg" width="1.5em" height="1.5em" viewBox="0 0 24 24">
+                                    <g fill="none" stroke="currentColor" strokeLinecap="round" strokeLinejoin="round" strokeWidth={2}>
+                                        <path d="M12.586 2.586A2 2 0 0 0 11.172 2H4a2 2 0 0 0-2 2v7.172a2 2 0 0 0 .586 1.414l8.704 8.704a2.426 2.426 0 0 0 3.42 0l6.58-6.58a2.426 2.426 0 0 0 0-3.42z"></path>
+                                        <circle cx={7.5} cy={7.5} r={0.5} fill="currentColor"></circle>
+                                    </g>
+                                </svg>
+                                {id}</p>
+
+                            </div>
+                            <div>
+                                <p className="card-number"> <svg xmlns="http://www.w3.org/2000/svg" width="1em" height="1em" viewBox="0 0 24 24"><path fill="currentColor" d="M12,1A11,11,0,1,0,23,12,11,11,0,0,0,12,1Zm0,20a9,9,0,1,1,9-9A9,9,0,0,1,12,21Z"></path><rect width={2} height={7} x={11} y={6} fill="currentColor" rx={1}><animateTransform attributeName="transform" dur="9s" repeatCount="indefinite" type="rotate" values="0 12 12;360 12 12"></animateTransform></rect><rect width={2} height={9} x={11} y={11} fill="currentColor" rx={1}><animateTransform attributeName="transform" dur="3s" repeatCount="indefinite" type="rotate" values="0 12 12;360 12 12"></animateTransform></rect></svg>
+                                {status}
+                                </p>
+
+                            </div>
                         </div>
-                        <h2 className="Status"><svg xmlns="http://www.w3.org/2000/svg" width="1em" height="1em" viewBox="0 0 24 24"><path fill="currentColor" d="M12,1A11,11,0,1,0,23,12,11,11,0,0,0,12,1Zm0,20a9,9,0,1,1,9-9A9,9,0,0,1,12,21Z"></path><rect width={2} height={7} x={11} y={6} fill="currentColor" rx={1}><animateTransform attributeName="transform" dur="9s" repeatCount="indefinite" type="rotate" values="0 12 12;360 12 12"></animateTransform></rect><rect width={2} height={9} x={11} y={11} fill="currentColor" rx={1}><animateTransform attributeName="transform" dur="3s" repeatCount="indefinite" type="rotate" values="0 12 12;360 12 12"></animateTransform></rect></svg>
-                            <div>{status}</div></h2>
                     </div>
                 </div>
                 <div className="table-details">
