@@ -4,8 +4,9 @@ import { PlusOutlined } from '@ant-design/icons';
 import './ShippingInfo.css'; // Import CSS file
 import api from '../../config/axios';
 
-const ShippingInfo = ({ breeder, koiId, bidderId,roomId }) => {
-    const [form] = Form.useForm(); // Tạo form để quản lý state của các input
+const ShippingInfo = ({ breeder, koiId, bidderId, roomId, onSubmit }) => { // Thêm `onSubmit` vào props
+    const [form] = Form.useForm(); 
+
     const handleSubmit = async (values) => {
         try {
             // Gọi API để tạo thông tin shipping
@@ -19,17 +20,17 @@ const ShippingInfo = ({ breeder, koiId, bidderId,roomId }) => {
             );
 
             // Sau khi tạo thông tin shipping, tạo invoice
-           
             const invoiceResponse = await api.post(`/invoice/create/${roomId}`);
 
             message.success('Shipping info submitted successfully!');
+
+            // Gọi hàm onSubmit để đóng modal
+            onSubmit(); // Thêm dòng này để gọi hàm onSubmit sau khi tạo thông tin shipping thành công
         } catch (error) {
-            message.error('Failed to submit shipping info !');
+            message.error('Failed to submit shipping info!');
             console.error(error);
         }
     };
-
-
 
     return (
         <>
@@ -69,15 +70,15 @@ const ShippingInfo = ({ breeder, koiId, bidderId,roomId }) => {
                     <div className="Breeder-detail">
                         <div className="info-row2">
                             <span>Name</span>
-                            <span>{breeder?.name || 'N/A'}</span> {/* Đây là tên của breeder */}
+                            <span>{breeder?.name || 'N/A'}</span>
                         </div>
                         <div className="info-row2">
                             <span>Hotline</span>
-                            <span>{breeder?.account.phone || 'N/A'}</span> {/* Đây là số điện thoại của breeder */}
+                            <span>{breeder?.account.phone || 'N/A'}</span>
                         </div>
                         <div className="info-row2">
                             <span>Email</span>
-                            <span>{breeder?.account.email || 'N/A'}</span> {/* Đây là email của breeder */}
+                            <span>{breeder?.account.email || 'N/A'}</span>
                         </div>
                     </div>
                 </div>
@@ -88,5 +89,6 @@ const ShippingInfo = ({ breeder, koiId, bidderId,roomId }) => {
         </>
     );
 };
+
 
 export default ShippingInfo;

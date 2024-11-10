@@ -423,12 +423,16 @@ const handleSubmitKoi = async (kois) => {
     kois.status = "PENDING"; // Mặc định "PENDING" cho các trường hợp khác
   }
 
-  kois.initialPrice = kois.initialPrice.replace(/,/g, "");
+  kois.initialPrice = parseInt(kois.initialPrice.replace(/,/g, ""), 10);
 
   const immediatePrice = form.getFieldValue("immediatePrice");
+
+  // Chuyển đổi immediatePrice sang kiểu số và đảm bảo giá trị là một số nguyên đầy đủ
   kois.immediatePrice = immediatePrice
-    ? immediatePrice.replace(/ VNĐ/g, "")
-    : null;
+    ? parseInt(immediatePrice.replace(/ VNĐ/g, "").replace(/,/g, ""), 10)
+    : 0;
+
+  console.log("Payload trước khi gửi:", kois);
 
   try {
     setLoading(true);
@@ -503,14 +507,14 @@ const handleSubmitKoi = async (kois) => {
       setPaymentAmount(Math.round(numericPrice) * 0.5);
       setIsPaymentModal(true); // Hiển thị modal thanh toán sau khi submit thành công
       setIsResubmit(false); // Reset lại trạng thái
+      }
+    } catch (err) {
+      console.error("Create request error:", err);
+      toast.error("Create fail");
+    } finally {
+      setLoading(false);
     }
-  } catch (err) {
-    console.error("Create request error:", err);
-    toast.error("Create fail");
-  } finally {
-    setLoading(false);
-  }
-};
+  };
 
 // Upload tệp lên Firebase
 const handleUpload = (file) => {
