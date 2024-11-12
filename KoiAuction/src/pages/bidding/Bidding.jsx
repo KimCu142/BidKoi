@@ -1,19 +1,18 @@
 import "./Bidding.css";
 import { Image } from "antd";
-import axios from "axios";
 import { useState, useEffect } from "react";
 import { InfoCircleOutlined, CustomerServiceOutlined } from "@ant-design/icons";
 import { Popover, Button, Space, Modal, FloatButton } from "antd";
 import KoiTable from "../../components/KoiTable/KoiTable";
 import { useParams } from "react-router-dom";
 import BidTable from "../../components/KoiTable/BidTable";
-import ChatBot from "../../components/KoiTable/ChatBot";
 import Chat from "../Chat/Chat";
 import { toast } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
 import confetti from "canvas-confetti";
 import ShippingInfo from "../ComfirmShipping/ShippingInfo";
 import api from "../../config/axios";
+import ChatBot from "../../components/KoiTable/";
 import AuctionResult from "../../components/Result/Result";
 import { useCallback } from 'react';
 
@@ -68,7 +67,7 @@ export default function Bidding() {
 
   useEffect(() => {
     api
-      .get(`http://localhost:8080/BidKoi/auction/active`)
+      .get(`/auction/active`)
       .then((response) => {
         const auctionData = response.data.data;
         setAuctionDetails(auctionData);
@@ -81,6 +80,7 @@ export default function Bidding() {
   }, [roomId]);
 
   useEffect(() => {
+
     // Chỉ tạo interval nếu đấu giá chưa kết thúc và có thời gian kết thúc hợp lệ
     if (auctionDetails.endTime && !isAuctionEnded) {
       const interval = setInterval(() => {
@@ -108,7 +108,7 @@ export default function Bidding() {
   const handleAuctionEnd = async () => {
     setIsAuctionEnded(true); // Kết thúc đấu giá
     try {
-      const response = await api.get(`http://localhost:8080/BidKoi/placeBid/winner/${roomId}`);
+      const response = await api.get(`/BidKoi/placeBid/winner/${roomId}`);
       const winnerName = response.data.data.username;
 
       if (username === winnerName) {
