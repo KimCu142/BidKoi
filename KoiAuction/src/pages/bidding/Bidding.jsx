@@ -12,9 +12,11 @@ import "react-toastify/dist/ReactToastify.css";
 import confetti from "canvas-confetti";
 import ShippingInfo from "../ComfirmShipping/ShippingInfo";
 import api from "../../config/axios";
+
 import ChatBot from "../../components/KoiTable/";
 import AuctionResult from "../../components/Result/Result";
 import { useCallback } from 'react';
+
 
 export default function Bidding() {
   const token = localStorage.getItem("token");
@@ -275,6 +277,9 @@ export default function Bidding() {
           endTime={auctionDetails.endTime}
           immediatePrice={room.koi.immediatePrice}
           />
+
+          <ChatBot/>
+
         </Modal>
       </>
     </div>
