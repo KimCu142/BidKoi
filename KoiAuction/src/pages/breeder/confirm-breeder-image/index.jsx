@@ -1,6 +1,6 @@
 /* eslint-disable no-unused-vars */
 import KoiCard from "../../../components/KoiCard/KoiCard";
-import { Upload, Image, Button, Form } from "antd";
+import { Upload, Image, Button, Form, Popconfirm, Select, Input } from "antd";
 import { PlusOutlined } from "@ant-design/icons";
 import { useEffect, useState } from "react";
 import styles from "./index.module.scss";
@@ -22,9 +22,9 @@ function BreederConfirmImg() {
   const [loading, setLoading] = useState(false);
   const [uploaded, setUploaded] = useState(false); // Trạng thái kiểm tra đã upload hay chưa
   const [imageUrl, setImageUrl] = useState("");
+  const [confirmType, setConfirmType] = useState("success");
+  const [reason, setReason] = useState("");
   const { shippingId } = useParams();
-
-  console.log("shippingId từ URL:", shippingId);
 
   useEffect(() => {
     const storedUser = localStorage.getItem("user");
@@ -35,17 +35,23 @@ function BreederConfirmImg() {
     }
   }, []);
 
-  const fetchImageData = async () => {
+  const fetchData = async () => {
     try {
       const response = await api.get(`/shipping/${shippingId}`);
       if (response.data.length > 0) {
         const koiData = response.data[0];
+        console.log("Dữ liệu sau khi fetch:", koiData); // Kiểm tra dữ liệu từ backend
         setKoi(koiData);
-        console.log("Response data:", koiData);
+        setImageUrl(koiData.imgBreeder || "");
+        setUploaded(!!koiData.imgBreeder);
 
-        if (koiData.imgBreeder) {
-          setImageUrl(koiData.imgBreeder); // Lưu URL ảnh vào state để hiển thị
-          setUploaded(true);
+        // Cập nhật confirmType và reason dựa trên dữ liệu mới
+        if (koiData.breederConfirm === "Successful delivery") {
+          setConfirmType("success");
+          setReason(""); // Xóa reason khi thành công
+        } else {
+          setConfirmType("fail");
+          setReason(koiData.breederConfirm); // Đặt lý do nếu không thành công
         }
       }
     } catch (error) {
@@ -55,9 +61,16 @@ function BreederConfirmImg() {
 
   useEffect(() => {
     if (shippingId) {
-      fetchImageData();
+      fetchData();
     }
   }, [shippingId]);
+
+  const handleConfirmChange = (value) => {
+    setConfirmType(value);
+    if (value === "success") setReason("");
+  };
+
+  const handleReasonChange = (e) => setReason(e.target.value);
 
   const handleSubmit = async () => {
     let confirmUrl = imageUrl; // Sử dụng ảnh đã có (nếu có)
@@ -69,16 +82,26 @@ function BreederConfirmImg() {
     try {
       setLoading(true);
 
+      const payload = {
+        img: confirmUrl,
+        confirm: confirmType === "success" ? "Successful delivery" : reason,
+      };
+
+      console.log("Payload gửi đi:", payload);
+
       const response = await api.patch(
         `/shipping/breeder/${shippingId}`,
-        confirmUrl,
-        { headers: { "Content-Type": "application/json" } }
+        payload,
+        {
+          headers: { "Content-Type": "application/json" },
+        }
       );
 
       if (response.status === 204) {
         toast.success("Upload successful");
         setImageUrl(confirmUrl);
         setUploaded(true);
+        await fetchData();
       } else {
         console.error("Failed to save image:", response.data);
       }
@@ -136,8 +159,8 @@ function BreederConfirmImg() {
         <motion.div
           className={styles.KoiWrapper}
           initial={{ scale: 0.8 }}
-          animate={{ scale: 1, rotate: 0 }} // Hiệu ứng mượt khi hình con cá vào đúng vị trí
-          whileHover={{ scale: 1.1, rotate: 5 }} // Hiệu ứng khi hover: to hơn và xoay nhẹ
+          animate={{ scale: 1, rotate: 0 }}
+          whileHover={{ scale: 1.1, rotate: 5 }}
         >
           <img className={styles.KoiImg} src={koi.koi.image} alt="Koi image" />
         </motion.div>
@@ -146,19 +169,18 @@ function BreederConfirmImg() {
       )}
       <motion.div
         className={styles.card}
-        initial={{ y: 50, opacity: 0 }} // Từ dưới lên với opacity
-        animate={{ y: 0, opacity: 1 }} // Lên vị trí với opacity đầy đủ
+        initial={{ y: 50, opacity: 0 }}
+        animate={{ y: 0, opacity: 1 }}
         transition={{ delay: 0.3, duration: 0.6, ease: [0.42, 0, 0.58, 1] }}
       >
         <div className={styles.status}>
           <motion.span
-            initial={{ x: -50, opacity: 0 }} // Text vào từ trái
-            animate={{ x: 0, opacity: 1 }}
+            initial={{ x: -50, opacity: 0 }}
             transition={{ delay: 0.4 }}
           >
             Status: {koi.status}
           </motion.span>
-          <span className={styles.statusText}>Waiting for shipping</span>
+          <span className={styles.statusText}>{koi.breederConfirm}</span>
         </div>
         <motion.div
           className={styles.shipInfo}
@@ -170,8 +192,6 @@ function BreederConfirmImg() {
           <div className={styles.infoRow}>
             <span>Address</span>
             <span>{koi.address}</span>
-            <span>Shipping time</span>
-            <span>{koi.date}</span>
           </div>
           <div className={styles.infoRow}>
             <span>Phone Number</span>
@@ -214,15 +234,74 @@ function BreederConfirmImg() {
                 <div className={styles.textLight2}>Allowed JPG, PNG.</div>
               )}
             </div>
-            {!uploaded && (
-              <Button
-                type="primary"
-                className={styles.sendButton}
-                loading={loading}
-                htmlType="submit"
+            <Form.Item
+              label={<span style={{ fontSize: "18px" }}>Confirm Shipping</span>}
+              style={{ marginTop: "16px" }}
+            >
+              <Select
+                placeholder="Chọn loại xác nhận"
+                onChange={handleConfirmChange}
+                value={confirmType}
+                disabled={uploaded}
+                style={{
+                  backgroundColor: "#f0f0f0",
+                }}
+                dropdownStyle={{
+                  fontSize: "16px", // Kích thước chữ trong dropdown
+                }}
               >
-                Send
-              </Button>
+                <Select.Option
+                  value="success"
+                  style={{ fontSize: "16px", color: "#000" }}
+                >
+                  Successful delivery
+                </Select.Option>
+                <Select.Option
+                  value="fail"
+                  style={{ fontSize: "16px", color: "#000" }}
+                >
+                  Unsuccessful delivery
+                </Select.Option>
+              </Select>
+            </Form.Item>
+
+            {/* Ô nhập lý do nếu không thành công */}
+            {confirmType === "fail" && (
+              <Form.Item
+                label={<span style={{ fontSize: "18px" }}>Reason</span>}
+              >
+                <Input.TextArea
+                  placeholder="Enter here"
+                  value={reason}
+                  onChange={handleReasonChange}
+                  rows={3}
+                  disabled={uploaded}
+                />
+              </Form.Item>
+            )}
+            {/* Popconfirm để xác nhận gửi */}
+            {!uploaded && (
+              <Popconfirm
+                title={
+                  <div>
+                    Are you sure you want to send? <br />
+                    <span style={{ color: "red", fontWeight: "bold" }}>
+                      You cannot edit after pressing Send.
+                    </span>
+                  </div>
+                }
+                onConfirm={form.submit}
+                okText="Sure"
+                cancelText="Cancel"
+              >
+                <Button
+                  type="primary"
+                  className={styles.sendButton}
+                  loading={loading}
+                >
+                  Send
+                </Button>
+              </Popconfirm>
             )}
           </Form>
         </motion.div>

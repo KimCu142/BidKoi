@@ -1,0 +1,130 @@
+/* Invoice.css */
+.invoice-body{
+  display: flex;
+  justify-content: center;
+}
+.invoice-container {
+  display: flex;
+  min-width: 500px;
+  padding: 10px;
+  background-color: #f6f6f6;
+  box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+  border-radius: 20px;
+  font-family: Arial, sans-serif;
+
+}
+
+.navigate-buttons{
+  height: 100%;
+  padding: 10px;
+  display: flex;
+  background-color:white;
+  border-radius: 20px;
+
+}
+.invoice-title {
+  font-size: 24px;
+  font-weight: bold;
+  margin-bottom: 20px;
+}
+
+.order-status {
+  background-color: #4C9689;
+  padding: 15px;
+  border-radius: 5px;
+  color: white;
+  font-weight: bold;
+  border-radius: 24px 24px 0 0;
+  box-shadow: 0 0 1px rgba(0, 0, 0, 1);
+}
+.shipping-info{
+  background-color: white;
+}
+
+.shipping-info, .recipient-info, .koi-info, .payment-info {
+  padding: 15px;
+  box-shadow: 0 0 1px rgba(0, 0, 0, 0.8);
+  
+}
+.koi-info{
+  border-radius: 20px;
+}
+.shipping-info h3, .recipient-info h3, .koi-info h3, .payment-info h3 {
+  font-size: 18px;
+  font-weight: bold;
+  color: #333;
+ 
+}
+
+.shipping-info p, .recipient-info p, .koi-info p, .payment-info p {
+  margin: 5px 0;
+  color: #555;
+  font-size: 14px;
+}
+
+
+.recipient-details{
+  display: flex;
+  align-items: center;
+  gap: 10px;
+
+}
+
+
+.payment-info {
+  background-color: #f1faff;
+  border-radius: 20px;
+  box-shadow: 0 0 5px rgba(0, 0, 0, 0.05);
+  margin-bottom: 20px;
+}
+
+.payment-info p {
+  color: #0a6da0;
+  font-weight: bold;
+}
+
+.recipient-info {
+  background-color:white;
+  border-radius: 0px 0px 20px 20px;
+  margin-bottom: 30px;
+}
+
+.recipient-info p {
+  color: #6e5a01;
+}
+
+.invoice-container {
+  display: flex;
+  align-items: stretch; /* Đảm bảo các phần tử con sẽ có cùng chiều cao */
+}
+
+.invoice-details, .koi-info-card {
+  flex: 1; /* Cho phép các phần tử con có cùng chiều rộng */
+  display: flex;
+  flex-direction: column;
+  padding: 15px; /* Thêm padding nếu cần */
+  box-sizing: border-box;
+}
+
+
+
+
+
+
+@media (max-width: 1000px) {
+  .invoice-container {
+    padding: 10px;
+  }
+
+  .invoice-title {
+    font-size: 20px;
+  }
+
+  .shipping-info, .recipient-info, .koi-info, .payment-info {
+    padding: 10px;
+  }
+
+  .invoice-container {
+    flex-direction: column;
+  }
+}

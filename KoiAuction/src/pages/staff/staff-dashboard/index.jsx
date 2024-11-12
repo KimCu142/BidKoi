@@ -1,4 +1,3 @@
-/* eslint-disable no-unused-vars */
 import React, { useEffect, useState } from "react";
 import {
   DesktopOutlined,
@@ -7,11 +6,13 @@ import {
   TeamOutlined,
   ToTopOutlined,
   UserOutlined,
+  DollarCircleOutlined, // Thêm biểu tượng mới cho lựa chọn Confirm Withdraw
 } from "@ant-design/icons";
-import { Breadcrumb, Layout, Menu, theme } from "antd";
+import { Breadcrumb, Layout, Menu, theme, Button } from "antd";
 import { Outlet, useNavigate } from "react-router-dom";
 import api from "../../../config/axios";
 const { Header, Content, Footer, Sider } = Layout;
+
 function getItem(label, key, icon, children) {
   return {
     key,
@@ -42,17 +43,11 @@ const StaffDashboard = () => {
     fetchAuctions();
   }, []);
 
+  // Cập nhật danh sách items để thêm mục "Confirm Withdraw"
   const items = [
     getItem("Koi Request", "staff-request", <TeamOutlined />),
-    getItem("Manage Auction", "create-auction", <ToTopOutlined />, [
-      getItem("Create New Auction", "create-auction/main"),
-      ...auctions.map((auction) =>
-        getItem(
-          `Auction #${auction.auctionId}`,
-          `create-auction/${auction.auctionId}`
-        )
-      ),
-    ]),
+    getItem("Manage Auction", "create-auction", <ToTopOutlined />),
+    getItem("Confirm Withdraw", "confirm-withdraw", <DollarCircleOutlined />), // Mục mới
   ];
 
   // Handle Menu item click
@@ -62,6 +57,10 @@ const StaffDashboard = () => {
     } else {
       navigate(`/staff-dashboard/${e.key}`);
     }
+  };
+
+  const handleBackToHome = () => {
+    navigate("/");
   };
 
   return (
@@ -88,10 +87,18 @@ const StaffDashboard = () => {
       <Layout>
         <Header
           style={{
-            padding: 0,
+            display: "flex",
+            justifyContent: "space-between",
+            alignItems: "center",
+            padding: "0 16px",
             background: colorBgContainer,
           }}
-        />
+        >
+          <h2>Staff Dashboard</h2>
+          <Button type="link" onClick={handleBackToHome}>
+            Back to Home
+          </Button>
+        </Header>
         <Content
           style={{
             margin: "0 16px",
@@ -127,4 +134,5 @@ const StaffDashboard = () => {
     </Layout>
   );
 };
+
 export default StaffDashboard;

@@ -236,13 +236,6 @@ p {
   height: 80px;
 }
 
-// .detailLogo {
-//   flex: 1;
-//   display: flex;
-//   justify-content: center;
-//   align-items: center;
-// }
-
 @media (min-width: 1280px) {
   .logoCloud {
     grid-template-columns: repeat(3, 1fr);

@@ -8,15 +8,13 @@
     display: flex;
     gap: 16px;
     justify-content: center;
-    height: 100%;
-
 }
 
 .KoiTable {
     display: flex;
     flex-direction: column;
-
-
+    width: 50%;
+    gap: 16px;
 }
 
 .Visual {
@@ -24,16 +22,10 @@
 
 }
 
-.KoiTable {
-    width: 60%;
-    gap: 16px;
-}
 
 .img {
     padding: 0px 24px;
     border-radius: 24px;
-
-
     display: flex;
     flex-direction: column;
     position: relative;
@@ -42,7 +34,8 @@
     background-color: #2980b9;
     /* Màu xanh dương đậm */
     color: white;
-    margin-bottom: 10px;
+   
+    height: 70%;
 }
 
 .auctionsInfo {
@@ -107,8 +100,7 @@ video {
     display: flex;
     flex-direction: row;
     /* Sắp xếp các phần tử con theo hàng ngang */
-    align-items: stretch;
-    /* Kéo dài các phần tử con để có chiều cao bằng nhau */
+    height: 100%;
     gap: 16px;
 }
 
@@ -123,7 +115,7 @@ video {
     width: 50%;
 }
 
-@media (max-width: 768px) {
+@media (max-width: 1050px) {
     .Bidding {
 
         flex-direction: column;
@@ -132,12 +124,12 @@ video {
     }
 
     .Visual {
-        width: 100%;
+        width: 90%;
         align-items: center;
         justify-content: center;
     }
     .KoiTable {
-        width: 100%;
+        width: 90%;
         gap: 16px;
     }
     .Bidding2{
@@ -151,6 +143,6 @@ video {
     }
     .Chat2 {
         width: 100%;
-        height: 40vh;
+   
     }
 }

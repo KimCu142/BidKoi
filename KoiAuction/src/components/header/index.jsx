@@ -1,7 +1,7 @@
 import { Link, Navigate, useLocation, useNavigate } from "react-router-dom";
 import "./index.scss";
 import { useState, useEffect, useContext } from "react";
-import { Button, Dropdown, message, Space } from "antd";
+import { Avatar, Button, Dropdown, message, Space } from "antd";
 import {
   DownOutlined,
   LogoutOutlined,
@@ -15,10 +15,32 @@ function Header() {
   const location = useLocation();
   const navigate = useNavigate();
   const [menuOpen, setMenuOpen] = useState(false);
+  const [role, setRole] = useState("");
+  const [avatarUrl, setAvatarUrl] = useState("");
+
   const { isLoggedIn, username, logout } = useContext(AuthContext);
   const handleMenuClick = (e) => {
     console.log("click", e);
   };
+
+  useEffect(() => {
+    const storedUser = JSON.parse(localStorage.getItem("user"));
+    console.log("Stored User:", storedUser);
+    if (storedUser) {
+      setRole(storedUser.role);
+
+      // Kiểm tra nếu role là BIDDER hoặc BREEDER và chỉ đặt avatarUrl khi có đối tượng avatar hoặc logo
+      const avatarPath =
+        storedUser.role === "BIDDER" && storedUser.bidder
+          ? storedUser.bidder.avatar
+          : storedUser.role === "BREEDER" && storedUser.breeder
+          ? storedUser.breeder.logo
+          : null;
+
+      setAvatarUrl(avatarPath);
+      console.log("Avatar URL:", avatarPath); // Log URL để kiểm tra
+    }
+  }, []);
 
   const handleLogout = () => {
     logout();
@@ -37,12 +59,16 @@ function Header() {
       icon: <UserOutlined />,
       onClick: () => navigate("/profile"),
     },
-    {
-      label: "Wallet",
-      key: "2",
-      icon: <WalletOutlined />,
-      onClick: () => navigate("/wallet"),
-    },
+    ...(role === "BIDDER" || role === "BREEDER"
+      ? [
+          {
+            label: "Wallet",
+            key: "2",
+            icon: <WalletOutlined />,
+            onClick: () => navigate("/wallet"),
+          },
+        ]
+      : []),
     {
       label: "Logout",
       key: "3",
@@ -76,7 +102,7 @@ function Header() {
       {/* {`header ${isScroll ? "scroll" : ""}`} */}
       <div className="header-logo">
         <img
-          src="https://auctionkoi.com/images/auction_koi_logo.png"
+          src="https://firebasestorage.googleapis.com/v0/b/bidkoi-16827.appspot.com/o/spin-image%2Fauction_koi_logo.png?alt=media&token=61002108-7cad-4523-9ff3-b97a7e992c90"
           alt=""
           width={40}
           height={40}
@@ -117,6 +143,16 @@ function Header() {
                     </Button>
                   </Dropdown>
                 </div>
+                {/* Avatar or Logo */}
+                {role !== "STAFF" && (
+                  <div className="avatar-container">
+                    <Avatar
+                      src={avatarUrl}
+                      size={40}
+                      alt={role === "BIDDER" ? "User Avatar" : "Breeder Logo"}
+                    />
+                  </div>
+                )}
               </li>
             ) : (
               <>
@@ -145,6 +181,7 @@ function Header() {
           </div>
         </ul>
       </nav>
+
       <div className="menu-icon" onClick={toggleMenu}>
         <MenuOutlined />
       </div>

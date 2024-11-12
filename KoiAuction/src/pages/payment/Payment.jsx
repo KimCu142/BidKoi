@@ -1,4 +1,3 @@
-
 import { useEffect, useState } from "react";
 import api from "../../config/axios";
 import styles from "./index.module.scss";
@@ -7,7 +6,7 @@ import PropTypes from "prop-types";
 import { useNavigate } from "react-router-dom";
 
 function Payment({ auctionAmount, roomId }) {
-  const paymentAmount = Math.round(auctionAmount );
+  const paymentAmount = Math.round(auctionAmount);
   const [loading, setLoading] = useState(false);
   const [bidderId, setbidderId] = useState({});
   const navigate = useNavigate();
@@ -17,13 +16,13 @@ function Payment({ auctionAmount, roomId }) {
     }
   };
 
-useEffect(() => {
-  const storedUser = localStorage.getItem("user");
-  if (storedUser) {
-    const userData = JSON.parse(storedUser);
-   setbidderId(userData.bidder.id);
-  }
-}, []);
+  useEffect(() => {
+    const storedUser = localStorage.getItem("user");
+    if (storedUser) {
+      const userData = JSON.parse(storedUser);
+      setbidderId(userData.bidder.id);
+    }
+  }, []);
   const handleDeposit = async () => {
     try {
       const response = await api.post(
@@ -52,7 +51,9 @@ useEffect(() => {
         className={styles.paymentButton}
         disabled={loading}
       >
-        {loading ? "Đang xử lý..." : `Pay ${paymentAmount} VNĐ`}
+        {loading
+          ? "Đang xử lý..."
+          : `Pay ${paymentAmount.toLocaleString()} VNĐ`}
       </button>
       <p className={styles.participationInfo}>
         Get in the game! Your participation fee is just 20% of the initial bid

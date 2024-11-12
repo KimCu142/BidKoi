@@ -6,10 +6,27 @@ const apiKey = 'AIzaSyDiiyu9YFpObl9e8-zPW-JK8AyQHBk_Bw0';
 const genAI = new GoogleGenerativeAI(apiKey);
 const { TextArea } = Input;
 
-export default function ChatBot() {
+export default function ChatBot({
+    name,
+    initialPrice,
+    id,
+    rating,
+    sex,
+    length,
+    breeder,
+    age,
+    status,
+    endTime,
+    immediatePrice,
+}) {
     const [messages, setMessages] = useState([
-        { sender: 'User', content: 'Lô!' },
-        { sender: 'Bot', content: 'Xin chào! Tôi là Kim Cương, trợ lý của bạn trong phòng đấu giá cá Koi.Buổi đấu giá cá Koi này sẽ bắt đầu từ 6h30 ngày 14/10/2024 và kết thúc vào 20h ngày 15/10/2024. Hãy cho tôi biết nếu bạn cần hỗ trợ!' },
+        { sender: 'User', content: 'Xin Chào!' },
+        {
+            sender: 'Bot',
+            content: `Xin chào! Tôi là Kim Cương, trợ lý của bạn trong phòng đấu giá cá Koi. Buổi đấu giá cho cá Koi ${name} có giá khởi điểm là ${initialPrice} và giá mua ngay là ${immediatePrice}. 
+            Thông tin cá: Mã ID: ${id},Rating:${rating} Độ tuổi: ${age}, Giống: ${breeder}, Chiều dài: ${length}, Giới tính: ${sex}, Tình trạng: ${status}. Buổi đấu giá này sẽ kết thúc vào lúc ${endTime}.`
+        },
+
     ]);
     const [newMessage, setNewMessage] = useState('');
     const [typing, setTyping] = useState(false);
@@ -60,10 +77,15 @@ export default function ChatBot() {
     }
 
     return (
+
+        <div>
+
+      
         <div className='ChatBox' >
             <List
                 itemLayout="horizontal"
-                dataSource={messages}
+                dataSource={messages.filter((_, index) => index >= 2)} // Bỏ qua 2 tin nhắn đầu tiên
+
                 renderItem={(item) => (
                     <List.Item>
                         <List.Item.Meta
@@ -75,12 +97,17 @@ export default function ChatBot() {
                 )}
                 style={{ maxHeight: '600px', overflowY: 'auto', padding: '10px' }}
             />
+
+
             {typing && (
                 <div style={{ padding: '10px', color: '#999', textAlign: 'center' }}>
-                    Bot đang gõ...
+                    Bot typing...
                 </div>
             )}
-            <TextArea
+           
+        </div>
+        <TextArea
+
                 rows={3}
                 value={newMessage}
                 onChange={(e) => setNewMessage(e.target.value)}
@@ -93,7 +120,9 @@ export default function ChatBot() {
                 onClick={handleSend}
                 style={{ width: '100%', marginTop: '5px' }}
             >
-                Gửi
+
+                SEND
+
             </Button>
         </div>
     );

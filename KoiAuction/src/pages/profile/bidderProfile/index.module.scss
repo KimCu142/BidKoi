@@ -128,8 +128,7 @@
 .mainBox {
   display: grid;
   margin-top: 70px;
-  padding: 5rem 5rem;
-  background-color: #f0f0f0;
+  padding: 0 5rem;
   margin-left: 250px;
   height: 100vh;
   // animation: slideIn 0.6s ease forwards;
@@ -143,20 +142,6 @@
 }
 
 .profileBox {
-  .userId {
-    width: 500px;
-    height: 100px;
-    font-size: 24px;
-    background-color: #d4163c;
-    align-items: center;
-    color: white;
-    display: inline-flex;
-    border-radius: 24px;
-    padding: 9px 20px;
-    margin-right: 16px;
-    cursor: pointer;
-    font-weight: 600;
-  }
   .profileContainer {
     display: flex;
     background-color: white;
@@ -165,10 +150,11 @@
     width: 1100px;
     box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
 
-    .imageFields {
-      max-width: 300px;
-      flex-shrink: 0;
-      padding: 24px 15px;
+    .avatarTitle {
+      margin: 14px;
+      font-size: 16px;
+      font-weight: 600;
+      text-align: center;
     }
 
     .textlight {
@@ -182,6 +168,20 @@
       margin: 18px 14px;
       gap: 20px;
       width: 100%;
+
+      .avatarContainer {
+        grid-column: 1 / -1; // Chiếm toàn bộ chiều rộng của grid
+        display: flex;
+        justify-content: center;
+        align-items: center;
+      }
+
+      .logoContainer {
+        display: flex;
+        align-items: center;
+        gap: 20px;
+        flex-direction: column;
+      }
 
       .formLabel {
         font-size: 16px;
@@ -261,4 +261,17 @@
   align-items: center;
   justify-content: center;
   height: 100%;
+}
+
+.loadingOverlay {
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  background-color: rgba(0, 0, 0, 0.8);
+  z-index: 1000;
 }

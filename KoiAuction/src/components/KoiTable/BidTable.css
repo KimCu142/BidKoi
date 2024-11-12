@@ -22,7 +22,7 @@
     text-align: center;
     background-color: #e9eaed;
     font-size: larger;
-    height: 360px;
+    height: 100%;
 }
 
 .Bids {
@@ -50,3 +50,21 @@
     font-size: 14px;
     color: white;
 }
+
+.bidHeader, .bidEntry {
+    display: grid;
+    grid-template-columns: 1fr 1fr 1fr; /* Căn đều các cột */
+    gap: 10px;
+    padding: 5px 10px;
+    justify-items: center; /* Căn giữa theo chiều ngang cho các phần tử bên trong */
+    align-items: center; /* Căn giữa theo chiều dọc */
+    text-align: center; /* Căn giữa nội dung văn bản */
+  }
+  
+  .bidHeader {
+    border-bottom: 1px solid #ccc;
+    font-weight: bold;
+    justify-content: center;
+
+  }
+  

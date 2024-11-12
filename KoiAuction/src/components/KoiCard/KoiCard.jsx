@@ -36,12 +36,13 @@ const KoiCard = ({
   status,
   breeder,
   rating,
+  logo,
 }) => {
   return (
     <div className={styles.card}>
       {/* Use styles from the module */}
       <div className={styles["card-header"]}>
-        <img src="https://auctionkoi.com/images/kanno-logo.png" alt="Logo" />
+        <img src={logo} alt="Logo" />
         <img src={img} alt="KoiPic" />
 
         <div className={styles["section"]}>
@@ -88,8 +89,8 @@ const KoiCard = ({
             </svg>
             {status}
           </p>
-          <p className={styles.price}>▶${price}</p>
-        </div>
+          <p className={styles.price}>▶{price.toLocaleString()}VND</p>
+          </div>
       </div>
 
       <div className={styles["card-content2"]}>

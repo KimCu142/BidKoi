@@ -133,12 +133,9 @@ function BreederProfile({ accountId, token }) {
         `/breeder/update-profile/${accountId}`,
         updatedData
       );
-
       toast.success("Update successfully!");
-
       await fetchUserData();
       setIsEdit(false);
-
       setTimeout(() => {
         setIsUpdate(false); // Kết thúc loading sau 1 giây
       }, 1000);
@@ -215,31 +212,6 @@ function BreederProfile({ accountId, token }) {
 
   return (
     <>
-      <div className={styles.sidebar}>
-        <div className={styles.sidebarMenu}>
-          <ul>
-            <li>
-              <Link to="/profile" className={styles.active}>
-                <span className="las la-user"></span>
-                <span> Account</span>
-              </Link>
-            </li>
-            <li>
-              <Link to="/Password" className={styles.active}>
-                <span className="las la-lock"></span>
-                <span> Password</span>
-              </Link>
-            </li>
-            <li>
-              <Link to="/breeder-activities" className={styles.active}>
-                <span className="las la-fish"></span>
-                <span> Activities</span>
-              </Link>
-            </li>
-          </ul>
-        </div>
-      </div>
-
       <motion.div
         className={styles.mainBox}
         initial={{ opacity: 0 }}
@@ -253,39 +225,47 @@ function BreederProfile({ accountId, token }) {
           </div> */}
           <Form className={styles.profileContainer}>
             <div className={styles.formFields}>
-              <Form.Item name="logo">
-                <div className={styles.logoContainer}>
-                  <label className={styles.avatarTitle}>Logo</label>
-                  {previewImage && !isEdit ? (
-                    <Image
-                      src={previewImage}
-                      alt="Logo"
-                      style={{
-                        width: "150px",
-                        height: "150px",
-                        // borderRadius: "50%",
-                      }}
-                    />
-                  ) : (
-                    <Upload
-                      action="https://660d2bd96ddfa2943b33731c.mockapi.io/api/upload"
-                      listType="picture-circle"
-                      fileList={fileList}
-                      onPreview={handlePreview}
-                      onChange={handleChange}
-                      disabled={!isEdit}
-                      beforeUpload={() => false}
-                    >
-                      {fileList.length === 0 && isEdit ? uploadButton : null}
-                    </Upload>
-                  )}
-                </div>
-                {isEdit && (
-                  <div className={styles.textlight}>
-                    Allowed JPG, GIF or PNG.
+              {/* Avatar section */}
+              <div className={styles.avatarContainer}>
+                <Form.Item name="logo">
+                  <div className={styles.logoContainer}>
+                    <label className={styles.avatarTitle}>Logo</label>
+                    {previewImage && !isEdit ? (
+                      <Image
+                        src={previewImage}
+                        alt="Logo"
+                        style={{
+                          width: "150px",
+                          height: "150px",
+                          borderRadius: "50%",
+                        }}
+                      />
+                    ) : (
+                      <Upload
+                        action="https://660d2bd96ddfa2943b33731c.mockapi.io/api/upload"
+                        listType="picture-circle"
+                        fileList={fileList}
+                        onPreview={handlePreview}
+                        onChange={handleChange}
+                        disabled={!isEdit}
+                        beforeUpload={() => false}
+                        maxCount={1}
+                      >
+                        {/* Always show the upload button if no previewImage is available */}
+                        {!previewImage || fileList.length === 0
+                          ? uploadButton
+                          : null}
+                      </Upload>
+                    )}
                   </div>
-                )}
-              </Form.Item>
+                  {isEdit && (
+                    <div className={styles.textlight}>
+                      Allowed JPG, GIF or PNG.
+                    </div>
+                  )}
+                </Form.Item>
+              </div>
+
               <Form.Item className={styles.addressFields}>
                 <label className={styles.formLabel}>Address</label>
                 <TextArea
@@ -351,29 +331,21 @@ function BreederProfile({ accountId, token }) {
 
               <div className={styles.profileButton}>
                 <div className={styles.twoButton}>
-                  {isEdit ? (
-                    <>
-                      <motion.button
-                        className={styles.btn1}
-                        onClick={handleUpdate}
-                        whileHover={{ scale: 1.1 }}
-                        whileTap={{ scale: 0.9, y: -10 }}
-                      >
-                        Save changes
-                      </motion.button>
-
-                      <div onClick={handleReset} className={styles.btn2}>
-                        Reset
-                      </div>
-                    </>
-                  ) : (
-                    <div className={styles.btn1} onClick={handleEdit}>
-                      Edit
-                    </div>
+                  <motion.button
+                    className={styles.btn1}
+                    onClick={isEdit ? handleUpdate : handleEdit}
+                    whileHover={{ scale: 1.1 }}
+                  >
+                    {isEdit ? "Save changes" : "Edit"}
+                  </motion.button>
+                  {isEdit && (
+                    <motion.button
+                      className={styles.btn2}
+                      onClick={handleCancel}
+                    >
+                      Cancel
+                    </motion.button>
                   )}
-                  <div className={styles.btn2} onClick={handleCancel}>
-                    Cancel
-                  </div>
                 </div>
               </div>
             </div>

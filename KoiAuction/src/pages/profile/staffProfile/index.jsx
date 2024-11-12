@@ -11,6 +11,7 @@ import uploadAvatarFile from "../../../utils/avatarFile";
 import { Link } from "react-router-dom";
 import api from "../../../config/axios";
 import { motion } from "framer-motion";
+import SpinImage from "../../../components/spin/spin";
 const { Option } = Select;
 
 // Thay đổi đường dẫn tùy vào vị trí của utils/file
@@ -128,6 +129,10 @@ function StaffProfile({ accountId, token }) {
 
       toast.success("Update successfully!");
 
+      const storedUser = JSON.parse(localStorage.getItem("user"));
+      storedUser.staff = { ...storedUser.staff, ...updatedData };
+      localStorage.setItem("user", JSON.stringify(storedUser));
+
       // Cập nhật dữ liệu người dùng sau khi lưu thành công
       await fetchUserData();
       setIsEdit(false);
@@ -155,31 +160,6 @@ function StaffProfile({ accountId, token }) {
 
   return (
     <>
-      <div className={styles.sidebar}>
-        <div className={styles.sidebarMenu}>
-          <ul>
-            <li>
-              <Link to="/profile" className={styles.active}>
-                <span className="las la-user"></span>
-                <span> Account</span>
-              </Link>
-            </li>
-            <li>
-              <Link to="/Password" className={styles.active}>
-                <span className="las la-lock"></span>
-                <span> Password</span>
-              </Link>
-            </li>
-            <li>
-              <Link to="/staff-activities" className={styles.active}>
-                <span className="las la-fish"></span>
-                <span> Activities</span>
-              </Link>
-            </li>
-          </ul>
-        </div>
-      </div>
-
       <motion.div
         className={styles.mainBox}
         initial={{ opacity: 0 }}
@@ -223,14 +203,18 @@ function StaffProfile({ accountId, token }) {
               </Form.Item>
               <Form.Item>
                 <label className={styles.formLabel}>Gender</label>
-                <Input
-                  placeholder="Gender"
+                <Select
                   value={userData.gender}
-                  onChange={(e) =>
-                    setUserData({ ...userData, gender: e.target.value })
+                  onChange={(value) =>
+                    setUserData({ ...userData, gender: value })
                   }
                   disabled={!isEdit}
-                />
+                  className={styles.genderSelect}
+                >
+                  <Option value="Female">Female</Option>
+                  <Option value="Male">Male</Option>
+                  <Option value="Other">Other</Option>
+                </Select>
               </Form.Item>
               <Form.Item>
                 <label className={styles.formLabel}>Phone number</label>
@@ -280,35 +264,34 @@ function StaffProfile({ accountId, token }) {
 
               <div className={styles.profileButton}>
                 <div className={styles.twoButton}>
-                  {isEdit ? (
-                    <>
-                      <motion.button
-                        className={styles.btn1}
-                        onClick={handleUpdate}
-                        whileHover={{ scale: 1.1 }}
-                        whileTap={{ scale: 0.9, y: -10 }}
-                      >
-                        Save changes
-                      </motion.button>
-
-                      <div onClick={handleReset} className={styles.btn2}>
-                        Reset
-                      </div>
-                    </>
-                  ) : (
-                    <div className={styles.btn1} onClick={handleEdit}>
-                      Edit
-                    </div>
+                  <motion.button
+                    className={styles.btn1}
+                    onClick={isEdit ? handleUpdate : handleEdit}
+                    whileHover={{ scale: 1.1 }}
+                  >
+                    {isEdit ? "Save changes" : "Edit"}
+                  </motion.button>
+                  {isEdit && (
+                    <motion.button
+                      className={styles.btn2}
+                      onClick={handleCancel}
+                    >
+                      Cancel
+                    </motion.button>
                   )}
-                  <div className={styles.btn2} onClick={handleCancel}>
-                    Cancel
-                  </div>
                 </div>
               </div>
             </div>
           </Form>
         </div>
       </motion.div>
+      {/* Loading Spinner */}
+      {isUpdate && (
+        <div className={styles.loadingOverlay}>
+          {/* Sử dụng component spinner của bạn */}
+          <SpinImage />
+        </div>
+      )}
     </>
   );
 }

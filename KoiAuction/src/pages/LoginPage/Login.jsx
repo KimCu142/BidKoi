@@ -7,17 +7,56 @@ import {
 } from "@ant-design/icons";
 import { useContext, useState } from "react";
 import styles from "./Login.module.css"; // Importing CSS module
+import { getToken } from "firebase/messaging";
 
 import { Buffer } from "buffer";
 import api from "../../config/axios";
 import { AuthContext } from "../../components/AuthContext";
+import { messaging } from "../../config/firebase";
 window.Buffer = Buffer; // Polyfill Buffer in the browser
 
 const Login = () => {
-  const navigate = useNavigate(); // Hook useNavigate to handle navigation
+  const navigate = useNavigate();
   const { setIsLoggedIn, setUsername, setUserRole } = useContext(AuthContext);
   const [username, setUsernameInput] = useState("");
   const [password, setPassword] = useState("");
+
+  const registerServiceWorkerAndGetToken = async () => {
+    if ("serviceWorker" in navigator) {
+      try {
+        // Đăng ký service worker
+        const registration = await navigator.serviceWorker.register(
+          "/firebase-messaging-sw.js"
+        );
+        console.log(
+          "Service Worker đã đăng ký thành công với scope:",
+          registration.scope
+        );
+
+        // Lấy FCM token sau khi Service Worker đã đăng ký thành công
+        const fcmToken = await getToken(messaging, {
+          vapidKey:
+            "BOKHozavi944RIRKyTCxY52AsRMqtLpEKS0AWtw2uO2mxzGA2aGjVe6xhCicp8GFeaJmokptuMJgqq4Fqu-DLZ0",
+          serviceWorkerRegistration: registration,
+        });
+
+        if (fcmToken) {
+          console.log("FCM Token:", fcmToken);
+          // Gửi FCM token này lên server để lưu trữ
+          await api.post("account/save-fcm-token", { fcmToken });
+        } else {
+          console.warn("Không lấy được FCM token.");
+        }
+      } catch (error) {
+        console.error(
+          "Lỗi khi đăng ký Service Worker hoặc lấy FCM token:",
+          error
+        );
+      }
+    } else {
+      console.warn("Trình duyệt không hỗ trợ Service Worker.");
+    }
+  };
 
   const handleLogin = async (values) => {
     values.preventDefault();
@@ -31,6 +70,8 @@ const Login = () => {
       localStorage.setItem("role", data.role);
       console.log(data);
       message.success("Login successful!");
+
+      await registerServiceWorkerAndGetToken();
 
       // Update AuthContext with new login information
       setIsLoggedIn(true);
@@ -63,7 +104,7 @@ const Login = () => {
       <div className={styles.formContainer}>
         <div className={styles.col1}>
           <img
-            src="src\assets\LoginPic.jpg"
+            src="https://firebasestorage.googleapis.com/v0/b/bidkoi-16827.appspot.com/o/LoginPic.jpg?alt=media&token=ab8ea944-6265-4c30-b561-01db2b816095"
             alt="Koi Fish"
             className={styles.image}
           />

@@ -1,12 +1,6 @@
 import React, { useState } from "react";
-import {
-  DesktopOutlined,
-  FileOutlined,
-  PieChartOutlined,
-  TeamOutlined,
-  UserOutlined,
-} from "@ant-design/icons";
-import { Breadcrumb, Layout, Menu, theme } from "antd";
+import { PieChartOutlined } from "@ant-design/icons";
+import { Breadcrumb, Layout, Menu, theme, Button } from "antd";
 import { Outlet, useNavigate } from "react-router-dom";
 const { Header, Content, Footer, Sider } = Layout;
 function getItem(label, key, icon, children) {
@@ -44,6 +38,10 @@ const BreederDashboard = () => {
     navigate(`/breeder-dashboard/${e.key}`); // Navigate to the clicked route
   };
 
+  const handleBackToHome = () => {
+    navigate("/");
+  };
+
   return (
     <Layout
       style={{
@@ -67,10 +65,18 @@ const BreederDashboard = () => {
       <Layout>
         <Header
           style={{
-            padding: 0,
+            display: "flex",
+            justifyContent: "space-between",
+            alignItems: "center",
+            padding: "0 16px",
             background: colorBgContainer,
           }}
-        />
+        >
+          <h2>Breeder Dashboard</h2>
+          <Button type="link" onClick={handleBackToHome}>
+            Back to Home
+          </Button>
+        </Header>
         <Content
           style={{
             margin: "0 16px",

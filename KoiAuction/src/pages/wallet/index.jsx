@@ -1,80 +1,74 @@
-/* eslint-disable no-unused-vars */
 import React, { useEffect, useState } from "react";
 import { toast } from "react-toastify";
 import api from "../../config/axios";
 import useGetParams from "../../hooks/useGetParams";
+import styles from "./index.module.scss";
+import { motion } from "framer-motion";
+import Transactions from "../../components/Transactions/Transactions";
+import WithdrawRequestForm from "../../components/Withdraw/Requestwithdraw";
+import { Modal } from "antd";
 
 function Wallet() {
   const [balance, setBalance] = useState("");
   const [isLoading, setIsLoading] = useState(false);
   const [paymentUrl, setPaymentUrl] = useState("");
   const [currentBalance, setCurrentBalance] = useState(0);
+  const [showWithdrawModal, setShowWithdrawModal] = useState(false);
 
-  const params = useGetParams();
-  const vnp_TxnRef = params("vnp_TxnRef");
-  const vnp_ResponseCode = params("vnp_ResponseCode");
-  const vnp_Amount = params("vnp_Amount");
+  const denominations = [
+    { value: 1000000 },
+    { value: 3000000 },
+    { value: 5000000 },
+    { value: 10000000 },
+    { value: 15000000 },
+    { value: 20000000 },
+  ];
 
-  const LocalUser = localStorage.getItem('user');
-  const UserData=  JSON.parse(LocalUser);
-  const accountId= UserData.bidder.account.id;
-    console.log(accountId);
-   
+  const LocalUser = localStorage.getItem("user");
+  const UserData = JSON.parse(LocalUser);
 
+  // Kiểm tra role và lấy accountId tương ứng
+  let accountId = null;
+  if (UserData.role === "BIDDER" && UserData.bidder) {
+    accountId = UserData.bidder.account.id;
+  } else if (UserData.role === "BREEDER" && UserData.breeder) {
+    accountId = UserData.breeder.account.id;
+  }
+  console.log(accountId);
 
   const fetchBalance = async () => {
     try {
       const response = await api.get(`/wallet/view/${accountId}`);
+
       const { data } = response;
       if (data) {
         setCurrentBalance(data);
       } else {
-        console.log("Không lấy được số dư ví");
+        console.log("Failed to retrieve wallet balance");
       }
     } catch (error) {
-      console.log("Lỗi khi gọi API lấy số dư ví", error);
-    }
-  };
-
-  const handleVNPayCallback = async () => {
-    try {
-      const response = await api.get(`/wallet/vnpay-callback`, {
-        params: {
-          vnp_TxnRef: vnp_TxnRef,
-          vnp_ResponseCode: vnp_ResponseCode,
-          vnp_Amount: vnp_Amount,
-        },
-      });
-
-      if (response.data && response.data.includes("successfully")) {
-        toast.success({
-          message: "Nạp tiền thành công!",
-          description: "Số dư của bạn đã được cập nhật.",
-        });
-
-        await fetchBalance();
-      }
-    } catch (error) {
-      console.error("Lỗi khi gọi API callback", error);
-      toast.warning({
-        message: "Nạp tiền thất bại",
-        description: "Có lỗi xảy ra khi xử lý giao dịch. Vui lòng thử lại.",
-      });
+      console.log("Error fetching wallet balance", error);
     }
   };
 
   const handleRecharge = async () => {
-    if (!balance || isNaN(balance) || balance <= 0) {
-      toast.warning("Vui lòng nhập số tiền hợp lệ!");
+    const plainBalance = balance.replace(/,/g, "");
+
+    if (!plainBalance || isNaN(plainBalance) || plainBalance <= 0) {
+      toast.warning("Please enter a valid amount!");
       return;
     }
-    try {
-      setIsLoading(true);
 
+    if (parseFloat(plainBalance) > 20000000) {
+      toast.warning("The maximum top-up amount is 20,000,000 VND!");
+      return;
+    }
+
+    try {
       const response = await api.post(
         `/wallet/${accountId}`,
         {
-          balance: parseFloat(balance), // Gửi số tiền nạp trong request body
+          balance: parseFloat(plainBalance), // Gửi số tiền nạp trong request body
         },
         {
           headers: {
@@ -84,59 +78,133 @@ function Wallet() {
       );
 
       const { data } = response;
-      if (data && data.includes("https")) {
+      if (data.includes("https")) {
         setPaymentUrl(data);
-        window.location.href = data;
+        toast.info("Redirecting to VNPay...");
+        setTimeout(() => (window.location.href = data), 1000);
       } else {
-        console.log("Không lấy được URL thanh toán");
+        console.log("Failed to retrieve payment URL");
       }
     } catch (error) {
-      console.error("Lỗi khi gọi API nạp tiền", error);
-      toast.error("Có lỗi xảy ra khi nạp tiền. Vui lòng thử lại!");
+      console.error("Error calling top-up API", error);
+      toast.error("An error occurred during the top-up. Please try again!");
     } finally {
       setIsLoading(false);
     }
   };
 
+  const handleBalanceChange = (e) => {
+    const input = e.target.value.replace(/,/g, "");
+    if (!isNaN(input)) {
+      setBalance(Number(input).toLocaleString());
+    }
+  };
+
+  const selectDenomination = (value) => {
+    setBalance(value.toLocaleString());
+  };
+
   useEffect(() => {
     fetchBalance();
-
-    if (vnp_ResponseCode === "00") {
-      handleVNPayCallback();
-    }
-  }, [accountId, vnp_ResponseCode]);
+  }, [accountId]);
 
   return (
-    <>
-      <div>
-        <h2>Nạp tiền vào ví</h2>
+    <div className={styles.formContainer}>
+      <motion.div
+        className={styles.walletContainer}
+        initial={{ opacity: 0, y: -50 }}
+        animate={{ opacity: 1, y: 0 }}
+        transition={{ duration: 0.6, ease: "easeOut" }}
+      >
+        <h2 className={styles.title}>Top-up Wallet</h2>
 
-        <div>
-          <label>Số dư hiện tại trong ví: </label>
-          <strong>{currentBalance.balance} VND</strong>
+        <div className={styles.balance}>
+          <label>
+            Current wallet balance:{" "}
+            <strong>
+              {Number(currentBalance.balance).toLocaleString()} VND
+            </strong>
+          </label>
         </div>
-        <div>
-          <lable> Số tiền muốn nạp: </lable>
-          <input
-            type="number"
-            value={balance}
-            onChange={(e) => setBalance(e.target.value)}
-            placeholder="Nhập số tiền..."
+
+        <h3 className={styles.denominationTitle}>Choose Denomination</h3>
+        <div className={styles.denominationSelector}>
+          {denominations.map((denom) => (
+            <motion.button
+              key={denom.value}
+              onClick={() => selectDenomination(denom.value)}
+              className={styles.denominationButton}
+              whileHover={{ scale: 1.1, backgroundColor: "#b3d7ff" }}
+              whileTap={{ scale: 0.9 }}
+              transition={{ type: "spring", stiffness: 300 }}
+            >
+              {denom.value.toLocaleString()}đ
+            </motion.button>
+          ))}
+        </div>
+
+        <div className={styles.inputGroup}>
+          <label> Amount to top-up: </label>
+          <div className={styles.inputWithUnit}>
+            <input
+              className={styles.inputLabel}
+              type="text"
+              value={balance}
+              onChange={handleBalanceChange}
+              placeholder="Enter amount..."
+            />
+            <span className={styles.unit}>VND</span>
+          </div>
+        </div>
+
+        <motion.button
+          className={styles.button}
+          onClick={handleRecharge}
+          disabled={isLoading}
+          whileHover={{
+            scale: 1.05,
+            boxShadow: "0px 4px 15px rgba(0, 123, 255, 0.3)",
+          }}
+          whileTap={{ scale: 0.95 }}
+        >
+          {isLoading ? (
+            <span className={styles.loader}></span>
+          ) : (
+            "Top-up via VNPay"
+          )}
+        </motion.button>
+
+        <motion.button
+          onClick={() => setShowWithdrawModal(true)}
+          className={styles.button}
+          whileHover={{
+            scale: 1.05,
+            boxShadow: "0px 4px 15px rgba(0, 123, 255, 0.3)",
+          }}
+          whileTap={{ scale: 0.95 }}
+        >
+          Withdraw Funds
+        </motion.button>
+
+        <Modal
+          title="Withdraw Request"
+          visible={showWithdrawModal}
+          onCancel={() => setShowWithdrawModal(false)}
+          footer={null}
+          centered
+        >
+          <WithdrawRequestForm 
+            accountId={accountId} 
+            accountBalance={currentBalance.balance}
+            closeModal={() => setShowWithdrawModal(false)} // Truyền hàm đóng modal vào WithdrawRequestForm
           />
+        </Modal>
+
+        <div className={styles.transactionsinwallet}>
+       <Transactions accountId={accountId} />
         </div>
-
-        <button onClick={handleRecharge} disabled={isLoading}>
-          {isLoading ? "Đang xử lý..." : "Nạp tiền qua VNPay"}
-        </button>
-
-        {paymentUrl && (
-          <p>
-            Đang chuyển hướng tới VNPAY... Nếu không tự động chuyển, bạn có thể
-            nhấn <a href={paymentUrl}>vào đây</a> để thanh toán.
-          </p>
-        )}
-      </div>
-    </>
+      </motion.div>
+    </div>
   );
 }
 

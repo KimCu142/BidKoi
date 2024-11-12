@@ -67,7 +67,7 @@ const RegisterForm = () => {
       <div className={styles.formContainer}>
         <div className={styles.col1}>
           <img
-            src="src/assets/z5860878036591_6cfc2dede6582c487e0388ff75d9a13d.jpg"
+            src="https://firebasestorage.googleapis.com/v0/b/bidkoi-16827.appspot.com/o/LoginPic.jpg?alt=media&token=ab8ea944-6265-4c30-b561-01db2b816095"
             alt="Koi Fish"
             className={styles.image}
           />

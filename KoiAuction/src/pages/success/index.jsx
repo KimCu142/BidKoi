@@ -12,13 +12,11 @@ function SuccessPage() {
   const navigate = useNavigate();
 
   const transactionId = params("transactionId");
-  const vnp_TransactionStatus = params("vnp_TransactionStatus");
   const vnp_TxnRef = params("vnp_TxnRef");
   const vnp_ResponseCode = params("vnp_ResponseCode");
   const vnp_Amount = params("vnp_Amount");
 
   console.log("transactionId:", transactionId);
-  console.log("vnp_TransactionStatus:", vnp_TransactionStatus);
 
   const handleVNPayCallback = async () => {
     try {
@@ -29,29 +27,18 @@ function SuccessPage() {
           vnp_Amount: vnp_Amount,
         },
       });
-
-      if (response.data && response.data.includes("successfully")) {
-        toast.success("Nạp tiền thành công! Số dư của bạn đã được cập nhật.");
-      } else {
-        throw new Error("Giao dịch không thành công");
-      }
     } catch (error) {
       console.error("Lỗi khi gọi API callback", error);
-      toast.warning({
-        message: "Nạp tiền thất bại",
-        description: "Có lỗi xảy ra khi xử lý giao dịch. Vui lòng thử lại.",
-      });
     }
   };
 
   useEffect(() => {
     if (vnp_ResponseCode === "00") {
-      handleVNPayCallback(); // Gọi API nếu giao dịch thành công
+      handleVNPayCallback();
+      toast.success("Top-up successful! Your balance has been updated");
     } else {
-      toast.error({
-        message: "Thanh toán thất bại",
-        description: "Giao dịch không thành công. Vui lòng thử lại!",
-      });
+      handleVNPayCallback();
+      toast.error("Top-up fail! Please try again.");
       navigate("/fail");
     }
   }, [vnp_ResponseCode]);

@@ -1,11 +1,10 @@
-/. body {
-  background: linear-gradient(rgba(255, 255, 255, 0.5),
-      rgba(255, 255, 255, 0.5)),
-    url("D:\Ky5\BidKoi-FE-New\BidKoi\KoiAuction\src\assets\maybay.png");
+body {
+  background: url("https://firebasestorage.googleapis.com/v0/b/bidkoi-16827.appspot.com/o/main-background.png?alt=media&token=a4c0bd1f-f36f-49e8-8390-dd447662cc4d");
 
   background-size: cover;
   background-position: center;
   background-blend-mode: overlay;
+  background-color: rgba(254, 254, 254, 0.4);
 }
 
 .appLayout {
@@ -16,7 +15,6 @@
 
 .contentWrapper {
   flex: 1;
-  padding: 20px;
 }
 
 .siteFooter {
