@@ -85,6 +85,7 @@ function Transactions({ accountId }) {
                         <Select.Option value="REFUND">REFUND</Select.Option>
                         <Select.Option value="DEPOSIT">DEPOSIT</Select.Option>
                         <Select.Option value="ADD_MONEY">ADD_MONEY</Select.Option>
+                        <Select.Option value="WITHDRAW">WITHDRAW</Select.Option>
                     </Select>
                 ) : (
                     <Input
