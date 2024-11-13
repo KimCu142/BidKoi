@@ -27,7 +27,7 @@ const userSchema = yup.object().shape({
   username: yup
     .string()
     .required("Username is required")
-    .min(8, "Username must be at least 8 characters")
+    .min(5, "Username must be at least 5 characters")
     .max(16, "Username cannot be longer than 16 characters")
     .matches(
       /^[a-zA-Z0-9]+$/,
@@ -104,7 +104,7 @@ function Form() {
       }}
     >
       <CustomTitle
-        title="CREATE STAFF ACCOUNT"
+        title="CREATE BREEDER/STAFF ACCOUNT"
         subtitle="Create a New Breeder/Staff Profile"
       />
       <Formik

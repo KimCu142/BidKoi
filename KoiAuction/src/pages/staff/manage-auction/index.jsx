@@ -30,11 +30,13 @@ const Auction = () => {
   const fetchAuctions = async () => {
     try {
       const response = await api.get("/auction");
-      const auctionData = response.data.map((auction) => ({
-        ...auction,
-        startTime: auction.startTime ? moment(auction.startTime) : null,
-        endTime: auction.endTime ? moment(auction.endTime) : null,
-      }));
+      const auctionData = response.data
+        .map((auction) => ({
+          ...auction,
+          startTime: auction.startTime ? moment(auction.startTime) : null,
+          endTime: auction.endTime ? moment(auction.endTime) : null,
+        }))
+        .sort((a, b) => b.auctionId - a.auctionId);
 
       const allRooms = auctionData.flatMap((auction) => auction.rooms || []);
       setAllAuctionRooms(allRooms);
@@ -119,7 +121,8 @@ const Auction = () => {
         prevRooms.filter((r) => r.roomId !== room.roomId)
       );
       toast.success("Room added successfully!");
-      setOpenRoomModal(false); // Close the room modal after adding
+      setOpenRoomModal(false);
+      fetchAuctions();
     } catch (error) {
       toast.error("Failed to add room to auction");
     }
@@ -127,9 +130,7 @@ const Auction = () => {
 
   const handleRemoveRoom = async (room) => {
     try {
-      await api.delete(
-        `/auction/${selectedAuction.auctionId}/room/${room.roomId}`
-      );
+      await api.put(`/auction/remove/${room.roomId}`);
       setSelectedRooms((prevSelected) =>
         prevSelected.filter((r) => r.roomId !== room.roomId)
       );
@@ -138,6 +139,7 @@ const Auction = () => {
       );
       setRooms((prevRooms) => [...prevRooms, room]);
       toast.info("Room removed successfully");
+      fetchAuctions();
     } catch (error) {
       toast.error("Failed to remove room");
     }
@@ -203,8 +205,6 @@ const Auction = () => {
       toast.error("Failed to end auction or rollback transaction");
     }
   };
-  
-
 
   const statusColors = {
     PENDING: "#d9d9d9",
@@ -230,10 +230,32 @@ const Auction = () => {
       ),
     },
     {
+      title: "Status",
+      dataIndex: "status",
+      key: "status",
+      render: (status) => {
+        let color;
+        switch (status) {
+          case "PENDING":
+            color = "#d9d9d9";
+            break;
+          case "ACTIVE":
+            color = "#52c41a";
+            break;
+          case "CLOSED":
+            color = "#ff4d4f";
+            break;
+        }
+        return <span style={{ color, fontWeight: "bold" }}>{status}</span>;
+      },
+    },
+
+    {
       title: "Auction Id",
       dataIndex: "auctionId",
       key: "auctionId",
       render: (text) => `#${text}`,
+      sorter: (a, b) => new Date(b.auctionId) - new Date(a.auctionId),
     },
     {
       title: "Start Time",

@@ -7,7 +7,7 @@ import {
   MailOutlined,
   PhoneOutlined,
 } from "@ant-design/icons";
-import { Button, Input, Space, Tooltip, message } from "antd";
+import { Button, Input, Space, Tooltip, message, Form } from "antd";
 import { useState } from "react";
 import axios from "axios";
 import styles from "./Login.module.css"; // Importing CSS module
@@ -16,14 +16,11 @@ const RegisterForm = () => {
   const navigate = useNavigate(); // Hook useNavigate to navigate
 
   // State for form inputs
-  const [username, setUsername] = useState("");
   const [password, setPassword] = useState("");
   const [confirmPassword, setConfirmPassword] = useState("");
-  const [email, setEmail] = useState("");
-  const [phone, setPhoneNumber] = useState("");
 
-  const handleRegister = async (e) => {
-    e.preventDefault();
+  const handleRegister = async (values) => {
+    const { username, email, phone, password, confirmPassword } = values;
 
     if (password !== confirmPassword) {
       message.error("Passwords do not match!");
@@ -75,107 +72,163 @@ const RegisterForm = () => {
 
         <div className={`${styles.col2} ${styles.glass2}`}>
           <p className={styles.loginWords}>Create an Account!</p>
-          <form
+          <Form
             className={`${styles.loginForm} ${styles.glass}`}
-            onSubmit={handleRegister}
+            onFinish={handleRegister}
+            layout="vertical"
+            style={{ maxWidth: "540px" }}
           >
             {/* Username Input */}
-            <Input
-              placeholder="Enter your username"
-              prefix={<UserOutlined style={{ color: "rgba(0,0,0,.25)" }} />}
-              required
-              className={styles.formItem} // Using the CSS module class
-              value={username}
-              onChange={(e) => setUsername(e.target.value)}
-              style={{ width: "500px", height: "48px" }} // Adjust size to match Login
-              suffix={
-                <Tooltip title="Ngọc Thảo xin chào cả nhà :> !">
-                  <InfoCircleOutlined
-                    style={{
-                      color: "rgba(0,0,0,.45)",
-                    }}
-                  />
-                </Tooltip>
-              }
-            />
-
-            <br />
-            <br />
+            <Form.Item
+              name="username"
+              rules={[
+                {
+                  required: true,
+                  message: "Please enter your username!",
+                },
+                {
+                  min: 8,
+                  max: 16,
+                  message: "Username must be between 8 and 16 characters!",
+                },
+              ]}
+            >
+              <Input
+                placeholder="Enter your username"
+                prefix={<UserOutlined style={{ color: "rgba(0,0,0,.25)" }} />}
+                className={styles.formItem} // Using the CSS module class
+                suffix={
+                  <Tooltip title="Ngọc Thảo xin chào cả nhà :> !">
+                    <InfoCircleOutlined
+                      style={{
+                        color: "rgba(0,0,0,.45)",
+                      }}
+                    />
+                  </Tooltip>
+                }
+                style={{ width: "500px", height: "48px" }} // Adjust size to match Login
+              />
+            </Form.Item>
 
             {/* Email Input */}
-            <Input
-              placeholder="Enter your email"
-              prefix={<MailOutlined style={{ color: "rgba(0,0,0,.25)" }} />}
-              required
-              type="email"
-              className={styles.formItem} // Using the CSS module class
-              value={email}
-              onChange={(e) => setEmail(e.target.value)}
-              style={{ width: "500px", height: "48px" }} // Adjust size to match Login
-            />
-
-            <br />
-            <br />
+            <Form.Item
+              name="email"
+              rules={[
+                {
+                  required: true,
+                  message: "Please enter your email!",
+                },
+                {
+                  type: "email",
+                  message: "Please enter a valid email!",
+                },
+              ]}
+            >
+              <Input
+                placeholder="Enter your email"
+                prefix={<MailOutlined style={{ color: "rgba(0,0,0,.25)" }} />}
+                className={styles.formItem}
+                style={{ width: "500px", height: "48px" }}
+              />
+            </Form.Item>
 
             {/* Phone Number Input */}
-            <Input
-              placeholder="Enter your phone number"
-              prefix={<PhoneOutlined style={{ color: "rgba(0,0,0,.25)" }} />}
-              required
-              type="tel"
-              className={styles.formItem} // Using the CSS module class
-              value={phone}
-              onChange={(e) => setPhoneNumber(e.target.value)}
-              style={{ width: "500px", height: "48px" }} // Adjust size to match Login
-            />
-
-            <br />
-            <br />
+            <Form.Item
+              name="phone"
+              rules={[
+                {
+                  required: true,
+                  message: "Please enter your phone number!",
+                },
+                {
+                  pattern: /^0\d{9}$/,
+                  message: "Phone number must be 10 digits and start with 0!",
+                },
+              ]}
+            >
+              <Input
+                placeholder="Enter your phone number"
+                prefix={<PhoneOutlined style={{ color: "rgba(0,0,0,.25)" }} />}
+                className={styles.formItem}
+                style={{ width: "500px", height: "48px" }}
+              />
+            </Form.Item>
 
             {/* Password inputs with visibility toggle */}
-            <Space direction="vertical" size="large" style={{ width: "100%" }}>
+            <Form.Item
+              name="password"
+              rules={[
+                {
+                  required: true,
+                  message: "Please enter your password!",
+                },
+                {
+                  min: 8,
+                  max: 32,
+                  message: "Password must be between 8 and 32 characters!",
+                },
+                {
+                  pattern: /^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)(?=.*[!@#$%^&*]).+$/,
+                  message:
+                    "Password must contain at least one uppercase letter, one lowercase letter, one number, and one special character!",
+                },
+              ]}
+            >
               <Input.Password
                 placeholder="Enter your password"
                 iconRender={(visible) =>
                   visible ? <EyeTwoTone /> : <EyeInvisibleOutlined />
                 }
-                required
-                className={styles.formItem} // Using the CSS module class
-                value={password}
+                className={styles.formItem}
                 onChange={(e) => setPassword(e.target.value)}
-                style={{ width: "500px", height: "48px" }} // Adjust size to match Login
+                style={{ width: "500px", height: "48px" }}
               />
+            </Form.Item>
+
+            <Form.Item
+              name="confirmPassword"
+              rules={[
+                {
+                  required: true,
+                  message: "Please confirm your password!",
+                },
+                {
+                  validator: (_, value) =>
+                    value === password
+                      ? Promise.resolve()
+                      : Promise.reject("Passwords do not match!"),
+                },
+              ]}
+            >
               <Input.Password
                 placeholder="Confirm your password"
                 iconRender={(visible) =>
                   visible ? <EyeTwoTone /> : <EyeInvisibleOutlined />
                 }
-                required
-                className={styles.formItem} // Using the CSS module class
-                value={confirmPassword}
+                className={styles.formItem}
                 onChange={(e) => setConfirmPassword(e.target.value)}
-                style={{ width: "500px", height: "48px" }} // Adjust size to match Login
+                style={{ width: "500px", height: "48px" }}
               />
-            </Space>
-            <br />
-            <br />
+            </Form.Item>
 
             {/* Register Button */}
-            <Button
-              type="primary"
-              block
-              htmlType="submit"
-              className={styles.formItem}
-            >
-              Register
-            </Button>
-          </form>
+            <Form.Item>
+              <Button
+                type="primary"
+                block
+                htmlType="submit"
+                className={styles.formItem}
+              >
+                Register
+              </Button>
+            </Form.Item>
+          </Form>
 
           <p className={styles.registerLink}>
             Already have an account?{" "}
             <span
               className={styles.registerLinkText}
-              onClick={() => navigate("/Login")} // Navigate to Login page
+              onClick={() => navigate("/Login")}
               style={{ cursor: "pointer" }}
             >
               Login

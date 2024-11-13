@@ -1,4 +1,3 @@
-
 /* eslint-disable react-hooks/exhaustive-deps */
 /* eslint-disable no-unused-vars */
 import React, { useEffect, useState } from "react";
@@ -27,7 +26,6 @@ function Wallet() {
   const LocalUser = localStorage.getItem("user");
   const UserData = JSON.parse(LocalUser);
 
-
   // Kiểm tra role và lấy accountId tương ứng
   let accountId = null;
   if (UserData.role === "BIDDER" && UserData.bidder) {
@@ -36,7 +34,6 @@ function Wallet() {
     accountId = UserData.breeder.account.id;
   }
   console.log(accountId);
-
 
   const fetchBalance = async () => {
     try {
@@ -59,9 +56,7 @@ function Wallet() {
     if (!plainBalance || isNaN(plainBalance) || plainBalance <= 0) {
       toast.warning("Please enter a valid amount!");
       return;
-
     }
-
 
     if (parseFloat(plainBalance) > 20000000) {
       toast.warning("The maximum top-up amount is 20,000,000 VND!");
@@ -71,11 +66,8 @@ function Wallet() {
     try {
       setIsLoading(true);
 
-
-    try {
       const response = await api.post(
         `/wallet/${accountId}`,
-
         {
           balance: parseFloat(plainBalance), // Gửi số tiền nạp trong request body
         },
@@ -84,7 +76,6 @@ function Wallet() {
             "Content-Type": "application/json",
           },
         }
-
       );
 
       const { data } = response;
@@ -98,7 +89,6 @@ function Wallet() {
     } catch (error) {
       console.error("Error calling top-up API", error);
       toast.error("An error occurred during the top-up. Please try again!");
-
     } finally {
       setIsLoading(false);
     }
@@ -185,8 +175,7 @@ function Wallet() {
           )}
         </motion.button>
       </motion.div>
-  <Transactions accountId={accountId} />
-
+      <Transactions accountId={accountId} />
     </div>
   );
 }

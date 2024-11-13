@@ -52,7 +52,7 @@ function BreederPayment({ koiRequestAmount, handlePayment }) {
   const handleCreateKoiRequest = async () => {
     if (walletBalance < paymentAmount) {
       console.log("Số dư hiện tại:", walletBalance);
-      toast.error("Số dư của bạn không đủ. Vui lòng nạp thêm để tiếp tục.");
+      toast.error("Your balance is insufficient. Please top up to continue.");
       return;
     }
 
@@ -66,14 +66,13 @@ function BreederPayment({ koiRequestAmount, handlePayment }) {
         console.log(
           "Yêu cầu đấu giá Koi đã được tạo thành công và tiền đã bị trừ."
         );
-        toast.success("Yêu cầu đấu giá đã được tạo thành công!");
+        console.log("The Koi request has been created successfully!");
         handlePayment();
       } else {
         console.error("Có lỗi xảy ra khi tạo yêu cầu đấu giá Koi.");
       }
     } catch (error) {
       console.error("Lỗi khi gọi API:", error);
-      toast.error("Có lỗi xảy ra khi tạo yêu cầu đấu giá Koi.");
     } finally {
       setLoading(false);
     }

@@ -54,11 +54,14 @@ function BreederRequest() {
   const [userData, setUserData] = useState("");
   const [isResubmit, setIsResubmit] = useState(false);
 
-  useEffect(() => {
-    try {
-      // Lấy dữ liệu từ localStorage
-      const storedUser = localStorage.getItem("user");
+  const formatNumber = (value) => {
+    return value.toString().replace(/\B(?=(\d{3})+(?!\d))/g, ",");
+  };
 
+  useEffect(() => {
+    // Lấy dữ liệu từ localStorage
+    try {
+      const storedUser = localStorage.getItem("user");
       if (storedUser) {
         setUserData(JSON.parse(storedUser));
       }
@@ -68,7 +71,7 @@ function BreederRequest() {
   }, []);
 
   useEffect(() => {
-
+    // Cập nhật giá trị immediatePrice khi multiplierOption hoặc giá thay đổi
     const initialPrice = form.getFieldValue("initialPrice")?.replace(/,/g, "");
     if (
       initialPrice &&
@@ -82,20 +85,20 @@ function BreederRequest() {
     } else {
       form.setFieldsValue({ immediatePrice: null });
     }
-  }, [multiplierOption]);
+  }, [multiplierOption, form]); // Thêm form vào dependency để đảm bảo form không bị thay đổi ngoài ý muốn
 
+  useEffect(() => {
+    // Fetch dữ liệu breeder khi userData có accountId
     const fetchBreederData = async () => {
       try {
         const accountId = userData?.breeder?.account?.id;
-
         if (accountId) {
           const response = await api.get(`/breeder/profile/${accountId}`);
-          const userData = response.data;
-
-          if (userData && userData.name) {
-            setBreeders(userData.name);
-            setBreederId(userData.breederID);
-            console.log("Breeder Name:", userData.name);
+          const breederData = response.data;
+          if (breederData?.name) {
+            setBreeders(breederData.name);
+            setBreederId(breederData.breederID);
+            console.log("Breeder Data:", breederData);
           }
         } else {
           console.error("Account ID is not available.");
@@ -110,30 +113,24 @@ function BreederRequest() {
     }
   }, [userData]);
 
-  useEffect(() => {
-    if (breederId) {
-      fetchKoiAndBreeder(breederId);
-    }
-  }, [breederId]);
-
-
-
   const handlePayment = () => {
+    // Xử lý sau khi thanh toán
     setIsPaymentModal(false);
-    setIsResubmit(false); // Đặt lại trạng thái sau khi thanh toán
-    setSelectedKoi(null); // Reset selectedKoi để không ảnh hưởng đến các lần tạo mới
+    setIsResubmit(false);
+    setSelectedKoi(null);
     form.submit();
   };
 
   const handleOk = () => {
+    // Xử lý khi nhấn OK
     form
       .validateFields()
       .then((values) => {
         const numericPrice = parseFloat(values.initialPrice.replace(/,/g, ""));
         if (isResubmit || !selectedKoi) {
-          setPaymentAmount(Math.round(numericPrice) * 0.5); // Tính số tiền thanh toán
-          setIsPaymentModal(true); // Mở modal thanh toán cho cả Resubmit và Create New Request
-          setIsResubmit(false); 
+          setPaymentAmount(Math.round(numericPrice * 0.5)); // Tính số tiền thanh toán
+          setIsPaymentModal(true);
+          setIsResubmit(false);
           setSelectedKoi(null);
         } else {
           form.submit();
@@ -145,22 +142,30 @@ function BreederRequest() {
   };
 
   const handleCancelPayment = () => {
+    // Huỷ modal thanh toán
     setIsPaymentModal(false);
-    setIsResubmit(false); // Reset isResubmit để không ảnh hưởng đến các lần tạo mới
-    setSelectedKoi(null); // Reset selectedKoi để không ảnh hưởng đến các lần tạo mới
+    setIsResubmit(false);
+    setSelectedKoi(null);
   };
+
+  useEffect(() => {
+    if (breederId) {
+      fetchKoiAndBreeder(breederId);
+    }
+  }, [breederId]);
 
   const fetchKoiAndBreeder = async (breederId) => {
+    console.log("Breeder ID:", breederId);
     try {
       const koiResponse = await api.get(`/koi/breeder/${breederId}`);
-      setKois(koiResponse.data);
+      const sortedKois = koiResponse.data.sort(
+        (a, b) => new Date(b.koiId) - new Date(a.koiId)
+      );
+      setKois(sortedKois);
     } catch (error) {
       console.error("Error fetching koi data:", error);
-      // Thêm logic xử lý lỗi nếu cần
     }
   };
-
-
 
   const getJapaneseAge = (age) => {
     age = Number(age);
@@ -188,7 +193,7 @@ function BreederRequest() {
 
   const columns = [
     {
-      title: "",
+      title: "Status",
       dataIndex: "status",
       key: "status",
       render: (status) => (
@@ -207,6 +212,7 @@ function BreederRequest() {
       title: "Koi Id",
       dataIndex: "koiId",
       key: "koiId",
+      sorter: (a, b) => new Date(b.koiId) - new Date(a.koiId),
     },
     {
       title: "Koi Name",
@@ -227,7 +233,13 @@ function BreederRequest() {
       key: "initialPrice",
       render: (price) => `${price.toLocaleString()} VNĐ`, // Định dạng số với dấu chấm
     },
-
+    {
+      title: "Immediate price",
+      dataIndex: "immediatePrice",
+      key: "immediatePrice",
+      render: (immediatePrice) =>
+        immediatePrice ? `${Number(immediatePrice).toLocaleString()} VNĐ` : "-",
+    },
     {
       title: "Detail",
       key: "detail",
@@ -281,7 +293,6 @@ function BreederRequest() {
         } else if (status === "REJECTED") {
           // Khi trạng thái là "REJECTED", chỉ hiển thị nút "Resubmit"
           return (
-
             <Button
               type="link"
               style={{ color: "darkviolet", fontWeight: "600" }}
@@ -314,6 +325,9 @@ function BreederRequest() {
       ...newKoiData,
       breeder: breeders,
       initialPrice: formatNumber(newKoiData.initialPrice),
+      immediatePrice: newKoiData.immediatePrice
+        ? `${newKoiData.immediatePrice.toLocaleString()} VNĐ`
+        : null, // Sử dụng giá trị từ dữ liệu đã lưu
     });
 
     // Đặt lại fileList và videoFileList cho ảnh và video từ rejectedKoi
@@ -336,10 +350,6 @@ function BreederRequest() {
     setOpenEditModal(true);
   };
 
-  const formatNumber = (value) => {
-    return value.toString().replace(/\B(?=(\d{3})+(?!\d))/g, ",");
-  };
-
   //Open Create
   const handleOpenCreateModal = () => {
     setSelectedKoi(null);
@@ -356,10 +366,14 @@ function BreederRequest() {
 
     // Cập nhật `selectedKoi` và thiết lập giá trị cho form
     setSelectedKoi(koiData);
+    const formattedInitialPrice = formatNumber(koiRequest.initialPrice);
     form.setFieldsValue({
       ...koiData,
       breeder: koiRequest.breeder.name,
-      initialPrice: formatNumber(koiRequest.initialPrice),
+      initialPrice: formattedInitialPrice,
+      immediatePrice: koiRequest.immediatePrice
+        ? `${koiRequest.immediatePrice.toLocaleString()} VNĐ`
+        : null, // Sử dụng giá trị từ dữ liệu đã lưu
     });
 
     // Đặt lại fileList cho ảnh từ koiRequest
@@ -431,12 +445,19 @@ function BreederRequest() {
       kois.status = "PENDING"; // Mặc định "PENDING" cho các trường hợp khác
     }
 
-    kois.initialPrice = kois.initialPrice.replace(/,/g, "");
+    kois.initialPrice = parseInt(kois.initialPrice.replace(/,/g, ""), 10);
 
     const immediatePrice = form.getFieldValue("immediatePrice");
-    kois.immediatePrice = immediatePrice
-      ? immediatePrice.replace(/ VNĐ/g, "")
-      : null;
+
+    // Cập nhật giá trị immediatePrice nếu `multiplierOption` không phải là "null"
+    if (multiplierOption !== "null") {
+      const multiplier = parseInt(multiplierOption.replace("x", ""), 10);
+      kois.immediatePrice = multiplier * kois.initialPrice;
+    } else {
+      kois.immediatePrice = 0; // Giá trị mặc định nếu không chọn multiplier
+    }
+
+    console.log("Payload trước khi gửi:", kois);
 
     try {
       setLoading(true);
@@ -621,6 +642,9 @@ function BreederRequest() {
               <strong>Age:</strong> {selectedKoi.age} years
             </p>
             <p>
+              <strong>Breeder:</strong> {selectedKoi.breeder.name}
+            </p>
+            <p>
               <strong>Description:</strong> {selectedKoi.description}
             </p>
             <p>
@@ -647,11 +671,15 @@ function BreederRequest() {
         width={1000}
       >
         <h2 className={styles.koiTitle}>Basic Information</h2>
-        <Form form={form} onFinish={(values) => {
-          handleSubmitKoi(values);
-          setIsResubmit(false); // Reset isResubmit để không ảnh hưởng đến các lần tạo mới
-          setSelectedKoi(null); // Reset selectedKoi sau khi submit
-        }} labelCol={{ span: 24 }}>
+        <Form
+          form={form}
+          onFinish={(values) => {
+            handleSubmitKoi(values);
+            setIsResubmit(false); // Reset isResubmit để không ảnh hưởng đến các lần tạo mới
+            setSelectedKoi(null); // Reset selectedKoi sau khi submit
+          }}
+          labelCol={{ span: 24 }}
+        >
           <div className={styles.koiInfo}>
             <Form.Item name="status" initialValue={0} hidden>
               <Input type="hidden" />
@@ -660,12 +688,12 @@ function BreederRequest() {
               label="KoiID"
               name="koiId"
               hidden
-            // rules={[
-            //   {
-            //     required: true,
-            //     message: "Please enter KoiID",
-            //   },
-            // ]}
+              // rules={[
+              //   {
+              //     required: true,
+              //     message: "Please enter KoiID",
+              //   },
+              // ]}
             >
               <Input />
             </Form.Item>
@@ -807,6 +835,21 @@ function BreederRequest() {
                 placeholder="Select immediate price option"
                 onChange={(value) => {
                   setMultiplierOption(value);
+                  if (value === "null") {
+                    form.setFieldsValue({ immediatePrice: 0 });
+                  } else {
+                    const initialPrice = form
+                      .getFieldValue("initialPrice")
+                      ?.replace(/,/g, "");
+                    if (initialPrice && !isNaN(parseFloat(initialPrice))) {
+                      const multiplier = parseInt(value.replace("x", ""), 10);
+                      const calculatedPrice =
+                        (
+                          multiplier * parseFloat(initialPrice)
+                        ).toLocaleString() + " VNĐ";
+                      form.setFieldsValue({ immediatePrice: calculatedPrice });
+                    }
+                  }
                 }}
               >
                 <Option value="null">No immediate price</Option>
@@ -955,7 +998,6 @@ function BreederRequest() {
             </motion.div>
           </div>
         )}
-
       </Modal>
 
       {previewImage && (

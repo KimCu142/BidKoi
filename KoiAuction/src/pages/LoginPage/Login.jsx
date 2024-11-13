@@ -24,16 +24,22 @@ const Login = () => {
   const registerServiceWorkerAndGetToken = async () => {
     if ("serviceWorker" in navigator) {
       try {
-        // Đăng ký service worker
-        const registration = await navigator.serviceWorker.register(
-          "/firebase-messaging-sw.js"
-        );
+        // Kiểm tra và yêu cầu quyền thông báo
+        const permission = await Notification.requestPermission();
+        if (permission !== "granted") {
+          console.warn("Notification permission not granted.");
+          return;
+        }
+
+        // Sử dụng service worker đã đăng ký sẵn để lấy token
+        const registration = await navigator.serviceWorker.ready;
+
         console.log(
-          "Service Worker đã đăng ký thành công với scope:",
+          "Using registered Service Worker with scope:",
           registration.scope
         );
 
-        // Lấy FCM token sau khi Service Worker đã đăng ký thành công
+        // Lấy FCM token sau khi Service Worker đã được đăng ký trước đó
         const fcmToken = await getToken(messaging, {
           vapidKey:
             "BOKHozavi944RIRKyTCxY52AsRMqtLpEKS0AWtw2uO2mxzGA2aGjVe6xhCicp8GFeaJmokptuMJgqq4Fqu-DLZ0",
@@ -43,7 +49,21 @@ const Login = () => {
         if (fcmToken) {
           console.log("FCM Token:", fcmToken);
           // Gửi FCM token này lên server để lưu trữ
-          await api.post("account/save-fcm-token", { fcmToken });
+          const response = await api.patch(
+            "/account/fcm",
+            { fcmToken },
+            {
+              headers: {
+                "Content-Type": "application/json",
+              },
+            }
+          );
+
+          if (response.status === 200) {
+            console.log("Token đã được lưu thành công trên BE.");
+          } else {
+            console.warn("Có lỗi xảy ra khi lưu token trên BE.");
+          }
         } else {
           console.warn("Không lấy được FCM token.");
         }
@@ -65,13 +85,17 @@ const Login = () => {
       const response = await api.post("account/login", { username, password });
       const data = response.data;
 
+      if (data.role === "BANNED") {
+        message.error(`You are banned: ${data.description}`);
+        console.error("Login error:", data.description);
+        return;
+      }
+
       localStorage.setItem("token", data.token);
       localStorage.setItem("user", JSON.stringify(data));
       localStorage.setItem("role", data.role);
       console.log(data);
       message.success("Login successful!");
-
-      await registerServiceWorkerAndGetToken();
 
       // Update AuthContext with new login information
       setIsLoggedIn(true);
@@ -80,13 +104,7 @@ const Login = () => {
 
       navigate("/");
 
-      // if (data.role === "STAFF") {
-      //   navigate("/staff-dashboard");
-      // } else if (data.role === "BREEDER") {
-      //   navigate("/breeder-dashboard");
-      // } else {
-      //   navigate("/");
-      // }
+      await registerServiceWorkerAndGetToken();
     } catch (error) {
       if (error.response) {
         const errorMessage = error.response.data.message;
