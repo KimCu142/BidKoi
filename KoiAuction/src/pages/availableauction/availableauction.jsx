@@ -49,7 +49,7 @@ function AvailableAuction() {
       const endTime = new Date(auctionData.endTime).getTime();
   const auctionId = auctionData.auctionId;
       // Chỉ navigate khi thời gian hiện tại lớn hơn hoặc bằng startTime
-      if (currentTime >= startTime && currentTime <= endTime ) {
+      if (currentTime >= startTime && currentTime <= endTime+ 86400000 ) {
         navigate(`/auctions/${auctionId}`);
       } else if(currentTime >= endTime){
         alert("Auction Ended!");

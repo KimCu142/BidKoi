@@ -65,7 +65,7 @@ const Auctions = () => {
     const endTime = new Date(auctionDetails.endTime).getTime();
   
     // Kiểm tra nếu thời gian hiện tại đã vượt qua thời gian kết thúc đấu giá
-    if (currentTime > endTime) {
+    if (currentTime > endTime + 86400000) {
       alert("Auction Ended!");
       return; // Ngừng thực hiện nếu đấu giá đã kết thúc
     }

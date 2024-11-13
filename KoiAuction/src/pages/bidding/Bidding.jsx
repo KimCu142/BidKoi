@@ -109,9 +109,8 @@ export default function Bidding() {
   const handleAuctionEnd = async () => {
     setIsAuctionEnded(true); // Kết thúc đấu giá
     try {
-      const response = await api.get(`/BidKoi/placeBid/winner/${roomId}`);
+      const response = await api.get(`/placeBid/winner/${roomId}`);
       const winnerName = response.data.data.username;
-
       if (username === winnerName) {
         fireConfetti();
         toast.success("Congratulations, you've won this auction!", {
