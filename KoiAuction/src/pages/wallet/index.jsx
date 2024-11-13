@@ -1,3 +1,7 @@
+
+/* eslint-disable react-hooks/exhaustive-deps */
+/* eslint-disable no-unused-vars */
+
 import React, { useEffect, useState } from "react";
 import { toast } from "react-toastify";
 import api from "../../config/axios";
@@ -65,6 +69,9 @@ function Wallet() {
     }
 
     try {
+
+      setIsLoading(true);
+
       const response = await api.post(
         `/wallet/${accountId}`,
         {
@@ -173,7 +180,6 @@ function Wallet() {
             "Top-up via VNPay"
           )}
         </motion.button>
-
         <motion.button
           onClick={() => setShowWithdrawModal(true)}
           className={styles.button}
