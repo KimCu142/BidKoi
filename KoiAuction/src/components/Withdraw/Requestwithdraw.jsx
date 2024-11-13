@@ -44,12 +44,7 @@ const WithdrawRequestForm = ({ accountId, accountBalance, closeModal }) => {
             form={form}
             layout="vertical"
             onFinish={handleSubmit}
-            initialValues={{
-                amount: '10000',
-                accountNumber: '123456',
-                accountName: 'Huynh Kim Cuong',
-                bankName: '',
-            }}
+         
         >
             <Form.Item
                 label="Amount"

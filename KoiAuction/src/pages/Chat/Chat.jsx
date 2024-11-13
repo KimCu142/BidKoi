@@ -121,7 +121,7 @@ const Chat = () => {
       <h2>Chat Room {roomId.toUpperCase()}</h2>
       {userData.connected ? (
         <div className="chat-box">
-          <Scrollbars style={{ height: 400 }} autoHide ref={scrollbarsRef}>
+          <Scrollbars  autoHide ref={scrollbarsRef}>
             <div className="chat-content">
               <ul className="chat-messages">
                 {publicChats.map((chat, index) => (

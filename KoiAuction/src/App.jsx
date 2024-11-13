@@ -244,10 +244,13 @@ function App() {
         },
       ],
     },
-    
     {
       path: "/admin-dashboard",
-      element: <DashboardLayout />,
+      element: (
+        <ProtectedRoute allowedRoles={["ADMIN"]}>
+          <DashboardLayout />
+        </ProtectedRoute>
+      ),
       children: [
         { path: "dashboard", element: <AdminDashboard /> },
         { path: "team", element: <Team /> },

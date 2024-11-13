@@ -6,6 +6,7 @@ import useGetParams from "../../hooks/useGetParams";
 import api from "../../config/axios";
 import { useNavigate } from "react-router-dom";
 import { toast } from "react-toastify";
+import styles from "./index.module.css";
 
 function SuccessPage() {
   const params = useGetParams();
@@ -36,6 +37,12 @@ function SuccessPage() {
     if (vnp_ResponseCode === "00") {
       handleVNPayCallback();
       toast.success("Top-up successful! Your balance has been updated");
+
+      const timeout = setTimeout(() => {
+        handleGoBackWallet();
+      }, 5000);
+
+      return () => clearTimeout(timeout);
     } else {
       handleVNPayCallback();
       toast.error("Top-up fail! Please try again.");
@@ -48,16 +55,29 @@ function SuccessPage() {
   };
 
   return (
-    <Result
-      status="success"
-      title="Payment sucessfully!!!"
-      subTitle={`Transaction number: ${vnp_TxnRef} Cloud server configuration takes 1-5`}
-      extra={[
-        <Button key="console" onClick={handleGoBackWallet}>
-          Go back to Wallet
-        </Button>,
-      ]}
-    />
+    <div className={styles.pageContainer}>
+      <div className={styles.resultContainer}>
+        <Result
+          status="success"
+          title={<div className={styles.title}>Payment successfully!!!</div>}
+          subTitle={
+            <div className={styles.subTitle}>
+              Thank you for using our service. You will be redirected to your
+              wallet in 5 seconds.
+            </div>
+          }
+          extra={[
+            <Button
+              key="console"
+              className={styles.button}
+              onClick={handleGoBackWallet}
+            >
+              Go back to Wallet
+            </Button>,
+          ]}
+        />
+      </div>
+    </div>
   );
 }
 

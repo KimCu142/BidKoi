@@ -1,3 +1,4 @@
+/* eslint-disable no-unused-vars */
 import { Button, Table, Image, Popconfirm, Rate, Modal } from "antd";
 import { useEffect, useState } from "react";
 import { toast } from "react-toastify";
@@ -7,22 +8,18 @@ function StaffResponse() {
   const [kois, setKois] = useState([]);
   const [breeders, setBreeders] = useState({});
 
-  const LocalUser = localStorage.getItem('user');
+  const LocalUser = localStorage.getItem("user");
   const UserData = JSON.parse(LocalUser);
   const staffId = UserData.staff.staffId;
 
   //GET
   const fetchKoiAndBreeder = async () => {
     try {
-      // Fetch thông tin koi
       const koiResponse = await api.get(`/koi`);
-      setKois(koiResponse.data);
-
-      // Fetch thông tin breeder
-      // const breederResponse = await api.get(`/breeder`);
-      // if (breederResponse.status === 200) {
-      //   setBreeders(breederResponse.data[0]);
-      // }
+      const sortedKois = koiResponse.data.sort(
+        (a, b) => new Date(b.koiId) - new Date(a.koiId)
+      );
+      setKois(sortedKois);
     } catch (error) {
       console.error("Error fetching data:", error);
     }
@@ -52,12 +49,24 @@ function StaffResponse() {
 
   const handleApprove = async (koiId) => {
     try {
-
-
       // Tạo room cho Koi
       await api.post(`/room/creation/${koiId}`);
-      // Lưu Staff 
+      // Lưu Staff
       await api.put(`/staff/${staffId}/approve/${koiId}`);
+
+      const koi = kois.find((koi) => koi.koiId === koiId);
+      const breederFcmToken = koi?.breeder?.account?.fcmToken;
+
+      if (breederFcmToken) {
+        const notificationFCM = {
+          title: "Koi Request Approved",
+          message: "Your Koi request has been approved.",
+          fcmToken: breederFcmToken,
+        };
+        await sendNotification(notificationFCM);
+      } else {
+        console.warn("FCM token not found for breeder");
+      }
 
       toast.success("Koi request has been approved and room created");
       fetchKoiAndBreeder();
@@ -70,13 +79,41 @@ function StaffResponse() {
   const handleReject = async (koiId) => {
     try {
       await api.post(`/transaction/rollback-to-breeder/${koiId}`);
-      // Lưu Staff 
+      // Lưu Staff
       await api.put(`/staff/${staffId}/reject/${koiId}`);
+
+      const koi = kois.find((koi) => koi.koiId === koiId);
+      const breederFcmToken = koi?.breeder?.account?.fcmToken;
+
+      if (breederFcmToken) {
+        const notificationFCM = {
+          title: "Koi Request Rejected",
+          message: "Your Koi request has been rejected.",
+          fcmToken: breederFcmToken,
+        };
+        await sendNotification(notificationFCM);
+      } else {
+        console.warn("FCM token not found for breeder");
+      }
+
       toast.success("Koi request has been rejected");
       fetchKoiAndBreeder();
     } catch (error) {
       console.error("Error rejecting request:", error);
       toast.error("Failed to rejecte the koi request");
+    }
+  };
+
+  const sendNotification = async (notificationFCM) => {
+    try {
+      await api.post(`/notification/send-notification`, notificationFCM, {
+        headers: {
+          "Content-Type": "application/json",
+        },
+      });
+      console.log("Notification sent successfully!");
+    } catch (err) {
+      console.log("Failed to send notification");
     }
   };
 
@@ -88,7 +125,7 @@ function StaffResponse() {
 
   const columns = [
     {
-      title: "",
+      title: "Status",
       dataIndex: "status",
       key: "status",
       render: (status) => (
@@ -107,6 +144,7 @@ function StaffResponse() {
       title: "Koi Id",
       dataIndex: "koiId",
       key: "koiId",
+      sorter: (a, b) => new Date(b.koiId) - new Date(a.koiId),
     },
     {
       title: "Koi Name",
@@ -126,6 +164,13 @@ function StaffResponse() {
       dataIndex: "initialPrice",
       key: "initialPrice",
       render: (price) => `${price.toLocaleString()} VNĐ`, // Định dạng số với dấu chấm
+    },
+    {
+      title: "Immediate price",
+      dataIndex: "immediatePrice",
+      key: "immediatePrice",
+      render: (immediatePrice) =>
+        immediatePrice ? `${Number(immediatePrice).toLocaleString()} VNĐ` : "No immediate price",
     },
     {
       title: "Detail",
@@ -178,7 +223,7 @@ function StaffResponse() {
                   <video src={record.video} controls width={230}></video>
                 </div>
               ),
-              onOk() { },
+              onOk() {},
             });
           }}
         >

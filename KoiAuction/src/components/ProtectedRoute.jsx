@@ -10,9 +10,9 @@ const ProtectedRoute = ({ children, allowedRoles }) => {
 
   useEffect(() => {
     if (!role) {
-      toast.error("Vui lòng đăng nhập để truy cập trang này");
+      toast.error("Please log in to access this page.");
     } else if (allowedRoles && !allowedRoles.includes(role)) {
-      toast.error("Bạn không có quyền truy cập vào trang này");
+      toast.error("You do not have permission to access this page.");
     }
   }, [role, allowedRoles]);
 
@@ -22,8 +22,6 @@ const ProtectedRoute = ({ children, allowedRoles }) => {
   }
 
   if (allowedRoles && !allowedRoles.includes(role)) {
-    // Nếu không có quyền truy cập, hiển thị thông báo và chặn truy cập
-    toast.error("Ai cho zô mà zô mák");
     return <Navigate to="/" replace />;
   }
 

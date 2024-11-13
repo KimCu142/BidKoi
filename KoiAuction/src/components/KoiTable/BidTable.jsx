@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import { Card, Input, Button, message } from 'antd';
+import { Card, Input, Button, message,Popconfirm } from 'antd';
 import { ReloadOutlined } from '@ant-design/icons';
 import { over } from 'stompjs';
 import SockJS from 'sockjs-client';
@@ -18,8 +18,8 @@ const BidTable = ({ initialPrice, immediatePrice, isAuctionEnded, onAuctionEnd }
     price: ''
   });
   const highestBid = pastBids.length === 0
-  ? initialPrice
-  : Math.max(initialPrice, Math.max(...pastBids.map(bid => parseFloat(bid.price))));
+    ? initialPrice
+    : Math.max(initialPrice, Math.max(...pastBids.map(bid => parseFloat(bid.price))));
 
 
   const [inputError, setInputError] = useState('');
@@ -100,16 +100,29 @@ const BidTable = ({ initialPrice, immediatePrice, isAuctionEnded, onAuctionEnd }
 
   const sendBid = () => {
     const numericPrice = bidData.price.replace(/,/g, '');
+  
+    // Kiểm tra nếu người dùng hiện tại có giá cao nhất
+    const storedUser = localStorage.getItem("user");
+    if (storedUser) {
+      const userData = JSON.parse(storedUser);
+      const highestBidUser = pastBids.find(bid => parseFloat(bid.price) === highestBid)?.username;
+      
+      if (userData.username === highestBidUser) {
+        message.error("You currently have the highest bid. You cannot place another bid.");
+        return;
+      }
+    }
+  
     if (parseFloat(numericPrice) < parseFloat(minimumBid)) {
       message.error(`Your bid must be higher than Minimum bid: ${minimumBid}`);
       return;
     }
-
+  
     if (immediatePrice && immediatePrice !== 0 && parseFloat(numericPrice) > parseFloat(immediatePrice)) {
       message.error(`Your bid cannot exceed the Buy Now price: ${immediatePrice}`);
       return;
     }
-
+  
     if (stompClient && numericPrice && bidderId) {
       const bidMessage = {
         userId: bidderId,
@@ -120,6 +133,7 @@ const BidTable = ({ initialPrice, immediatePrice, isAuctionEnded, onAuctionEnd }
       setBidData({ ...bidData, price: "" });
     }
   };
+  
 
   const onError = (err) => {
     console.error("Connection error", err);
@@ -164,7 +178,7 @@ const BidTable = ({ initialPrice, immediatePrice, isAuctionEnded, onAuctionEnd }
       >
         <div className="BidInput">
           <Input
-            placeholder={`Enter bid amount ${immediatePrice && immediatePrice !== 0 ? `(Maximum bid: ${immediatePrice})` : ""} (Minimum bid: ${minimumBid})`}
+            placeholder={`Enter bid amount `}
             value={bidData.price}
             onChange={handleBidAmount}
             style={{
@@ -188,27 +202,37 @@ const BidTable = ({ initialPrice, immediatePrice, isAuctionEnded, onAuctionEnd }
           >
             Place Bid
           </Button>
-          {immediatePrice && immediatePrice !== 0 && (
-            <Button
-              type="danger"
-              shape="round"
-              style={{
-                borderRadius: '24px',
-                padding: '15px 15px',
-                margin: '5px',
-                width: '30%',
-              }}
-              onClick={handleImmediateBuy}
-              disabled={isAuctionEnded || highestBid >= immediatePrice}
+          {immediatePrice !== 0 && (
+
+            <Popconfirm
+              title={`Are you sure you want to buy now at ${parseFloat(immediatePrice).toLocaleString()} VND?`}
+              onConfirm={handleImmediateBuy}
+              okText="Yes"
+              cancelText="No"
+              disabled={isAuctionEnded || highestBid >= immediatePrice} // Vô hiệu hóa Popconfirm nếu không đủ điều kiện
             >
-              Buy Now at {parseFloat(immediatePrice).toLocaleString()} VND
-            </Button>
+              <Button
+                type="danger"
+                shape="round"
+                style={{
+                  borderRadius: '24px',
+                  padding: '15px 15px',
+                  margin: '10px',
+                  color: 'white',
+                  backgroundColor: '#f41844',
+                }}
+         
+                disabled={isAuctionEnded || highestBid >= immediatePrice}
+              >
+                Buy Now at {parseFloat(immediatePrice).toLocaleString()} VND
+              </Button>
+            </Popconfirm>
           )}
         </div>
         {inputError && (
           <p style={{ color: 'red', marginTop: '10px' }}>{inputError}</p>
         )}
-        <p style={{ fontSize: '12px', color: '#666', marginTop: '10px' }}>
+        <p style={{ fontSize: '12px', color: '#666' }}>
           (Minimum bid: {parseFloat(minimumBid).toLocaleString()}, Increments of {parseFloat(increments).toLocaleString()} only)
         </p>
         <Button

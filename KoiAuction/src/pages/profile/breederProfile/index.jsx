@@ -134,6 +134,15 @@ function BreederProfile({ accountId, token }) {
         updatedData
       );
       toast.success("Update successfully!");
+
+      localStorage.setItem(
+        "user",
+        JSON.stringify({
+          ...JSON.parse(localStorage.getItem("user")),
+          breeder: updatedData,
+        })
+      );
+
       await fetchUserData();
       setIsEdit(false);
       setTimeout(() => {
