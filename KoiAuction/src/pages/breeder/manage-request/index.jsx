@@ -128,7 +128,7 @@ function BreederRequest() {
       .then((values) => {
         const numericPrice = parseFloat(values.initialPrice.replace(/,/g, ""));
         if (isResubmit || !selectedKoi) {
-          setPaymentAmount(Math.round(numericPrice * 0.5)); // Tính số tiền thanh toán
+          setPaymentAmount(Math.round(numericPrice * 0.3)); // Tính số tiền thanh toán
           setIsPaymentModal(true);
           setIsResubmit(false);
           setSelectedKoi(null);

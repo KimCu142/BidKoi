@@ -143,6 +143,7 @@ function Transactions({ accountId }) {
             dataIndex: 'amount',
             key: 'amount',
             sorter: (a, b) => a.amount - b.amount,
+            render: (amount) => amount.toLocaleString('en-US'),
         },
         {
             title: 'Transaction Date',

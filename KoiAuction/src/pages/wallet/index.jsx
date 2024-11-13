@@ -199,15 +199,15 @@ function Wallet() {
           footer={null}
           centered
         >
-          <WithdrawRequestForm 
-            accountId={accountId} 
+          <WithdrawRequestForm
+            accountId={accountId}
             accountBalance={currentBalance.balance}
             closeModal={() => setShowWithdrawModal(false)} // Truyền hàm đóng modal vào WithdrawRequestForm
           />
         </Modal>
 
         <div className={styles.transactionsinwallet}>
-       <Transactions accountId={accountId} />
+          <Transactions accountId={accountId} />
         </div>
       </motion.div>
     </div>

@@ -25,7 +25,8 @@ function ConfirmWithdraw() {
     const fetchTransactions = async () => {
         try {
             const response = await api.get(`/wallet/get-all-withdraw`);
-            setTransactions(response.data || []);
+            const sortedTransactions = (response.data || []).sort((a, b) => b.id - a.id);
+            setTransactions(sortedTransactions);
         } catch (error) {
             console.error("Error fetching transactions", error);
             toast.error("Unable to fetch transaction list.");
@@ -99,6 +100,7 @@ function ConfirmWithdraw() {
             key: 'amount',
             sorter: (a, b) => a.amount - b.amount,
             sortDirections: ['ascend', 'descend'],
+            render: (amount) => amount.toLocaleString('en-US'),
         },
         {
             title: 'Request Date',
@@ -106,31 +108,32 @@ function ConfirmWithdraw() {
             key: 'withdrawDate',
             sorter: (a, b) => new Date(a.withdrawDate) - new Date(b.withdrawDate),
             sortDirections: ['ascend', 'descend'],
+            defaultSortOrder: 'descend',
         },
         {
-          title: 'description',
-          dataIndex: 'description',
-          key: 'description',
-          sorter: (a, b) => new Date(a.description) - new Date(b.description),
-          sortDirections: ['ascend', 'descend'],
-      },
+            title: 'description',
+            dataIndex: 'description',
+            key: 'description',
+            sorter: (a, b) => new Date(a.description) - new Date(b.description),
+            sortDirections: ['ascend', 'descend'],
+        },
         {
             title: 'Action',
             key: 'action',
             render: (text, record) => {
                 if (record.status === 'APPROVED') {
-                    return  <div style={{ color: '#52c41a', fontWeight: "700" }}>APPROVED</div>;
+                    return <div style={{ color: '#52c41a', fontWeight: "700" }}>APPROVED</div>;
                 } else if (record.status === 'REJECTED') {
                     return <div style={{ color: '#ff4d4f', fontWeight: "700" }}>REJECTED</div>;
                 } else {
                     return (
                         <Space>
-                          
+
                             <Button
                                 type="primary"
                                 onClick={() => handleApproveWithdrawal(record.withdrawId)}
                             >
-                                Confirm 
+                                Confirm
                             </Button>
                             <Button
                                 type="primary" danger
