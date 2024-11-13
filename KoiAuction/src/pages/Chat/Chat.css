@@ -66,6 +66,7 @@
 }
 
 .input-message {
+  width: 100%;
   flex: 1;
   padding: 8px;
   border: 1px solid #d9d9d9;
@@ -86,24 +87,3 @@
   background-color: #40a9ff;
 }
 
-.register input {
-  width: 100%;
-  margin-bottom: 10px;
-  padding: 8px;
-  border: 1px solid #d9d9d9;
-  border-radius: 4px;
-}
-
-.register button {
-  width: 100%;
-  padding: 8px;
-  background-color: #1890ff;
-  color: white;
-  border: none;
-  border-radius: 4px;
-  cursor: pointer;
-}
-
-.register button:hover {
-  background-color: #40a9ff;
-}

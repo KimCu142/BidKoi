@@ -1,6 +1,5 @@
 import "./Bidding.css";
 import { Image } from "antd";
-import axios from "axios";
 import { useState, useEffect } from "react";
 import { InfoCircleOutlined, CustomerServiceOutlined } from "@ant-design/icons";
 import { Popover, Button, Space, Modal, FloatButton } from "antd";
