@@ -9,8 +9,8 @@ import {
 } from "@ant-design/icons";
 import { Button, Input, Space, Tooltip, message, Form } from "antd";
 import { useState } from "react";
-import axios from "axios";
 import styles from "./Login.module.css"; // Importing CSS module
+import api from "../../config/axios";
 
 const RegisterForm = () => {
   const navigate = useNavigate(); // Hook useNavigate to navigate
