@@ -1,5 +1,7 @@
+
 /* eslint-disable react-hooks/exhaustive-deps */
 /* eslint-disable no-unused-vars */
+
 import React, { useEffect, useState } from "react";
 import { toast } from "react-toastify";
 import api from "../../config/axios";
@@ -7,12 +9,15 @@ import useGetParams from "../../hooks/useGetParams";
 import styles from "./index.module.scss";
 import { motion } from "framer-motion";
 import Transactions from "../../components/Transactions/Transactions";
+import WithdrawRequestForm from "../../components/Withdraw/Requestwithdraw";
+import { Modal } from "antd";
 
 function Wallet() {
   const [balance, setBalance] = useState("");
   const [isLoading, setIsLoading] = useState(false);
   const [paymentUrl, setPaymentUrl] = useState("");
   const [currentBalance, setCurrentBalance] = useState(0);
+  const [showWithdrawModal, setShowWithdrawModal] = useState(false);
 
   const denominations = [
     { value: 1000000 },
@@ -64,6 +69,7 @@ function Wallet() {
     }
 
     try {
+
       setIsLoading(true);
 
       const response = await api.post(
@@ -145,7 +151,7 @@ function Wallet() {
         </div>
 
         <div className={styles.inputGroup}>
-          <lable> Amount to top-up: </lable>
+          <label> Amount to top-up: </label>
           <div className={styles.inputWithUnit}>
             <input
               className={styles.inputLabel}
@@ -174,8 +180,36 @@ function Wallet() {
             "Top-up via VNPay"
           )}
         </motion.button>
+        <motion.button
+          onClick={() => setShowWithdrawModal(true)}
+          className={styles.button}
+          whileHover={{
+            scale: 1.05,
+            boxShadow: "0px 4px 15px rgba(0, 123, 255, 0.3)",
+          }}
+          whileTap={{ scale: 0.95 }}
+        >
+          Withdraw Funds
+        </motion.button>
+
+        <Modal
+          title="Withdraw Request"
+          visible={showWithdrawModal}
+          onCancel={() => setShowWithdrawModal(false)}
+          footer={null}
+          centered
+        >
+          <WithdrawRequestForm 
+            accountId={accountId} 
+            accountBalance={currentBalance.balance}
+            closeModal={() => setShowWithdrawModal(false)} // Truyền hàm đóng modal vào WithdrawRequestForm
+          />
+        </Modal>
+
+        <div className={styles.transactionsinwallet}>
+       <Transactions accountId={accountId} />
+        </div>
       </motion.div>
-      <Transactions accountId={accountId} />
     </div>
   );
 }
