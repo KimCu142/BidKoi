@@ -46,11 +46,15 @@ function AvailableAuction() {
     if (auctionData) {
       const currentTime = new Date().getTime();
       const startTime = new Date(auctionData.startTime).getTime();
+      const endTime = new Date(auctionData.endTime).getTime();
   const auctionId = auctionData.auctionId;
       // Chỉ navigate khi thời gian hiện tại lớn hơn hoặc bằng startTime
-      if (currentTime >= startTime) {
+      if (currentTime >= startTime && currentTime <= endTime ) {
         navigate(`/auctions/${auctionId}`);
-      } else {
+      } else if(currentTime >= endTime){
+        alert("Auction Ended!");
+      }
+       else {
         alert("Auction has not started yet!");
       }
     }
@@ -118,21 +122,23 @@ function AvailableAuction() {
               variants={{ hover: { scale: 0.85 }, press: { scale: 1.1 } }}
               className="label"
             >
-              Auction #{auctionData?.auctionId}
+            {auctionData ? (`Auction #${auctionData?.auctionId}`) : ("No Auction Active")}
             </motion.div>
           </motion.button>
         </MotionConfig>
 
-        <div className="AuctionInfo">
-          <>
-          <p>Start Date: {new Date(auctionData?.startTime).toLocaleString()}</p>
-          <p>End Date: {new Date(auctionData?.endTime).toLocaleString()}</p>
-          <p>Status: {auctionData?.status}</p>
-          </>
-          <button onClick={handleNavigateToSchedule} className="schedule-button">
-            View Auction Schedule
-          </button>
-        </div>
+        {auctionData && (
+          <div className="AuctionInfo">
+            <>
+              <p>Start Date: {new Date(auctionData?.startTime).toLocaleString()}</p>
+              <p>End Date: {new Date(auctionData?.endTime).toLocaleString()}</p>
+              <p>Status: {auctionData?.status}</p>
+            </>
+            <button onClick={handleNavigateToSchedule} className="schedule-button">
+              View Auction Schedule
+            </button>
+          </div>
+        )}
       </div>
     </div>
   );

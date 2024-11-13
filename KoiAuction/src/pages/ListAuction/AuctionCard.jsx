@@ -31,11 +31,16 @@ function AuctionCard() {
         <div className="auction-list">
             {auctions.map((auction) => (
                 <div
-                    className={`auction-card ${auction.status === "PENDING" ? "pending-background" : ""}`}
+                    className={`auction-card ${
+                        auction.status === "PENDING"
+                            ? "pending-background"
+                            : auction.status === "CLOSED"
+                            ? "closed-background"
+                            : ""
+                    }`}
                     key={auction.auctionId}
                     onClick={() => handleNavigate(auction.auctionId)}
                 >
-
                     <div className="auction-info">
                         <div className="auction-title">
                             <span>Auction #{auction.auctionId}</span>
@@ -45,7 +50,7 @@ function AuctionCard() {
                             <p>{new Date(auction.endTime).toLocaleString()}</p>
                         </div>
                     </div>
-                    <div className="auction-arrow" >
+                    <div className="auction-arrow">
                         <span>➔</span>
                     </div>
                 </div>

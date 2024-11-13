@@ -1,6 +1,5 @@
 .auction-list {
-    padding-top: 80px;
-    padding-bottom: 50px;
+    padding: 80px;
     display: grid;
     grid-template-columns: repeat(auto-fill, minmax(300px, 1fr)); /* Tạo lưới tự động */
     gap: 20px; /* Khoảng cách giữa các card */
@@ -26,9 +25,12 @@
   .pending-background {
     background-color:#4f98ca; /* Màu nền cho auction PENDING */
   }
+  .closed-background {
+    background-color: #b1b3b5; /* Màu nền cho trạng thái CLOSED */
+}
 
   .auction-card:hover {
-    background-color: #f41844;
+    background-color: #cd4f66;
   }
     .pending-background:hover {
     background-color:  #6ba5cb;

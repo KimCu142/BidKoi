@@ -61,11 +61,20 @@ const Auctions = () => {
   };
 
   const handleRoomClick = async (room) => {
+    const currentTime = new Date().getTime();
+    const endTime = new Date(auctionDetails.endTime).getTime();
+  
+    // Kiểm tra nếu thời gian hiện tại đã vượt qua thời gian kết thúc đấu giá
+    if (currentTime > endTime) {
+      alert("Auction Ended!");
+      return; // Ngừng thực hiện nếu đấu giá đã kết thúc
+    }
+  
     try {
       const response = await api.get(
         `/placeBid/${userData.bidder.id}/${room.roomId}`
       );
-
+  
       const isAllowed = response.data;
       if (isAllowed) {
         handleNavigate(room.roomId); // Điều hướng tới trang đấu giá
