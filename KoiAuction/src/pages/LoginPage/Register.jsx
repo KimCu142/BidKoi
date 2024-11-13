@@ -28,8 +28,8 @@ const RegisterForm = () => {
     }
 
     try {
-      const response = await axios.post(
-        "http://localhost:8080/BidKoi/account/register",
+      const response = await api.post(
+        "/account/register",
         {
           username,
           password,
