@@ -238,7 +238,7 @@ function BreederRequest() {
       dataIndex: "immediatePrice",
       key: "immediatePrice",
       render: (immediatePrice) =>
-        immediatePrice ? `${Number(immediatePrice).toLocaleString()} VNĐ` : "-",
+        immediatePrice ? `${Number(immediatePrice).toLocaleString()} VNĐ` : "No Immediate price",
     },
     {
       title: "Detail",
@@ -529,7 +529,7 @@ function BreederRequest() {
       setUploadProgress(0);
       if (isResubmit) {
         const numericPrice = parseFloat(kois.initialPrice);
-        setPaymentAmount(Math.round(numericPrice) * 0.5);
+        setPaymentAmount(Math.round(numericPrice) * 0.3);
         setIsPaymentModal(true); // Hiển thị modal thanh toán sau khi submit thành công
         setIsResubmit(false); // Reset lại trạng thái
       }

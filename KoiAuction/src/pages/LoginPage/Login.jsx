@@ -102,7 +102,11 @@ const Login = () => {
       setUsername(data.username); // Update the username in context
       setUserRole(data.role);
 
-      navigate("/");
+      if (data.role === "ADMIN") {
+        navigate("/admin-dashboard");
+      } else {
+        navigate("/");
+      }
 
       await registerServiceWorkerAndGetToken();
     } catch (error) {

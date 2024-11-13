@@ -170,7 +170,7 @@ function StaffResponse() {
       dataIndex: "immediatePrice",
       key: "immediatePrice",
       render: (immediatePrice) =>
-        immediatePrice ? `${Number(immediatePrice).toLocaleString()} VNĐ` : "-",
+        immediatePrice ? `${Number(immediatePrice).toLocaleString()} VNĐ` : "No immediate price",
     },
     {
       title: "Detail",

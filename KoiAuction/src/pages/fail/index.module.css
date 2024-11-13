@@ -1,0 +1,52 @@
+/* index.module.css */
+
+.pageContainer {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    height: 100vh;
+}
+
+.resultContainer {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    padding: 20px;
+    background-color: #fff;
+    border-radius: 8px;
+    box-shadow: 0 4px 10px rgba(0, 0, 0, 0.1);
+    max-width: 400px;
+    margin: 0 auto;
+    text-align: center;
+}
+
+.title {
+    font-size: 24px;
+    font-weight: bold;
+    color: #d9534f;
+    /* Red color for error title */
+    margin-bottom: 10px;
+}
+
+.subTitle {
+    font-size: 16px;
+    color: #666;
+}
+
+.button {
+    background-color: #d9534f;
+    /* Red color for error button */
+    color: #fff;
+    border: none;
+    padding: 10px 20px;
+    border-radius: 5px;
+    font-size: 16px;
+    cursor: pointer;
+    transition: background-color 0.3s ease;
+}
+
+.button:hover {
+    background-color: #c9302c;
+    /* Darker red on hover */
+}
