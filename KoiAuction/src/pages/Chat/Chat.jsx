@@ -45,7 +45,7 @@ const Chat = () => {
   }, [publicChats]);
 
   const connect = () => {
-    let Sock = new SockJS("http://localhost:8080/BidKoi/ws");
+    let Sock = new SockJS("https://bidkois.azurewebsites.net/BidKoi/ws");
     stompClient = over(Sock);
     stompClient.connect({}, onConnected, onError);
   };

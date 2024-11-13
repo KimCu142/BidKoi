@@ -2,7 +2,6 @@ import React, { useState } from 'react';
 import { List, Avatar, Input, Button } from 'antd';
 import { SendOutlined } from '@ant-design/icons';
 import { GoogleGenerativeAI } from '@google/generative-ai';
-import "./ChatBot.css"
 const apiKey = 'AIzaSyDiiyu9YFpObl9e8-zPW-JK8AyQHBk_Bw0';
 const genAI = new GoogleGenerativeAI(apiKey);
 const { TextArea } = Input;
@@ -27,6 +26,7 @@ export default function ChatBot({
             content: `Xin chào! Tôi là Kim Cương, trợ lý của bạn trong phòng đấu giá cá Koi. Buổi đấu giá cho cá Koi ${name} có giá khởi điểm là ${initialPrice} và giá mua ngay là ${immediatePrice}. 
             Thông tin cá: Mã ID: ${id},Rating:${rating} Độ tuổi: ${age}, Giống: ${breeder}, Chiều dài: ${length}, Giới tính: ${sex}, Tình trạng: ${status}. Buổi đấu giá này sẽ kết thúc vào lúc ${endTime}.`
         },
+
     ]);
     const [newMessage, setNewMessage] = useState('');
     const [typing, setTyping] = useState(false);
@@ -77,6 +77,7 @@ export default function ChatBot({
     }
 
     return (
+
         <div>
 
       
@@ -84,6 +85,7 @@ export default function ChatBot({
             <List
                 itemLayout="horizontal"
                 dataSource={messages.filter((_, index) => index >= 2)} // Bỏ qua 2 tin nhắn đầu tiên
+
                 renderItem={(item) => (
                     <List.Item>
                         <List.Item.Meta
@@ -96,6 +98,7 @@ export default function ChatBot({
                 style={{ maxHeight: '600px', overflowY: 'auto', padding: '10px' }}
             />
 
+
             {typing && (
                 <div style={{ padding: '10px', color: '#999', textAlign: 'center' }}>
                     Bot typing...
@@ -104,6 +107,7 @@ export default function ChatBot({
            
         </div>
         <TextArea
+
                 rows={3}
                 value={newMessage}
                 onChange={(e) => setNewMessage(e.target.value)}
@@ -116,7 +120,9 @@ export default function ChatBot({
                 onClick={handleSend}
                 style={{ width: '100%', marginTop: '5px' }}
             >
+
                 SEND
+
             </Button>
         </div>
     );

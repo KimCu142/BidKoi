@@ -3,7 +3,7 @@
   "private": true,
   "version": "0.0.0",
   "type": "module",
-  "proxy": "http://localhost:8080/BidKoi",
+  "proxy": "https://bidkois.azurewebsites.net/BidKoi",
   "scripts": {
     "dev": "vite",
     "build": "vite build",
