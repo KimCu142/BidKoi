@@ -67,7 +67,7 @@ export default function Bidding() {
 
   useEffect(() => {
     api
-      .get(`http://localhost:8080/BidKoi/auction/active`)
+      .get(`/auction/active`)
       .then((response) => {
         const auctionData = response.data.data;
         setAuctionDetails(auctionData);
@@ -107,7 +107,7 @@ export default function Bidding() {
   const handleAuctionEnd = async () => {
     setIsAuctionEnded(true); // Kết thúc đấu giá
     try {
-      const response = await api.get(`http://localhost:8080/BidKoi/placeBid/winner/${roomId}`);
+      const response = await api.get(`/placeBid/winner/${roomId}`);
       const winnerName = response.data.data.username;
 
       if (username === winnerName) {
