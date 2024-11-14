@@ -47,7 +47,8 @@ const StaffDashboard = () => {
   const items = [
     getItem("Koi Request", "staff-request", <TeamOutlined />),
     getItem("Manage Auction", "create-auction", <ToTopOutlined />),
-    getItem("Confirm Withdraw", "confirm-withdraw", <DollarCircleOutlined />), // Mục mới
+    getItem("Confirm Withdraw", "confirm-withdraw", <DollarCircleOutlined />), 
+    getItem("Confirm Shipping", "confirm-shipping", <DollarCircleOutlined />),
   ];
 
   // Handle Menu item click

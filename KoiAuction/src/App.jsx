@@ -48,6 +48,7 @@ import { useEffect } from "react";
 import Transaction from "./components/scenes/transaction/index.jsx";
 import Auction from "./components/scenes/auction/index.jsx";
 import ConfirmWithdraw from "./pages/staff/manage-withdraw/ConfirmWithdraw.jsx";
+import StaffActivitiess from "./pages/staff/staff-activities/StaffActivitiess.jsx";
 // import Calendar from "./components/scenes/calendar/index.jsx";
 
 function AppLayout() {
@@ -239,6 +240,14 @@ function App() {
           element: (
             <ProtectedRoute allowedRoles={["STAFF"]}>
               <ConfirmWithdraw /> 
+            </ProtectedRoute>
+          ),
+        },
+        {
+          path: "confirm-shipping", // Thêm route mới cho Confirm Withdraw
+          element: (
+            <ProtectedRoute allowedRoles={["STAFF"]}>
+              <StaffActivitiess/> 
             </ProtectedRoute>
           ),
         },
